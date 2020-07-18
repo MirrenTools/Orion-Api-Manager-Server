@@ -1,7 +1,5 @@
 <template>
-	<div>
-		this is router lalala
-	</div>
+	<div>from swagger</div>
 </template>
 
 <script>

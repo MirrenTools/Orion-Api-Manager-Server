@@ -21,89 +21,14 @@ export const constantRoutes = [{
 		path: '/index',
 		component: Layout,
 		children: [{
-				path: '',
-				name: '首页标题',
-				component: () => import('./views/Client')
-			}, {
-				path: 'test',
-				name: 'fi',
-				component: () => import('./views/Lalala'),
-				meta: {
-					breadcrumb: [{
-						path: '/index',
-						title: '首页',
-						queryKeys: ['id']
-					}, {
-						path: '/index/lalala',
-						title: '二级标题'
-					}]
-				}
-			},
-			{
-				path: 'lalala',
-				name: 'Form',
-				component: () => import('./views/Lalala'),
-				meta: {
-					breadcrumb: [{
-						path: '/index',
-						title: '首页',
-						queryKeys: ['id']
-					}, {
-						path: '/index/test',
-						title: '二级标题'
-					}]
-				}
-			}
-		]
-	},
-	{
-		path: '/test',
-		component: Layout,
-		children: [{
-				path: '',
-				name: '测试标题',
-				component: () => import('./views/Client'),
-				meta: {
-					breadcrumb: [{
-						path: '/index',
-						title: '首页',
-						queryKeys: ['id']
-					}, {
-						path: '/index/test',
-						title: '二级标题'
-					}]
-				}
-			}, {
-				path: 'test',
-				name: 'fi',
-				component: () => import('./views/Client'),
-				meta: {
-					breadcrumb: [{
-						path: '/index',
-						title: '首页',
-						queryKeys: ['id']
-					}, {
-						path: '/index/lalala',
-						title: '二级标题'
-					}]
-				}
-			},
-			{
-				path: 'lalala',
-				name: 'Form',
-				component: () => import('./views/Lalala'),
-				meta: {
-					breadcrumb: [{
-						path: '/index',
-						title: '首页',
-						queryKeys: ['id']
-					}, {
-						path: '/index/test',
-						title: '二级标题'
-					}]
-				}
-			}
-		]
+			path: '',
+			name: '项目列表',
+			component: () => import('./views/Projects')
+		}, {
+			path: 'fromSwagger',
+			name: '导入Swagger',
+			component: () => import('./views/FromSwagger'),
+		}]
 	},
 	// 404 page must be placed at the end !!!
 	{

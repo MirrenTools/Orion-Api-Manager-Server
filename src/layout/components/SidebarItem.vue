@@ -1,6 +1,6 @@
 <template>
 	<div class="sidebar-item-container" :class="{ collapse: collapse }">
-		<el-menu default-active="1-3" background-color="#304156" text-color="#fff" active-text-color="#409eff" :router="true" :collapse="collapse" :collapse-transition="false">
+		<el-menu default-active="/index" background-color="#304156" text-color="#fff" active-text-color="#409eff" :router="true" :collapse="collapse" :collapse-transition="false">
 			<template v-for="item in menus">
 				<el-submenu v-if="item.items" :index="item.path">
 					<template slot="title">
@@ -35,23 +35,8 @@ export default {
 	data() {
 		return {
 			menus: [
-				{ path: '/test/test', title: '/test/indexind', icon: 'el-icon-delete', badge: 'badge-data-id' },
-				{ path: '/test/lalala', title: '/test/lalala', icon: 'el-icon-edit' },
-				{
-					path: '/form/test2',
-					title: '/form/test',
-					icon: 'el-icon-share',
-					items: [{ path: '/form/test', title: '/form/test', icon: 'el-icon-edit' }, { path: '/form/index', title: '/form/index', icon: 'el-icon-delete' }]
-				},
-				{ path: '/form/index3', title: '/form/index', icon: 'el-icon-share' },
-				{ path: '/form/test4', title: '/form/index', icon: 'el-icon-share' },
-				{ path: '/form/index5', title: '/form/index', icon: 'el-icon-share' },
-				{
-					path: '/form/test6',
-					title: '/form/test',
-					icon: 'el-icon-share',
-					items: [{ path: '/test', title: '/form/test', icon: 'el-icon-edit' }, { path: '/index', title: '/form/index', icon: 'el-icon-delete' }]
-				}
+				{ path: '/index', title: '项目列表', icon: 'el-icon-notebook-2' },
+				{ path: '/index/fromSwagger', title: '导入Swagger', icon: 'el-icon-attract' }
 			]
 		};
 	},
