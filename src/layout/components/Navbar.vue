@@ -1,8 +1,17 @@
 <template>
 	<div class="navbar">
-		<hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+		<!-- <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" /> -->
+		<img src="../../assets/logo.png" class="hamburger-container" style="margin-left: 5px;" />
 		<breadcrumb class="breadcrumb-container" />
-		<div class="right-menu"><el-link type="info" @click.native="logout" style="margin-right: 0.5rem;">退出登录</el-link></div>
+		<div class="right-menu">
+			<el-popover placement="bottom" title="确定退出登录吗?" width="200" trigger="click" v-model="logoutVisible">
+				<div style="text-align: right; margin: 0">
+					<el-button size="mini" @click="logoutVisible = false">取消</el-button>
+					<el-button type="primary" size="mini" @click.native="logout">确定</el-button>
+				</div>
+				<el-link type="info" slot="reference" style="margin-right: 0.5rem;">退出登录</el-link>
+			</el-popover>
+		</div>
 	</div>
 </template>
 
@@ -10,8 +19,14 @@
 import { mapGetters } from 'vuex';
 import Breadcrumb from './NavbarBreadcrumb';
 import Hamburger from './NavbarHamburger';
+import { apiLogout } from '@/api/Login';
 
 export default {
+	data() {
+		return {
+			logoutVisible: false
+		};
+	},
 	components: {
 		Breadcrumb,
 		Hamburger
@@ -24,8 +39,18 @@ export default {
 			this.$store.dispatch('app/toggleSideBar');
 		},
 		async logout() {
-			await this.$store.dispatch('user/logout');
-			this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+			var sessionid = this.$store.sessionId;
+			apiLogout(
+				{ sessionId: sessionid },
+				res => {
+					this.$store.dispatch('app/logout');
+					this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+				},
+				err => {
+					this.$message.error('请求失败,更多信息请查看浏览器控制台!');
+					console.log(err);
+				}
+			);
 		}
 	}
 };
@@ -47,9 +72,9 @@ export default {
 		transition: background 0.3s;
 		-webkit-tap-highlight-color: transparent;
 
-		&:hover {
-			background: rgba(0, 0, 0, 0.025);
-		}
+		// &:hover {
+		// 	background: rgba(0, 0, 0, 0.025);
+		// }
 	}
 
 	.breadcrumb-container {

@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { apiLogin, apiCheckVerification } from '@/api/Login';
+import { apiLogin} from '@/api/Login';
 export default {
 	data() {
 		var validateId = (rule, value, callback) => {
@@ -104,8 +104,8 @@ export default {
 			}
 		};
 		var validatePass = (rule, value, callback) => {
-			if (value.length < 6 || value.length > 32) {
-				callback(new Error('请输入6-32位密码'));
+			if (value.length < 4 || value.length > 32) {
+				callback(new Error('请输入4-32位密码'));
 			} else {
 				callback();
 			}
@@ -145,17 +145,27 @@ export default {
 			this.$refs.loginForm.validate(Verified => {
 				if (Verified) {
 					this.loading = false;
-					// var data = {id: id, password: password };
-					// apiLogin(
-					// 	data,
-					// 	res => {
-					// 		console.log('登录成功');
-					// 	},
-					// 	err => {
-					// 		console.log('登录失败');
-					// 	}
-					// );
-					this.loginError = true;
+					var data = { id: this.loginForm.id, pwd: this.loginForm.password };
+					apiLogin(
+						data,
+						res => {
+							var resp = res.data;
+							if (resp.code == 200) {
+								var info = resp.data;
+								this.$store.dispatch('app/login', info);
+								console.log('登录成功!');
+								this.$router.push('/index');
+							} else {
+								console.log('登录失败:'+resp.msg);
+								this.loginError = true;
+							}
+						},
+						err => {
+							this.$message.error('请求失败,更多信息请查看浏览器控制台!');
+							console.log('请求失败!');
+							console.log(err);
+						}
+					);
 				} else {
 					this.loading = false;
 				}

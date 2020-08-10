@@ -24,6 +24,7 @@ export default {
 			this.breadcrumbList = [];
 			var meta = this.$route.meta;
 			var query = this.$route.query;
+			var params = this.$route.params;
 			if (meta != null && meta.breadcrumb != null) {
 				for (var i = 0; i < meta.breadcrumb.length; i++) {
 					var route = meta.breadcrumb[i];
@@ -45,7 +46,27 @@ export default {
 						}
 					}
 					var breadcrumb = {};
-					breadcrumb.path = route.path + (queryParams || '');
+					var breadcrumbPath = route.path;
+					if (route.pathKeys != null) {
+						for (var j = 0; j < route.pathKeys.length; j++) {
+							var k = route.pathKeys[j];
+							var val = null;
+							if (params[k] != null && params[k] != '') {
+								val = params[k];
+							} else if (query[k] != null && query[k] != '') {
+								val = query[k];
+							}
+							if (val != null) {
+								if (breadcrumbPath.endsWith(k)) {
+									var reg = new RegExp('(.*):' + k); 
+									breadcrumbPath = breadcrumbPath.replace(reg, '$1'+val);
+								} else {
+									breadcrumbPath = breadcrumbPath.replace(':' + k + '/', val);
+								}
+							}
+						}
+					}
+					breadcrumb.path = breadcrumbPath + (queryParams || '');
 					breadcrumb.title = route.title;
 					this.breadcrumbList.push(breadcrumb);
 				}
@@ -53,7 +74,6 @@ export default {
 			var name = this.$route.name;
 			var breadcrumb = { title: name };
 			this.breadcrumbList.push(breadcrumb);
-			console.log(this.breadcrumbList);
 		}
 	}
 };
