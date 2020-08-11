@@ -120,7 +120,7 @@ export default {
 						}
 					);
 				} else {
-					this.$message.error('新增失败,请按提示完善项目信息!');
+					this.$message.warning('新增失败,请按提示完善项目信息!');
 					return false;
 				}
 			});

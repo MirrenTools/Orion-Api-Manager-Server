@@ -115,8 +115,8 @@
 		</el-dialog>
 
 		<!-- 分组列表 -->
-		<div v-show="mode === 'view'">
-			<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;align-items: center;">
+		<div v-show="mode === 'view'" style="width: 98%; max-width: 1240px;margin: auto;">
+			<div style="padding: 10px 0;display: flex;align-items: center;">
 				<div><b>分组列表</b></div>
 				<div style="margin-left: auto;">
 					<div v-show="mode === 'view'">
@@ -134,7 +134,7 @@
 					</div>
 				</div>
 			</div>
-			<div style="padding:0 10px;">
+			<div>
 				<el-collapse v-loading="groupsLoading">
 					<el-collapse-item v-for="g in groups" :key="g.groupId">
 						<!-- 分组名称与简介 -->
@@ -153,7 +153,7 @@
 								<el-button size="mini" type="primary" @click="groupMoveDown(g.groupId)">下移</el-button>
 								<el-button size="mini" type="primary" @click="showGroupUpdateDialog(g)">修改分组</el-button>
 								<el-button size="mini" type="danger" @click="groupDeleteSubmit(g.groupId)">删除分组</el-button>
-								<el-button size="mini" type="primary" style="margin-left: auto;">新增接口</el-button>
+								<el-button size="mini" type="primary" style="margin-left: auto;" @click="$router.push({path:`/index/post/project/api/${project.key}/${g.groupId}`})">新增接口</el-button>
 							</div>
 							<!-- 分组的描述 -->
 							<p v-html="g.description"></p>
@@ -169,9 +169,9 @@
 						<div v-for="api in g.apis" :key="api.apiId" style="margin-bottom: 10px;">
 							<div :class="['api', api.method]">
 								<!-- API的方法与路径与简介 -->
-								<div class="api-header">
+								<div :class="['api-header',((api.deprecated==true||api.deprecated=='true')?'text-through':'')]">
 									<div class="api-method">{{ api.method }}</div>
-									<div class="api-path-summary">{{ api.path }}</div>
+									<div class="api-path-summary"><span v-if="(api.deprecated==true||api.deprecated=='true')"><b>(已过期) </b></span>{{ api.path }}</div>
 									<div class="api-path-summary">{{ api.title }}</div>
 								</div>
 								<div style="padding:5px 10px;text-align: right;">
@@ -723,16 +723,13 @@ export default {
 		formatDate(time) {
 			return datetimeFormat(time);
 		}
+		
 	}
 };
 </script>
 
 <style lang="scss" scoped>
 @import '@/styles/api-method-style.scss';
-.min-height-table td,
-.min-height-table th {
-	padding: 0 !important;
-}
 .alink {
 	background-color: transparent;
 	color: #409eff;
@@ -755,4 +752,5 @@ export default {
 	display: inline-block;
 	padding-right: 10px;
 }
+
 </style>
