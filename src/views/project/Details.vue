@@ -247,13 +247,25 @@
 	const MODE_EDIT = 'edit';
 	export default {
 		data() {
+			var validateServers = (rule, value, callback) => {
+				var flag = false;
+				for (var i = 0; i < value.length; i++) {
+					if (value[i].url.trim() != '') {
+						flag = true;
+						break;
+					}
+				}
+				if (flag) {
+					callback();
+				} else {
+					callback(new Error('请最少添加一个主机地址'));
+				}
+			};
 			return {
 				/**查看项目的属性*/
 				project: {},
 				/**编辑的项目属性*/
-				projectEdit: {
-					schemes: []
-				},
+				projectEdit: {},
 				/**项目信息表达校验*/
 				editRules: {
 					name: [{
@@ -266,14 +278,9 @@
 						message: '请输入项目版本号',
 						trigger: 'blur'
 					}],
-					host: [{
+					servers: [{
 						required: true,
-						message: '请输入主机地址',
-						trigger: 'blur'
-					}],
-					schemes: [{
-						required: true,
-						message: '请至少选择一个服务',
+						validator: validateServers,
 						trigger: 'blur'
 					}]
 				},
@@ -826,7 +833,9 @@
 
 <style lang="scss" scoped>
 	@import '@/styles/api-method-style.scss';
-
+	.novalidate input {
+		border-color: #DCDFE6 !important;
+	}
 	.alink {
 		background-color: transparent;
 		color: #409eff;

@@ -3,8 +3,7 @@
 		<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;justify-content: center;align-items: center;">
 			<div>项目数量:{{ projectList.length || 0 }}</div>
 			<div style="margin-left: auto;">
-				<router-link class="alink" to="/index/new/project"><el-button type="primary">导入API</el-button></router-link>
-				<router-link class="alink" to="/index/fromSwagger"><el-button type="primary">导入Swagger</el-button></router-link>
+				<router-link class="alink" to="/index/import"><el-button type="primary">导入API</el-button></router-link>
 				<router-link class="alink" style="margin-right: 0;" to="/index/new/project"><el-button type="primary">新建项目</el-button></router-link>
 			</div>
 		</div>

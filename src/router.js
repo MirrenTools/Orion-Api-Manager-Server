@@ -99,11 +99,11 @@ export const constantRoutes = [{
 				}]
 			}
 		}, {
-			path: 'fromSwagger',
-			name: '导入Swagger',
-			component: () => import('./views/FromSwagger'),
+			path: 'import',
+			name: '导入API',
+			component: () => import('./views/ImportApi'),
 			meta: {
-				title: '导入Swagger',
+				title: '导入API',
 				breadcrumb: [{
 					path: '/index',
 					title: '项目列表'
