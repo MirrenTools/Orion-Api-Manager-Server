@@ -6,7 +6,7 @@
 			</div>
 			<div style="margin-left: auto;">
 				<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">删除</el-button>
-				<el-button size="mini" type="primary">修改</el-button>
+				<el-button size="mini" type="primary" @click="$router.push({path:`/index/put/project/api/${projectId}/${groupId}/${apiId}`})">修改</el-button>
 			</div>
 		</div>
 		<div style="width: 98%; max-width: 1240px;margin:0 auto 50px;" v-loading="dataLoading">
@@ -31,8 +31,7 @@
 					<!-- 拓展文档 -->
 					<div v-if="api.externalDocs != null">
 						<div v-if="api.externalDocs.description != null" v-html="api.externalDocs.description"></div>
-						<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url" target="_blank" class="alink"
-						 style="margin-left: 0;">
+						<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url" target="_blank" class="alink" style="margin-left: 0;">
 							{{ api.externalDocs.url }}
 						</a>
 					</div>
@@ -46,8 +45,8 @@
 				</div>
 				<!-- 请求参数 -->
 				<div style="padding:5px 10px;background-color: white">
-					<el-table :data="api.parameters" style="width: 100%;" row-key="tableXxxxxxRandomRowKeyId"
-					 border default-expand-all :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" empty-text="无需请求数据">
+					<el-table :data="api.parameters" style="width: 100%;" row-key="tableXxxxxxRandomRowKeyId" border
+					 default-expand-all :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" empty-text="无需请求数据">
 						<el-table-column prop="required" label="必填" width="100" align="right">
 							<template slot-scope="scope">
 								<span v-if="scope.row.required">{{ scope.row.required === 'true' ? '是' : '否' }}</span>
@@ -109,7 +108,9 @@
 		data() {
 			return {
 				projectId: '',
-				dataLoading:true,
+				groupId:'',
+				apiId:'',
+				dataLoading: true,
 				api: {
 					// apiId: 'apiId',
 					// deprecated: true,
@@ -145,11 +146,13 @@
 		},
 		created() {
 			this.projectId = this.$route.params.pid;
+			this.groupId = this.$route.params.gid;
 			var aid = this.$route.params.aid;
 			if (aid == null) {
 				this.$message.warning('加载项目信息失败!API的id不能为空!');
 				return;
 			}
+			this.apiId=aid;
 			this.loadApi(aid);
 		},
 		methods: {
@@ -172,20 +175,22 @@
 								this.$message.error('获取API信息失败:数据不存在,请检查id是否有误!');
 								return;
 							}
-							if (data.data.additional != null || data.data.additional != '') {
+							if (data.data.additional != null && data.data.additional != '') {
 								data.data.additional = JSON.parse(data.data.additional);
 							}
-							if (data.data.externalDocs != null || data.data.externalDocs != '') {
+							if (data.data.externalDocs != null && data.data.externalDocs != '') {
 								data.data.externalDocs = JSON.parse(data.data.externalDocs);
 							}
-							if (data.data.parameters != null || data.data.parameters != '') {
+							if (data.data.parameters != null && data.data.parameters != '') {
 								var reqd = JSON.parse(data.data.parameters);
 								for (var i = 0; i < reqd.length; i++) {
 									this.recursionCreateTableRandomRowKey(reqd[i]);
 								}
 								data.data.parameters = reqd;
+							} else {
+								data.data.parameters = [];
 							}
-							if (data.data.responses != null || data.data.responses != '') {
+							if (data.data.responses != null && data.data.responses != '') {
 								var respd = JSON.parse(data.data.responses);
 								if ((respd != null && respd.length > 0) && (respd[0].status == undefined || respd[0].data == undefined)) {
 									data.data.responses = [{
@@ -202,12 +207,14 @@
 										this.recursionCreateTableRandomRowKey(responsed[j]);
 									}
 								}
+							} else {
+								data.data.responses = [];
 							}
 							this.api = data.data;
 						} else {
 							this.$message.error('获取API信息失败:' + data.msg);
 						}
-						this.dataLoading=false;
+						this.dataLoading = false;
 					},
 					err => {
 						this.$message.error('获取API信息失败,更多信息请查看浏览器控制台!');

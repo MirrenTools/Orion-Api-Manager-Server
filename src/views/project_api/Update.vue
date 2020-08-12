@@ -1,9 +1,9 @@
 <template>
 	<div>
 		<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;align-items: center;">
-			<div><b>新增API</b></div>
+			<div><b>修改API</b></div>
 		</div>
-		<div style="width: 98%; max-width: 1240px;margin:0 auto 50px;">
+		<div style="width: 98%; max-width: 1240px;margin:0 auto 50px;" v-loading="dataLoading">
 			<el-form ref="apiForm" label-position="right" label-width="120px" :model="api" :rules="apiRules">
 				<el-form-item label="Method">
 					<el-select v-model="api.method" placeholder="请选择">
@@ -18,6 +18,9 @@
 						<el-option value="connect">connect</el-option>
 						<el-option value="other">other</el-option>
 					</el-select>
+					<div style="display: inline-block;margin-left: 10px;">
+					<span>接口状态: </span><el-radio v-model="api.deprecated" label="false">服务中</el-radio><el-radio v-model="api.deprecated" label="true">已过期(以后会删除)</el-radio>
+					</div>
 				</el-form-item>
 				<el-form-item prop="path" label="Path">
 					<el-input v-model="api.path" placeholder="URL上的path,必填,已/开始,如果没有系统会自动加上/ ,path参数请加上英文{},示例:{id}"></el-input>
@@ -165,18 +168,17 @@
 					</div>
 				</el-form-item>
 
-				<!-- 				<el-form-item label="附加说明">
+				<el-form-item label="附加说明" v-if="additional.length>0">
 					<div style="border: 1px solid #CCC;padding: 5px;margin-bottom: 5px;" v-for="(add,idx) in additional" :key="idx">
 						<el-input v-model="add.title" placeholder="附加标题标题"></el-input>
 						<el-input type="textarea" v-model="add.description" placeholder="附加说明描述"></el-input>
-						<div style="text-align: right;padding-top: 3px;"><el-button size="mini" v-show="additional.length>1">上移</el-button><el-button size="mini" v-show="additional.length>1">下移</el-button><el-button size="mini">移除</el-button></div>
+						<div style="text-align: right;padding-top: 3px;">
+							<el-button size="mini" @click="removeAdditional(idx)">移除</el-button>
+						</div>
 					</div>
-					<div style="text-align: right;">
-						<el-button @click="addAdditional()">添加更多</el-button>
-					</div>
-				</el-form-item> -->
+				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="submitCreateApi()">立即创建</el-button>
+					<el-button type="primary" @click="submitUpdateApi()">提交修改</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -272,13 +274,16 @@
 
 <script>
 	import {
-		saveApiAPI
+		getApiAPI,
+		updateApiAPI
 	} from '@/api/Project';
 	export default {
 		data() {
 			return {
 				projectId: '',
 				groupId: '',
+				apiId: '',
+				dataLoading: true,
 				api: {
 					// apiId: 'apiId',
 					// deprecated: true,
@@ -330,28 +335,145 @@
 					status: 200,
 					msg: 'ok',
 					data: []
-				}]
-				// additional:[{title:'title',description:'description'}]
+				}],
+				additional: []
 			};
 		},
 		created() {
 			this.projectId = this.$route.params.pid;
 			this.groupId = this.$route.params.gid;
-			if (this.groupId == null) {
-				this.$message.warning('加载信息失败!分组的id不能为空!');
+			this.apiId = this.$route.params.aid;
+			if (this.apiId == null) {
+				this.$message.warning('加载信息失败!API的id不能为空!');
 				return;
 			}
+			this.loadApi(this.apiId);
 		},
 		methods: {
 			/**
+			 * 加载API信息
+			 * @param {Object} aid
+			 */
+			loadApi(aid) {
+				if (aid == null || aid == '') {
+					return;
+				}
+				this.dataLoading = true;
+				getApiAPI(
+					aid,
+					res => {
+						var data = res.data;
+						console.log('加载API...');
+						console.log(data);
+						if (data.code == 200) {
+							if (data.data.apiId == null || data.data.apiId == '') {
+								this.$message.error('获取API信息失败:数据不存在,请检查id是否有误!');
+								return;
+							}
+							if (data.data.additional != null && data.data.additional != '') {
+								data.data.additional = JSON.parse(data.data.additional);
+							}
+							if (data.data.externalDocs != null && data.data.externalDocs != '') {
+								data.data.externalDocs = JSON.parse(data.data.externalDocs);
+							}
+							if (data.data.consumes != null && data.data.consumes != '') {
+								data.data.consumes = JSON.parse(data.data.consumes).join(',');
+							}
+							if (data.data.produces != null && data.data.produces != '') {
+								data.data.produces = JSON.parse(data.data.produces).join(',');
+							}
+							if (data.data.parameters != null && data.data.parameters != '') {
+								var reqd = JSON.parse(data.data.parameters);
+								for (var i = 0; i < reqd.length; i++) {
+									reqd[i].tableRowkey = this.getTableRandomRowKey();
+									reqd[i].tableRowLevel = 1;
+									reqd[i].required = (reqd[i].required == true || reqd[i].required == 'true');
+									reqd[i].ref = reqd;
+									if (reqd[i].items != null) {
+										this.recursionLoadTableData(reqd[i]);
+									} else {
+										reqd[i].items = [];
+									}
+								}
+								this.parameters = reqd;
+							}
+							if (data.data.responses != null && data.data.responses != '') {
+								var respd = JSON.parse(data.data.responses);
+								if ((respd != null && respd.length > 0) && (respd[0].status == null || respd[0].data == null)) {
+									respd = [{
+										status: 200,
+										msg: 'ok',
+										data: respd
+									}];
+								} else {
+									respd = respd;
+								}
+								for (var i = 0; i < respd.length; i++) {
+									var responsed = respd[i].data;
+									for (var j = 0; j < responsed.length; j++) {
+										var d = responsed[j];
+										d.tableRowkey = this.getTableRandomRowKey();
+										d.tableRowLevel = 1;
+										d.ref = responsed;
+										if (d.items != null) {
+											this.recursionLoadTableData(d);
+										} else {
+											d.items = [];
+										}
+									}
+								}
+								this.responses = respd;
+							}
+							if (data.data.additional != null && data.data.additional != '') {
+								if (Array.isArray(data.data.additional)) {
+									this.additional = data.data.additional;
+								} else {
+									this.additional = JSON.parse(data.data.additional);
+								}
+							}
+							this.api = data.data;
+						} else {
+							this.$message.error('获取API信息失败:' + data.msg);
+						}
+						this.dataLoading = false;
+					},
+					err => {
+						this.$message.error('获取API信息失败,更多信息请查看浏览器控制台!');
+						console.log(err);
+					}
+				);
+			},
+			/**
+			 * 递归添加要显示的表格参数
+			 * @param {Object} data
+			 */
+			recursionLoadTableData(data) {
+				if (data.items == null || data.items.length == 0) {
+					return;
+				}
+				for (var i = 0; i < data.items.length; i++) {
+					var d = data.items[i];
+					d.tableRowkey = this.getTableRandomRowKey();
+					d.tableRowLevel = data.tableRowLevel + 1;
+					d.ref = data.items;
+					if (d.items != null) {
+						this.recursionLoadTableData(d);
+					} else {
+						d.items = [];
+					}
+				}
+			},
+			/**
 			 * 提交新建API
 			 */
-			submitCreateApi() {
+			submitUpdateApi() {
 				this.$refs.apiForm.validate(valid => {
 					if (valid) {
 						var reqData = {};
+						reqData.apiId = this.apiId;
 						reqData.groupId = this.groupId;
 						reqData.method = this.api.method;
+						reqData.deprecated = this.api.deprecated;
 						reqData.path = this.api.path.replace(/(\/)+/g, '/');
 						if (!reqData.path.startsWith('/')) {
 							reqData.path = '/' + reqData.path;
@@ -477,28 +599,34 @@
 							reqData.responses = JSON.stringify(params);
 						}
 						// 响应参数结束
-						console.log('新增API');
+
+						if (this.additional != null && this.additional.length > 0) {
+							reqData.additional = JSON.stringify(this.additional);
+						}
+						console.log('修改API');
 						console.log(reqData);
-						saveApiAPI(reqData, res => {
+						updateApiAPI(reqData, res => {
 								var data = res.data;
 								if (data.code == 200) {
-									this.$confirm('新增成功,是否继续创建API?', '新增成功!', {
-										confirmButtonText: '继续新增',
-										cancelButtonText: '返回项目',
+									this.$confirm('修改成功,是否返回上一页?', '修改成功!', {
+										confirmButtonText: '返回',
+										cancelButtonText: '取消',
 										type: 'success'
-									}).catch(() => {
+									}).then(() => {
 										this.$router.go(-1);
+									}).catch(() => {
+										location.reload();
 									});
 								} else {
-									this.$message.error('新增成功失败:' + data.msg);
+									this.$message.error('修改成功失败:' + data.msg);
 								}
 							},
 							err => {
-								this.$message.error('新增成功失败,更多信息请查看浏览器控制台!');
+								this.$message.error('修改成功失败,更多信息请查看浏览器控制台!');
 								console.log(err);
 							});
 					} else {
-						this.$message.warning('新增失败,请按提示完善项目信息!');
+						this.$message.warning('修改失败,请按提示完善项目信息!');
 						return false;
 					}
 				});
@@ -650,6 +778,17 @@
 						this.findDataAndDelete(data[i].items, index);
 					}
 				}
+			},
+			removeAdditional(idx) {
+				this.$confirm('确定移除数据吗?', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					})
+					.then(() => {
+						this.additional.splice(idx, 1);
+					})
+					.catch(() => {});
 			},
 			/**
 			 * 判断类型是否为数值类型

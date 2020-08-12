@@ -84,6 +84,21 @@ export const constantRoutes = [{
 				}]
 			}
 		}, {
+			path: 'put/project/api/:pid/:gid/:aid',
+			name: '修改API',
+			component: () => import('./views/project_api/Update'),
+			meta: {
+				title: '修改API',
+				breadcrumb: [{
+					path: '/index',
+					title: '项目列表'
+				},{
+					path: '/index/get/project/:pid',
+					title: '项目详情',
+					pathKeys:['pid']
+				}]
+			}
+		}, {
 			path: 'fromSwagger',
 			name: '导入Swagger',
 			component: () => import('./views/FromSwagger'),

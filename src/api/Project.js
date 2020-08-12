@@ -144,6 +144,25 @@ export function getApiAPI(aid, res, err) {
 }
 
 /**
+ * 新建API
+ * @param {Object} data api的数据
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function saveApiAPI(data, res, err) {
+	request.post('/private/api' , qs.stringify(data)).then(res).catch(err);
+}
+/**
+ * 修改API
+ * @param {Object} data api的数据
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function updateApiAPI(data, res, err) {
+	request.put('/private/api' , qs.stringify(data)).then(res).catch(err);
+}
+
+/**
  * API排序排序上移
  * @param {Object} aid API的id
  * @param {Object} res
