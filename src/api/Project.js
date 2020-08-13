@@ -32,6 +32,16 @@ export function saveProjectAPI(data, res, err) {
 }
 
 /**
+ * 导入项目保存
+ * @param {Object} data 项目的信息,project:项目的json字符串
+ * @param {Object} resLL
+ * @param {Object} err
+ */
+export function saveProjectFronJsonAPI(data, res, err) {
+	request.post('/private/project/fromJson', qs.stringify(data)).then(res).catch(err);
+}
+
+/**
  * 复制项目
  * @param {Object} pid 项目的id
  * @param {Object} resLL

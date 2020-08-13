@@ -167,7 +167,8 @@
 						</div>
 					</div>
 				</el-form-item>
-
+				<el-form-item label="附加文档URL"><el-input v-model="api.exDurl" placeholder="请输入附加文档的URL"></el-input></el-form-item>
+				<el-form-item label="附加文档说明"><el-input type="textarea" v-model="api.exDdescription" placeholder="请输入附加文档的描述,支持HTML"></el-input></el-form-item>
 				<el-form-item label="附加说明" v-if="additional.length>0">
 					<div style="border: 1px solid #CCC;padding: 5px;margin-bottom: 5px;" v-for="(add,idx) in additional" :key="idx">
 						<el-input v-model="add.title" placeholder="附加标题标题"></el-input>
@@ -375,6 +376,12 @@
 							}
 							if (data.data.externalDocs != null && data.data.externalDocs != '') {
 								data.data.externalDocs = JSON.parse(data.data.externalDocs);
+								if (data.data.externalDocs.description != null) {
+									data.data.exDdescription = data.data.externalDocs.description;
+								}
+								if (data.data.externalDocs.url != null) {
+									data.data.exDurl = data.data.externalDocs.url;
+								}
 							}
 							if (data.data.consumes != null && data.data.consumes != '') {
 								data.data.consumes = JSON.parse(data.data.consumes).join(',');
@@ -603,7 +610,23 @@
 							reqData.responses = JSON.stringify(params);
 						}
 						// 响应参数结束
-
+						
+						var exd = null;
+						if (this.api.exDdescription != null) {
+							exd = {
+								description: this.api.exDdescription
+							};
+						}
+						if (this.api.exDurl != null) {
+							if (exd == null) {
+								exd = {};
+							}
+							exd.url = this.api.exDurl;
+						}
+						if (exd != null) {
+							reqData.externalDocs = JSON.stringify(exd);
+						}
+						
 						if (this.additional != null && this.additional.length > 0) {
 							reqData.additional = JSON.stringify(this.additional);
 						}
