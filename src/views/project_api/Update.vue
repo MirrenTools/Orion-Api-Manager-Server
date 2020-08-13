@@ -396,6 +396,8 @@
 									}
 								}
 								this.parameters = reqd;
+							}else{
+									this.parameters = [];
 							}
 							if (data.data.responses != null && data.data.responses != '') {
 								var respd = JSON.parse(data.data.responses);
@@ -423,6 +425,8 @@
 									}
 								}
 								this.responses = respd;
+							}else{
+								this.responses =[];
 							}
 							if (data.data.additional != null && data.data.additional != '') {
 								if (Array.isArray(data.data.additional)) {

@@ -17,7 +17,7 @@
 					<div class="api-method">{{ api.method }}</div>
 					<div class="api-path-summary">{{ api.path }}</div>
 				</div>
-				<!-- API操作 -->
+				<!-- API说明 -->
 				<div style="padding:10px;background-color: white">
 					<!-- API描述 -->
 					<div v-if="api.description" v-html="api.description.replace(/\n/g, '<br>')"></div>
@@ -45,7 +45,7 @@
 				</div>
 				<!-- 请求参数 -->
 				<div style="padding:5px 10px;background-color: white">
-					<el-table :data="api.parameters" style="width: 100%;" row-key="tableXxxxxxRandomRowKeyId" border
+					<el-table :data="api.parameters" style="width: 100%;" row-key="tableRowKeyId" border
 					 default-expand-all :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" empty-text="无需请求数据">
 						<el-table-column prop="required" label="必填" width="100" align="right">
 							<template slot-scope="scope">
@@ -82,7 +82,7 @@
 				<div style="padding:5px 10px;background-color: white">
 					<div v-for="(resp, idx) in api.responses" :key="idx">
 						<p>状态码: {{ resp.status }} 状态信息: {{ resp.msg }}</p>
-						<el-table :data="resp.data" style="width: 100%;" row-key="tableXxxxxxRandomRowKeyId" border default-expand-all
+						<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
 						 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
 							<el-table-column prop="type" label="参数类型" width="120" align="right"></el-table-column>
 							<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
@@ -261,7 +261,7 @@
 			 * @param {Object} data
 			 */
 			recursionCreateTableRandomRowKey(data) {
-				data.tableXxxxxxRandomRowKeyId = 'rowkey-' + Math.random();
+				data.tableRowKeyId = 'rowkey-' + Math.random();
 				if (data.items == null) {
 					return data;
 				}

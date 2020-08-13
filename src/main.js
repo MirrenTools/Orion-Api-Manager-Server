@@ -11,6 +11,7 @@ import router from './router.js'
 
 Vue.config.productionTip = false;
 
+
 Vue.use(ElementUI, {
 	i18n: (key, value) => i18n.t(key, value)
 })

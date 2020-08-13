@@ -32,10 +32,10 @@
 				<el-input v-model="projectEdit.contactName" placeholder="请输入联系人"></el-input>
 			</el-form-item>
 			<el-form-item label="联系信息" prop="contactInfo">
-				<el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息"></el-input>
+				<el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息,支持HTML"></el-input>
 			</el-form-item>
 			<el-form-item label="附加文档描述" prop="exDdescription">
-				<el-input v-model="projectEdit.exDdescription" placeholder="请输入附加文档描述"></el-input>
+				<el-input v-model="projectEdit.exDdescription" placeholder="请输入附加文档描述,支持HTML"></el-input>
 			</el-form-item>
 			<el-form-item label="附加文档URL" prop="exDurl">
 				<el-input v-model="projectEdit.exDurl" placeholder="请输入附加文档URL"></el-input>

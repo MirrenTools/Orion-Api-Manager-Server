@@ -48,13 +48,13 @@
 				</tr>
 				<tr v-show="project.contactInfo">
 					<td class="project-item">联系信息</td>
-					<td>{{ project.contactInfo }}</td>
+					<td v-html="project.contactInfo"></td>
 				</tr>
 				<tr v-show="project.exDdescription && project.exDurl">
-					<td class="project-item">附加文档</td>
+					<td class="project-item" valign="top">附加文档</td>
 					<td>
-						<span v-show="project.exDdescription">{{ project.exDdescription }}</span>
-						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink">查看详情</a>
+						<div v-show="project.exDdescription" v-html=" project.exDdescription"></div>
+						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">查看详情</a>
 					</td>
 				</tr>
 				<tr>
@@ -196,21 +196,105 @@
 						<div v-for="api in g.apis" :key="api.apiId" style="margin-bottom: 10px;">
 							<div :class="['api', api.method]">
 								<!-- API的方法与路径与简介 -->
-								<div :class="['api-header',((api.deprecated==true||api.deprecated=='true')?'text-through':'')]">
+								<div :class="['api-header',((api.deprecated==true||api.deprecated=='true')?'text-through':'')]" @click="api.show=!api.show">
 									<div class="api-method">{{ api.method }}</div>
 									<div class="api-path-summary"><span v-if="(api.deprecated==true||api.deprecated=='true')"><b>(已过期) </b></span>{{ api.path }}</div>
 									<div class="api-path-summary">{{ api.title }}</div>
+									<div style="margin-left: auto;">
+										<i v-show="!api.show" class="el-icon-arrow-right"></i>
+										<i v-show="api.show" class="el-icon-arrow-down"></i>
+									</div>
 								</div>
-								<div style="padding:5px 10px;text-align: right;">
-									<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">删除</el-button>
-									<a :href="'#/index/put/project/api/'+project.key+'/'+api.groupId+'/'+api.apiId" style="margin:0 10px;">
-										<el-button size="mini" type="primary">修改</el-button>
-									</a>
-									<el-button size="mini" @click="apiMoveUp(api.apiId)">上移</el-button>
-									<el-button size="mini" @click="apiMoveDown(api.apiId)">下移</el-button>
-									<a :href="'#/index/get/project/api/'+project.key+'/'+api.groupId+'/'+api.apiId" target="_blank" style="margin-left: 10px;">
-										<el-button size="mini" type="primary">查看详情</el-button>
-									</a>
+									<!-- API操作 -->
+									<div style="padding:5px 10px;text-align: right;"  @click="api.show=!api.show">
+										<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">删除</el-button>
+										<a :href="'#/index/put/project/api/'+project.key+'/'+api.groupId+'/'+api.apiId" style="margin:0 10px;">
+											<el-button size="mini" type="primary">修改</el-button>
+										</a>
+										<el-button size="mini" @click="apiMoveUp(api.apiId)">上移</el-button>
+										<el-button size="mini" @click="apiMoveDown(api.apiId)">下移</el-button>
+								<!-- 		<a :href="'#/index/get/project/api/'+project.key+'/'+api.groupId+'/'+api.apiId" target="_blank" style="margin-left: 10px;">
+											<el-button size="mini" type="primary">查看详情</el-button>
+										</a> -->
+									</div>
+								<div v-show="api.show">
+									<!-- API说明 -->
+									<div style="padding:10px;background-color: white">
+										<!-- API描述 -->
+										<div v-if="api.description" v-html="api.description.replace(/\n/g, '<br>')"></div>
+										<!-- API附件说明 -->
+										<div v-for="(addi, idx) in api.additional" :key="idx">
+											<div>
+												<b>{{ addi.title }}</b>
+											</div>
+											<div v-if="addi.description" v-html="addi.description.replace(/\n/g, '<br>')"></div>
+										</div>
+										<!-- 拓展文档 -->
+										<div v-if="api.externalDocs != null">
+											<div v-if="api.externalDocs.description != null" v-html="api.externalDocs.description"></div>
+											<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url" target="_blank" class="alink" style="margin-left: 0;">
+												{{ api.externalDocs.url }}
+											</a>
+										</div>
+									</div>
+									<!-- 请求参数标题 -->
+									<div style="padding:10px;">
+										<div style="display: flex;align-items: center;">
+											<div style="min-width: 60px;"><b>请求参数</b></div>
+											<div style="margin-left: auto;" v-if="api.consumes != null">Consumes: {{ api.consumes }}</div>
+										</div>
+									</div>
+									<!-- 请求参数 -->
+									<div style="padding:5px 10px;background-color: white">
+										<el-table :data="api.parameters" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
+										 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" empty-text="无需请求数据">
+											<el-table-column prop="required" label="必填" width="100" align="right">
+												<template slot-scope="scope">
+													<span v-if="scope.row.required">{{ scope.row.required === 'true' ? '是' : '否' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column prop="in" label="参数位置" width="120"></el-table-column>
+											<el-table-column prop="type" label="参数类型" width="120"></el-table-column>
+											<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
+											<el-table-column prop="description" label="参数描述">
+												<template slot-scope="scope">
+													<div v-if="scope.row.description" v-html="scope.row.description"></div>
+													<div class="desc-constraint">
+														<span v-if="scope.row.def">默认值: {{ scope.row.def }}</span>
+														<span v-if="scope.row.minLength">最小长度: {{ scope.row.minLength }}</span>
+														<span v-if="scope.row.maxLength">最大长度: {{ scope.row.maxLength }}</span>
+														<span v-if="scope.row.minValue">最小值: {{ scope.row.minValue }}</span>
+														<span v-if="scope.row.maxValue">最大值: {{ scope.row.maxValue }}</span>
+														<span v-if="scope.row.enums">枚举值: {{ scope.row.enums }}</span>
+														<span v-if="scope.row.regex">正则: {{ scope.row.regex }}</span>
+													</div>
+												</template>
+											</el-table-column>
+										</el-table>
+									</div>
+									<!-- 响应参数标题 -->
+									<div style="padding:10px;">
+										<div style="display: flex;align-items: center;">
+											<div style="min-width: 60px;"><b>响应参数</b></div>
+											<div style="margin-left: auto;" v-if="api.produces != null">Produces: {{ api.produces }}</div>
+										</div>
+									</div>
+									<!-- 响应参数 -->
+									<div style="padding:5px 10px;background-color: white">
+										<div v-for="(resp, idx) in api.responses" :key="idx">
+											<p>状态码: {{ resp.status }} 状态信息: {{ resp.msg }}</p>
+											<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
+											 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
+												<el-table-column prop="type" label="参数类型" width="120" align="right"></el-table-column>
+												<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
+												<el-table-column prop="description" label="参数描述">
+													<template slot-scope="scope">
+														<div v-if="scope.row.description" v-html="scope.row.description"></div>
+													</template>
+												</el-table-column>
+											</el-table>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -218,6 +302,9 @@
 				</el-collapse>
 			</div>
 		</div>
+
+
+
 	</div>
 </template>
 
@@ -540,7 +627,42 @@
 						console.log('获取项目分组...');
 						console.log(data);
 						if (data.code == 200) {
-							this.groups = data.data;
+
+							for (var g = 0; g < data.data.length; g++) {
+								for (var a = 0; a < data.data[g].apis.length; a++) {
+									var api = data.data[g].apis[a];
+									api.show = false;
+									if (api.parameters != null) {
+										api.parameters = JSON.parse(api.parameters);
+										for (var i = 0; i < api.parameters.length; i++) {
+											this.recursionCreateTableRandomRowKey(api.parameters[i]);
+										}
+									}else{
+										api.parameters=[];
+									}
+									if (api.responses != null) {
+										var respd = JSON.parse(api.responses);
+										if ((respd != null && respd.length > 0) && (respd[0].status == undefined || respd[0].data == undefined)) {
+											api.responses = [{
+												status: 200,
+												msg: 'ok',
+												data: respd
+											}];
+										} else {
+											api.responses = respd;
+										}
+										for (var r = 0; r < api.responses.length; r++) {
+											var rdata = api.responses[r].data;
+											for (var i = 0; i < rdata.length; i++) {
+												this.recursionCreateTableRandomRowKey(rdata[i]);
+											}
+										}
+									}else{
+										api.responses=[];
+									}
+								}
+							}
+							this.groups =data.data;
 							this.groupsLoading = false;
 						} else {
 							this.$message.error('获取项目分组信息失败:' + data.msg);
@@ -820,6 +942,19 @@
 				);
 			},
 			/**
+			 * 递归响应的数据并给数据创建id
+			 * @param {Object} data
+			 */
+			recursionCreateTableRandomRowKey(data) {
+				data.tableRowKeyId = 'rowkey-' + Math.random();
+				if (data.items == null) {
+					return data;
+				}
+				for (var i = 0; i < data.items.length; i++) {
+					this.recursionCreateTableRandomRowKey(data.items[i]);
+				}
+			},
+			/**
 			 * 格式化时间
 			 * @param {Object} time
 			 */
@@ -833,9 +968,11 @@
 
 <style lang="scss" scoped>
 	@import '@/styles/api-method-style.scss';
+
 	.novalidate input {
 		border-color: #DCDFE6 !important;
 	}
+
 	.alink {
 		background-color: transparent;
 		color: #409eff;
