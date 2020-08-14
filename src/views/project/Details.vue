@@ -20,14 +20,14 @@
 					<td width="120px" class="project-item">项目名称</td>
 					<td>
 						{{ project.name }}
-						<span style="font-size: 0.9em;">{{ project.versions }}</span>
+						<span style="font-size: 0.8em;">{{ project.versions }}</span>
 					</td>
 				</tr>
 				<tr v-show="project.lastTime">
 					<td class="project-item">最后更新时间</td>
 					<td>{{ formatDate(project.lastTime) }}</td>
 				</tr>
-				<tr v-show="project.description">
+				<tr v-show="project.description" valign="top">
 					<td width="120px" class="project-item">项目描述</td>
 					<td v-html="project.description"></td>
 				</tr>
@@ -52,7 +52,7 @@
 					<td class="project-item" valign="top">附加文档</td>
 					<td>
 						<div v-show="project.exDdescription" v-html="project.exDdescription"></div>
-						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">查看详情</a>
+						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">{{projectEdit.exDurl}}</a>
 					</td>
 				</tr>
 				<tr>
