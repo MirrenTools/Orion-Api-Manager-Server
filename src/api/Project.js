@@ -9,7 +9,7 @@ import qs from "qs"
  * @param {Object} err
  */
 export function findProjectListAPI(res, err) {
-	request.get('/project').then(res).catch(err);
+	request.get('/private/project').then(res).catch(err);
 }
 
 /**
