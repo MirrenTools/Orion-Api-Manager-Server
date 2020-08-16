@@ -135,6 +135,14 @@
 									</template>
 								</el-table-column>
 								<el-table-column prop="tableRowLevel" label="层级" width="60"></el-table-column>
+								<el-table-column prop="in" label="位置" width="120">
+									<template v-slot="scope">
+										<el-select v-model="scope.row.in" placeholder="请选择" v-if="scope.row.tableRowLevel==1">
+											<el-option value="body">body</el-option>
+											<el-option value="header">header</el-option>
+										</el-select>
+									</template>
+								</el-table-column>
 								<el-table-column prop="name" label="参数名称" width="250">
 									<template v-slot="scope">
 										<el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
@@ -250,10 +258,10 @@
 					<el-input v-model="parameterData.minLength" placeholder="最小长度"></el-input>
 				</el-form-item>
 				<el-form-item label="最大值" v-show="isNumber(parameterData.type)">
-					<el-input v-model="parameterData.maxValue" placeholder="最大值"></el-input>
+					<el-input v-model="parameterData.maximum" placeholder="最大值"></el-input>
 				</el-form-item>
 				<el-form-item label="最小值" v-show="isNumber(parameterData.type)">
-					<el-input v-model="parameterData.minValue" placeholder="最小值"></el-input>
+					<el-input v-model="parameterData.minimum" placeholder="最小值"></el-input>
 				</el-form-item>
 				<el-form-item label="默认值" v-show="isCanEnumsOrRegex(parameterData.type)">
 					<el-input v-model="parameterData.def" placeholder="默认值"></el-input>
@@ -262,7 +270,7 @@
 					<el-input v-model="parameterData.enums" placeholder="枚举值,英文,号分隔"></el-input>
 				</el-form-item>
 				<el-form-item label="正则表达式" v-show="isCanEnumsOrRegex(parameterData.type)">
-					<el-input v-model="parameterData.regex" placeholder="正则表达式"></el-input>
+					<el-input v-model="parameterData.pattern" placeholder="正则表达式"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -306,7 +314,7 @@
 					// 	def: 'test',
 					// 	minLength: 123,
 					// 	enums: '["q","ee","etet"]',
-					// 	regex: 'scope.row.regex ',
+					// 	pattern: 'scope.row.pattern ',
 					// 	items: [{
 					// 		rowKeyId: 'rowKeyId1',
 					// 		type: 'type',
@@ -546,11 +554,11 @@
 								if (p.maxLength != null && p.maxLength != '') {
 									d.maxLength = p.maxLength;
 								}
-								if (p.minValue != null && p.minValue != '') {
-									d.minValue = p.minValue;
+								if (p.minimum != null && p.minimum != '') {
+									d.minimum = p.minimum;
 								}
-								if (p.maxValue != null && p.maxValue != '') {
-									d.maxValue = p.maxValue;
+								if (p.maximum != null && p.maximum != '') {
+									d.maximum = p.maximum;
 								}
 								if (p.enums != null && p.enums != '') {
 									var cs = p.enums.split(',');
@@ -565,8 +573,8 @@
 										d.enums = JSON.stringify(enums);
 									}
 								}
-								if (p.regex != null && p.regex != '') {
-									d.regex = p.regex;
+								if (p.pattern != null && p.pattern != '') {
+									d.pattern = p.pattern;
 								}
 								if (p.items != null && p.items.length > 0) {
 									d.items = [];
@@ -596,6 +604,7 @@
 									}
 									var dd = {
 										type: pd.type,
+										in: pd.in,
 										name: pd.name,
 										description: pd.description
 									}
@@ -719,6 +728,7 @@
 					tableRowLevel: 1,
 					type: 'string',
 					name: '',
+					in: 'body',
 					description: '',
 					items: [],
 					ref: data
@@ -743,6 +753,7 @@
 					tableRowLevel: data.tableRowLevel + 1,
 					type: 'string',
 					name: '',
+					in: 'body',
 					description: '',
 					items: [],
 					ref: data.items

@@ -62,10 +62,10 @@
 									<span v-if="scope.row.def">默认值: {{ scope.row.def }}</span>
 									<span v-if="scope.row.minLength">最小长度: {{ scope.row.minLength }}</span>
 									<span v-if="scope.row.maxLength">最大长度: {{ scope.row.maxLength }}</span>
-									<span v-if="scope.row.minValue">最小值: {{ scope.row.minValue }}</span>
-									<span v-if="scope.row.maxValue">最大值: {{ scope.row.maxValue }}</span>
+									<span v-if="scope.row.minimum">最小值: {{ scope.row.minimum }}</span>
+									<span v-if="scope.row.maximum">最大值: {{ scope.row.maximum }}</span>
 									<span v-if="scope.row.enums">枚举值: {{ scope.row.enums }}</span>
-									<span v-if="scope.row.regex">正则: {{ scope.row.regex }}</span>
+									<span v-if="scope.row.pattern">正则: {{ scope.row.pattern }}</span>
 								</div>
 							</template>
 						</el-table-column>
@@ -85,6 +85,7 @@
 						<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
 						 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
 							<el-table-column prop="type" label="参数类型" width="120" align="right"></el-table-column>
+							<el-table-column prop="in" label="参数位置" width="80"></el-table-column>
 							<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
 							<el-table-column prop="description" label="参数描述">
 								<template slot-scope="scope">
@@ -132,7 +133,7 @@
 					// 	def: 'test',
 					// 	minLength: 123,
 					// 	enums: '["q","ee","etet"]',
-					// 	regex: 'scope.row.regex ',
+					// 	pattern: 'scope.row.pattern ',
 					// 	items: [{
 					// 		rowKeyId: 'rowKeyId1',
 					// 		type: 'type',
