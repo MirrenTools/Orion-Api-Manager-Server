@@ -568,10 +568,10 @@ export default {
 			//分组信息转换结束
 			// API信息转换开始
 			for (var path in data.paths) {
-				var api = {};
-				api.path = path;
 				var ad = data.paths[path];
 				for (var method in ad) {
+					var api = {};
+					api.path = path;
 					var adata = ad[method];
 					api.method = method;
 					api.title = adata.summary || path;
@@ -624,11 +624,6 @@ export default {
 							refs['#/components/headers/' + refkey] = data.components.headers[refkey];
 						}
 					}
-					// Reference转换为数据对象
-					for (var refkey in refs) {
-						this.convertSchema(refs[refkey], refs);
-					}
-					//加载Reference 结束
 
 					// Request转换
 					api.parameters = [];
@@ -664,11 +659,15 @@ export default {
 								resp.data.push(rdata);
 							}
 						}
+						if (pdata.content != null) {
+							var jsonContent =this.replaceSchemaRef(JSON.stringify(pdata.content),refs);
+							console.log('jsonContent');
+							console.log(jsonContent);
+							return;
+						}
 						api.responses.push(resp);
 					}
-					
-					
-					
+
 					var tempGroup;
 					if (adata.tags != null && adata.tags.length >= 1) {
 						tempGroup = groups[adata.tags[0]];
@@ -684,16 +683,38 @@ export default {
 						tempGroup = groups['Unnamed'];
 					}
 					tempGroup.apis.push(api);
-					console.log('api');
-					console.log(api);
+					// console.log('api');
+					// console.log(api);
 				}
 			}
+
 			// API信息转换结束
 			for (var key in groups) {
 				orionData.content.push(groups[key]);
 			}
 			orionData.externalDocs = data.externalDocs;
 			return orionData;
+		},
+		/**
+		 * 替换每个Schema中的引用
+		 */
+		replaceSchemaRef(jsonContent, refs) {
+			if (jsonContent.indexOf('$ref') == -1) {
+				return jsonContent;
+			}
+			var sp = jsonContent.split('"$ref');
+			var jsonContent = sp[0];
+			for (var i = 1; i < sp.length; i++) {
+				var spref = sp[i].replace('":"', '');
+				var reflink = spref.substring(0, spref.indexOf('"'));
+				console.log("-------------------");
+				console.log(reflink);
+				console.log(refs[reflink]);
+				var refContent = JSON.stringify(refs[reflink] || {});
+				jsonContent += spref.replace(reflink + '"', refContent);
+			}
+			console.log(jsonContent);
+			this.replaceSchemaRef(jsonContent, refs);
 		},
 		/**
 		 * 将Schema(比如definitions或components.schemas中的对象或请求响应数据)转换为Orion的请求响应数据
