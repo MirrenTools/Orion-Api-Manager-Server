@@ -1,5 +1,5 @@
 import marked from 'marked';
-	
+
 /**
  * 转换Swagger的文档为Orion可以识别的数据,如果转换失败则返回null
  * @param {Object} docs
@@ -174,6 +174,55 @@ export default function(docs) {
 			}
 		}
 		//分组信息转换结束
+		//可引用数据加载
+		//加载Reference
+		var refs = {};
+		if (data.definitions != null) {
+			for (var refkey in data.definitions) {
+				refs['#/definitions/' + refkey] = data.definitions[refkey];
+			}
+		}
+		if (data.parameters != null) {
+			for (var refkey in data.parameters) {
+				refs['#/parameters/' + refkey] = data.parameters[refkey];
+			}
+		}
+		if (data.responses != null) {
+			for (var refkey in data.responses) {
+				refs['#/responses/' + refkey] = data.responses[refkey];
+			}
+		}
+		if (data.components != null && data.components.schemas != null) {
+			for (var refkey in data.components.schemas) {
+				refs['#/components/schemas/' + refkey] = data.components.schemas[refkey];
+			}
+		}
+		if (data.components != null && data.components.parameters != null) {
+			for (var refkey in data.components.parameters) {
+				refs['#/components/parameters/' + refkey] = data.components.parameters[refkey];
+			}
+		}
+		if (data.components != null && data.components.responses != null) {
+			for (var refkey in data.components.responses) {
+				refs['#/components/responses/' + refkey] = data.components.responses[refkey];
+			}
+		}
+		if (data.components != null && data.components.requestBodies != null) {
+			for (var refkey in data.components.requestBodies) {
+				refs['#/components/requestBodies/' + refkey] = data.components.requestBodies[refkey];
+			}
+		}
+		if (data.components != null && data.components.headers != null) {
+			for (var refkey in data.components.headers) {
+				refs['#/components/headers/' + refkey] = data.components.headers[refkey];
+			}
+		}
+		for (var refkey in refs) {
+			var nref = fillSchemaRef(refs[refkey], refs);
+			refs[refkey] = nref;
+		}
+		//可引用数据加载结束
+
 		// API信息转换开始
 		for (var path in data.paths) {
 			var ad = data.paths[path];
@@ -190,53 +239,6 @@ export default function(docs) {
 				api.consumes = adata.consumes;
 				api.produces = adata.produces;
 				api.deprecated = adata.deprecated;
-				//加载Reference
-				var refs = {};
-				if (data.definitions != null) {
-					for (var refkey in data.definitions) {
-						refs['#/definitions/' + refkey] = data.definitions[refkey];
-					}
-				}
-				if (data.parameters != null) {
-					for (var refkey in data.parameters) {
-						refs['#/parameters/' + refkey] = data.parameters[refkey];
-					}
-				}
-				if (data.responses != null) {
-					for (var refkey in data.responses) {
-						refs['#/responses/' + refkey] = data.responses[refkey];
-					}
-				}
-				if (data.components != null && data.components.schemas != null) {
-					for (var refkey in data.components.schemas) {
-						refs['#/components/schemas/' + refkey] = data.components.schemas[refkey];
-					}
-				}
-				if (data.components != null && data.components.parameters != null) {
-					for (var refkey in data.components.parameters) {
-						refs['#/components/parameters/' + refkey] = data.components.parameters[refkey];
-					}
-				}
-				if (data.components != null && data.components.responses != null) {
-					for (var refkey in data.components.responses) {
-						refs['#/components/responses/' + refkey] = data.components.responses[refkey];
-					}
-				}
-				if (data.components != null && data.components.requestBodies != null) {
-					for (var refkey in data.components.requestBodies) {
-						refs['#/components/requestBodies/' + refkey] = data.components.requestBodies[refkey];
-					}
-				}
-				if (data.components != null && data.components.headers != null) {
-					for (var refkey in data.components.headers) {
-						refs['#/components/headers/' + refkey] = data.components.headers[refkey];
-					}
-				}
-				for (var refkey in refs) {
-					fillSchemaRef(refs[refkey], refs);
-				}
-				return data;
-
 
 				// Request转换
 				api.parameters = [];
@@ -272,9 +274,13 @@ export default function(docs) {
 						}
 					}
 					if (pdata.content != null) {
-						var content = fillSchemaRef(pdata.content, refs);
-						console.log(content);
-						return;
+						if (pdata.content['application/json'] != null) {
+							console.log('application/json');
+							console.log(pdata.content['application/json']);
+						} else {
+							console.log('pdata.content')
+							console.log(pdata.content);
+						}
 					}
 					api.responses.push(resp);
 				}
@@ -315,27 +321,17 @@ export default function(docs) {
 		var refStr = JSON.stringify(ref);
 		var refkeys = refStr.match(/"\$ref":".*?(?=")/g);
 		if (refkeys == null) {
-			return refkeys;
+			return JSON.parse(refStr);
 		}
 		for (var i = 0; i < refkeys.length; i++) {
-			var k = refkeys[i];
-			var rak = '[' + k + '"]';
-			refStr = refStr.replace(rak, k)
-			while (refStr.indexOf(rak) != -1) {
-				refStr = refStr.replace(rak, k)
-			}
-			var rok = '{' + k + '"}';
-			refStr = refStr.replace(rok, k);
-			while (refStr.indexOf(rok) != -1) {
-				refStr = refStr.replace(rok, k)
-			}
-			var key = k.replace('"$ref":"', '');
+			var key = refkeys[i].replace('"$ref":"', '');
 			var obj = refs[key];
-			refStr = refStr.replace(k, JSON.stringify(obj));
-			while (refStr.indexOf(k) != -1) {
-				refStr = refStr.replace(k, JSON.stringify(obj));
+			refStr = refStr.replace('"' + key + '"', JSON.stringify(obj));
+			while (refStr.indexOf(key) != -1) {
+				refStr = refStr.replace('"' + key + '"', JSON.stringify(obj));
 			}
 		}
+		return JSON.parse(refStr);
 	}
 	/**
 	 * 将Schema(比如definitions或components.schemas中的对象或请求响应数据)转换为Orion的请求响应数据
@@ -419,7 +415,7 @@ export default function(docs) {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取Swagger(OpenAPI)的数据类型
 	 * @param {Object} ref
@@ -438,7 +434,7 @@ export default function(docs) {
 		}
 		return ref.type;
 	}
-	
+
 	var openapi = docs.openapi;
 	var swagger = docs.swagger;
 	if (openapi != null && openapi.startsWith('3.')) {
