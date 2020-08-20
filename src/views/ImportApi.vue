@@ -191,6 +191,7 @@
 									<div style="padding:5px 10px;background-color: white">
 										<div v-for="(resp, idx) in api.responses" :key="idx">
 											<p>状态码: {{ resp.status }} 状态信息: {{ resp.msg }}</p>
+											<div v-if="resp.schema"><json-viewer :expand-depth="10" :value="resp.schema" /></div>
 											<el-table
 												:data="resp.data"
 												style="width: 100%;"
@@ -198,7 +199,7 @@
 												border
 												default-expand-all
 												:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
-												v-if="resp.data&&resp.data.length>0"
+												v-if="resp.data && resp.data.length > 0"
 											>
 												<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
 												<el-table-column prop="type" label="参数类型" width="100" align="right"></el-table-column>
@@ -225,9 +226,13 @@
 <script>
 import axios from 'axios';
 import { saveProjectFronJsonAPI } from '@/api/Project';
+import JsonViewer from 'vue-json-viewer';
 import swaggerConvert from '@/utils/ConvertSwaggerDocs.js';
 
 export default {
+	components: {
+		JsonViewer
+	},
 	data() {
 		var validateServers = (rule, value, callback) => {
 			var flag = false;
@@ -434,8 +439,8 @@ export default {
 					for (var a = 0; a < groups[g].apis.length; a++) {
 						var api = groups[g].apis[a];
 						api.show = true;
-						if(api.parameters==null){
-							api.parameters=[];
+						if (api.parameters == null) {
+							api.parameters = [];
 						}
 						for (var i = 0; i < api.parameters.length; i++) {
 							this.recursionCreateTableRandomRowKey(api.parameters[i]);
@@ -578,7 +583,7 @@ export default {
 											api.produces = JSON.stringify(produces);
 										}
 									}
-								
+
 									// 请求参数开始
 									if (ad.parameters.length > 0) {
 										var params = [];

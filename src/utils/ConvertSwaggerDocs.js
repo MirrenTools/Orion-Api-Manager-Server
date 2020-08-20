@@ -242,6 +242,8 @@ export default function(docs) {
 
 				// Request转换
 				api.parameters = [];
+				
+				
 
 				// Response转换
 				api.responses = [];
@@ -279,12 +281,13 @@ export default function(docs) {
 							var schema = pdata.content['application/json'].schema;
 							loadResponseSchema(resp.data, schema, refs);
 						} else {
-							resp.data.schema = fillSchemaRef(pdata.content, refs);
+							resp.schema = fillSchemaRef(pdata.content, refs);
 						}
 					}
 					if(pdata.schema != null){
 						loadResponseSchema(resp.data, pdata.schema, refs);
 					}
+
 					api.responses.push(resp);
 				}
 
@@ -347,6 +350,12 @@ export default function(docs) {
 		if (schema['$ref'] != null) {
 			schema = refs[schema['$ref']];
 		}
+		if (schema.default != null) {
+			schema.def = schema.default;
+		}
+		if (schema['enum'] != null) {
+			schema.enums = schema.['enum'];
+		}
 		if (schema.type == 'array' && schema.items != null) {
 			if (schema.items['$ref'] != null) {
 				schema = schema.items['$ref'];
@@ -395,88 +404,6 @@ export default function(docs) {
 		}
 		if (flag == 0) {
 			responseData.schema = schema;
-		}
-	}
-	/**
-	 * 将Schema(比如definitions或components.schemas中的对象或请求响应数据)转换为Orion的请求响应数据
-	 * @param {Object} ref 对象
-	 * @param {Object} refs 对象集合
-	 */
-	function getSchemaProperties(ref, refs) {
-		ref.type = getSchemaDataType(ref) || 'string';
-		if (ref.description != null) {
-			ref.description = marked(ref.description);
-		}
-		if (ref.default != null) {
-			ref.def = ref.default;
-		}
-		if (ref.enum != null) {
-			ref.enums = ref.enum;
-		}
-		if (ref['$ref'] != null) {
-			var refData = refs[ref['$ref']];
-			if (refData != null) {
-				if (ref.items == null) {
-					ref.items = [];
-				}
-				ref.items.push(refData);
-			}
-			return;
-		}
-		if (ref.required != null) {
-			if (ref.description == null) {
-				ref.description = 'Required:';
-			}
-			for (var i = 0; i < ref.required.length; i++) {
-				if (i == 0) {
-					ref.description = 'Required:' + ref.required[i];
-				} else {
-					ref.description += ',' + ref.required[i];
-				}
-			}
-		}
-
-		if (ref.properties != null) {
-			if (ref.items == null) {
-				ref.items = [];
-			}
-			for (var rkey in ref.properties) {
-				var pdata = ref.properties[rkey];
-				if (pdata['$ref'] != null) {
-					if (refs[pdata['$ref']] != null) {
-						ref.items.push(refs[pdata['$ref']]);
-					}
-				} else {
-					var item = {};
-					item.name = rkey;
-					item.type = this.getSwaggerSchemaDataType(pdata) || 'string';
-					item.description = pdata.pdata || '';
-					ref.items.push(item);
-				}
-			}
-		}
-		if (ref.additionalProperties != null) {
-			if (ref.items == null) {
-				ref.items = [];
-			}
-			for (var rkey in ref.additionalProperties) {
-				var pdata = ref.additionalProperties[rkey];
-				if (pdata['$ref'] != null) {
-					if (refs[pdata['$ref']] != null) {
-						ref.items.push(refs[pdata['$ref']]);
-					}
-				} else {
-					var item = {};
-					item.name = rkey;
-					item.type = this.getSwaggerSchemaDataType(pdata) || 'string';
-					item.description = pdata.pdata || '';
-				}
-			}
-		}
-		if (ref.items != null) {
-			for (var i = 0; i < ref.items; i++) {
-				this.convertSchema(ref.items[i], refs);
-			}
 		}
 	}
 
