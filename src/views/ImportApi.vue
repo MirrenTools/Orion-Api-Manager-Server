@@ -198,9 +198,10 @@
 												border
 												default-expand-all
 												:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
+												v-if="resp.data&&resp.data.length>0"
 											>
-												<el-table-column prop="type" label="参数类型" width="120" align="right"></el-table-column>
-												<el-table-column prop="in" label="参数位置" width="80"></el-table-column>
+												<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
+												<el-table-column prop="type" label="参数类型" width="100" align="right"></el-table-column>
 												<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
 												<el-table-column prop="description" label="参数描述">
 													<template slot-scope="scope">
@@ -432,7 +433,10 @@ export default {
 					}
 					for (var a = 0; a < groups[g].apis.length; a++) {
 						var api = groups[g].apis[a];
-						api.show = false;
+						api.show = true;
+						if(api.parameters==null){
+							api.parameters=[];
+						}
 						for (var i = 0; i < api.parameters.length; i++) {
 							this.recursionCreateTableRandomRowKey(api.parameters[i]);
 						}
@@ -574,7 +578,7 @@ export default {
 											api.produces = JSON.stringify(produces);
 										}
 									}
-
+								
 									// 请求参数开始
 									if (ad.parameters.length > 0) {
 										var params = [];

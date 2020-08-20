@@ -270,8 +270,8 @@
 												default-expand-all
 												:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
 											>
-												<el-table-column prop="type" label="参数类型" width="120" align="right"></el-table-column>
-												<el-table-column prop="in" label="参数位置" width="80"></el-table-column>
+												<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
+												<el-table-column prop="type" label="参数类型" width="100" align="right"></el-table-column>
 												<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
 												<el-table-column prop="description" label="参数描述">
 													<template slot-scope="scope">

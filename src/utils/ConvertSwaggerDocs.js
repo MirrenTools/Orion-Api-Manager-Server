@@ -233,7 +233,7 @@ export default function(docs) {
 				api.method = method;
 				api.title = adata.summary || path;
 				if (adata.description != null) {
-					adata.description = marked(adata.description);
+					api.description = marked(adata.description);
 				}
 				api.externalDocs = adata.externalDocs;
 				api.consumes = adata.consumes;
@@ -273,14 +273,17 @@ export default function(docs) {
 							resp.data.push(rdata);
 						}
 					}
+
 					if (pdata.content != null) {
-						if (pdata.content['application/json'] != null) {
-							console.log('application/json');
-							console.log(pdata.content['application/json']);
+						if (pdata.content['application/json'] != null && pdata.content['application/json'].schema != null) {
+							var schema = pdata.content['application/json'].schema;
+							loadResponseSchema(resp.data, schema, refs);
 						} else {
-							console.log('pdata.content')
-							console.log(pdata.content);
+							resp.data.schema = fillSchemaRef(pdata.content, refs);
 						}
+					}
+					if(pdata.schema != null){
+						loadResponseSchema(resp.data, pdata.schema, refs);
 					}
 					api.responses.push(resp);
 				}
@@ -315,7 +318,7 @@ export default function(docs) {
 	/**
 	 * 填充Schema
 	 * @param {Object} ref
-	 * @param {Object} refs
+	 * @param {Object} refs 可引用的对象集
 	 */
 	function fillSchemaRef(ref, refs) {
 		var refStr = JSON.stringify(ref);
@@ -334,12 +337,73 @@ export default function(docs) {
 		return JSON.parse(refStr);
 	}
 	/**
+	 * 将Response的Schema加载到OrionResponse中data中
+	 * @param {Object} responseData OrionResponse 的数据
+	 * @param {Object} schema 要需要转换加载的数据
+	 * @param {Object} refs 可引用的对象集
+	 */
+	function loadResponseSchema(responseData, schema, refs) {
+		var flag = 0;
+		if (schema['$ref'] != null) {
+			schema = refs[schema['$ref']];
+		}
+		if (schema.type == 'array' && schema.items != null) {
+			if (schema.items['$ref'] != null) {
+				schema = schema.items['$ref'];
+				if (schema.properties != null || schema.additionalProperties != null) {
+					flag++;
+				}
+			} else {
+				schema = schema.items;
+			}
+		}
+		if (schema['$ref'] != null) {
+			schema = refs[schema['$ref']];
+		}
+		if (schema.type == 'array' && schema.items != null) {
+			if (schema.items['$ref'] != null) {
+				schema = schema.items['$ref'];
+				if (schema.properties != null || schema.additionalProperties != null) {
+					flag++;
+				}
+			} else {
+				schema = schema.items;
+			}
+		}
+		if (schema.properties != null) {
+			for (var skey in schema.properties) {
+				var rdata = {};
+				rdata.in = 'body';
+				rdata.type = getSchemaDataType(schema.properties[skey]) || 'string';
+				rdata.name = skey;
+				rdata.description = schema.properties[skey].description || '';
+				responseData.push(rdata);
+
+			}
+			flag++;
+		}
+		if (schema.additionalProperties != null) {
+			for (var skey in schema.additionalProperties) {
+				var rdata = {};
+				rdata.in = 'body';
+				rdata.type = getSchemaDataType(schema.additionalProperties[skey]) || 'string';
+				rdata.name = skey;
+				rdata.description = schema.additionalProperties[skey].description || '';
+				responseData.push(rdata);
+			}
+			flag++;
+		}
+		if (flag == 0) {
+			responseData.schema = schema;
+		}
+	}
+	/**
 	 * 将Schema(比如definitions或components.schemas中的对象或请求响应数据)转换为Orion的请求响应数据
 	 * @param {Object} ref 对象
 	 * @param {Object} refs 对象集合
 	 */
-	function convertSchema(ref, refs) {
-		ref.type = this.getSwaggerSchemaDataType(ref) || 'string';
+	function getSchemaProperties(ref, refs) {
+		ref.type = getSchemaDataType(ref) || 'string';
 		if (ref.description != null) {
 			ref.description = marked(ref.description);
 		}
@@ -420,7 +484,7 @@ export default function(docs) {
 	 * 获取Swagger(OpenAPI)的数据类型
 	 * @param {Object} ref
 	 */
-	function getSwaggerSchemaDataType(ref) {
+	function getSchemaDataType(ref) {
 		if (ref.type != null) {
 			if (ref.type == 'integer' && ref.format == 'int64') {
 				return 'long';

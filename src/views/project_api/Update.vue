@@ -19,7 +19,9 @@
 						<el-option value="other">other</el-option>
 					</el-select>
 					<div style="display: inline-block;margin-left: 10px;">
-					<span>接口状态: </span><el-radio v-model="api.deprecated" label="false">服务中</el-radio><el-radio v-model="api.deprecated" label="true">已过期(以后会删除)</el-radio>
+						<span>接口状态: </span>
+						<el-radio v-model="api.deprecated" label="false">服务中</el-radio>
+						<el-radio v-model="api.deprecated" label="true">已过期(以后会删除)</el-radio>
 					</div>
 				</el-form-item>
 				<el-form-item prop="path" label="Path">
@@ -119,9 +121,18 @@
 							<div>响应数据:</div>
 							<el-table :data="resp.data" style="width: 100%;" class="min-height-table" row-key="tableRowkey" border
 							 default-expand-all :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
-								<el-table-column prop="type" label="参数类型" width="180" align="right">
+								<el-table-column prop="in" label="位置" width="180" align="right">
 									<template v-slot="scope">
-										<el-select v-model="scope.row.type" placeholder="请选择" style="width: 120px;">
+										<el-select v-model="scope.row.in" placeholder="请选择" v-if="scope.row.tableRowLevel==1" style="width: 100px;">
+											<el-option value="body">body</el-option>
+											<el-option value="header">header</el-option>
+										</el-select>
+									</template>
+								</el-table-column>
+								<el-table-column prop="tableRowLevel" label="层级" width="60"></el-table-column>
+								<el-table-column prop="type" label="参数类型" width="120" >
+									<template v-slot="scope">
+										<el-select v-model="scope.row.type" placeholder="请选择" style="width: 100px;">
 											<el-option value="string">string</el-option>
 											<el-option value="int">int</el-option>
 											<el-option value="long">long</el-option>
@@ -131,15 +142,6 @@
 											<el-option value="double">double</el-option>
 											<el-option value="number">number</el-option>
 											<el-option value="boolean">boolean</el-option>
-										</el-select>
-									</template>
-								</el-table-column>
-								<el-table-column prop="tableRowLevel" label="层级" width="60"></el-table-column>
-								<el-table-column prop="in" label="位置" width="120">
-									<template v-slot="scope">
-										<el-select v-model="scope.row.in" placeholder="请选择" v-if="scope.row.tableRowLevel==1">
-											<el-option value="body">body</el-option>
-											<el-option value="header">header</el-option>
 										</el-select>
 									</template>
 								</el-table-column>
@@ -175,8 +177,12 @@
 						</div>
 					</div>
 				</el-form-item>
-				<el-form-item label="附加文档URL"><el-input v-model="api.exDurl" placeholder="请输入附加文档的URL"></el-input></el-form-item>
-				<el-form-item label="附加文档说明"><el-input type="textarea" v-model="api.exDdescription" placeholder="请输入附加文档的描述,支持HTML"></el-input></el-form-item>
+				<el-form-item label="附加文档URL">
+					<el-input v-model="api.exDurl" placeholder="请输入附加文档的URL"></el-input>
+				</el-form-item>
+				<el-form-item label="附加文档说明">
+					<el-input type="textarea" v-model="api.exDdescription" placeholder="请输入附加文档的描述,支持HTML"></el-input>
+				</el-form-item>
 				<el-form-item label="附加说明" v-if="additional.length>0">
 					<div style="border: 1px solid #CCC;padding: 5px;margin-bottom: 5px;" v-for="(add,idx) in additional" :key="idx">
 						<el-input v-model="add.title" placeholder="附加标题标题"></el-input>
@@ -411,8 +417,8 @@
 									}
 								}
 								this.parameters = reqd;
-							}else{
-									this.parameters = [];
+							} else {
+								this.parameters = [];
 							}
 							if (data.data.responses != null && data.data.responses != '') {
 								var respd = JSON.parse(data.data.responses);
@@ -440,8 +446,8 @@
 									}
 								}
 								this.responses = respd;
-							}else{
-								this.responses =[];
+							} else {
+								this.responses = [];
 							}
 							if (data.data.additional != null && data.data.additional != '') {
 								if (Array.isArray(data.data.additional)) {
@@ -619,7 +625,7 @@
 							reqData.responses = JSON.stringify(params);
 						}
 						// 响应参数结束
-						
+
 						var exd = null;
 						if (this.api.exDdescription != null) {
 							exd = {
@@ -635,7 +641,7 @@
 						if (exd != null) {
 							reqData.externalDocs = JSON.stringify(exd);
 						}
-						
+
 						if (this.additional != null && this.additional.length > 0) {
 							reqData.additional = JSON.stringify(this.additional);
 						}
