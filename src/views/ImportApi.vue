@@ -161,7 +161,7 @@
 													<span v-if="scope.row.required">{{ scope.row.required == 'true' || scope.row.required == true ? '是' : '否' }}</span>
 												</template>
 											</el-table-column>
-											<el-table-column prop="in" label="参数位置" width="120"></el-table-column>
+											<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
 											<el-table-column prop="type" label="参数类型" width="120"></el-table-column>
 											<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
 											<el-table-column prop="description" label="参数描述">
@@ -179,6 +179,9 @@
 												</template>
 											</el-table-column>
 										</el-table>
+										<div v-if="api.body">
+											<json-viewer :expand-depth="10" :value="api.body" />
+										</div>
 									</div>
 									<!-- 响应参数标题 -->
 									<div style="padding:10px;">
@@ -583,7 +586,9 @@ export default {
 											api.produces = JSON.stringify(produces);
 										}
 									}
-
+									if(ad.body!=null&&ad.body!=''){
+										api.body=ad.body;
+									}
 									// 请求参数开始
 									if (ad.parameters.length > 0) {
 										var params = [];

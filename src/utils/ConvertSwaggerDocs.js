@@ -107,7 +107,7 @@ export default function(docs) {
 			}
 			orionData.description = '';
 			if (info.description != null) {
-				orionData.description = marked(info.description);
+				orionData.description = marked(info.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 			}
 			if (info.termsOfService != null) {
 				if (orionData.description != '') {
@@ -159,14 +159,14 @@ export default function(docs) {
 				tag.apis = [];
 				tag.summary = tag.name;
 				if (tag.description != null) {
-					tag.description = marked(tag.description);
+					tag.description = marked(tag.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 				}
 				if (groups[tag.name] != null) {
 					if (tag.description) {
 						if (groups[tag.name].description == null) {
 							groups[tag.name].description = '';
 						}
-						groups[tag.name].description += marked(tag.description);
+						groups[tag.name].description += marked(tag.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 					}
 				} else {
 					groups[tag.name] = tag;
@@ -233,7 +233,7 @@ export default function(docs) {
 				api.method = method;
 				api.title = adata.summary || path;
 				if (adata.description != null) {
-					api.description = marked(adata.description);
+					api.description = marked(adata.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 				}
 				api.externalDocs = adata.externalDocs;
 				api.consumes = adata.consumes;
@@ -242,8 +242,21 @@ export default function(docs) {
 
 				// Request转换
 				api.parameters = [];
-				
-				
+				if (adata.parameters != null) {
+					for (var i = 0; i < adata.parameters.length; i++) {
+						loadParametersSchema(api.parameters, adata.parameters[i], refs);
+					}
+				}
+				if (adata.requestBody != null && adata.requestBody.content != null) {
+					console.log('body')
+					if (adata.requestBody.content['application/json'] != null && adata.requestBody.content['application/json'].schema !=
+						null) {
+						var schema = adata.requestBody.content['application/json'].schema;
+						loadParametersSchema(api.parameters, schema, refs);
+					} else {
+						api.body = fillSchemaRef(adata.requestBody, refs);
+					}
+				}
 
 				// Response转换
 				api.responses = [];
@@ -276,6 +289,7 @@ export default function(docs) {
 						}
 					}
 
+
 					if (pdata.content != null) {
 						if (pdata.content['application/json'] != null && pdata.content['application/json'].schema != null) {
 							var schema = pdata.content['application/json'].schema;
@@ -284,7 +298,7 @@ export default function(docs) {
 							resp.schema = fillSchemaRef(pdata.content, refs);
 						}
 					}
-					if(pdata.schema != null){
+					if (pdata.schema != null) {
 						loadResponseSchema(resp.data, pdata.schema, refs);
 					}
 
@@ -339,6 +353,118 @@ export default function(docs) {
 		}
 		return JSON.parse(refStr);
 	}
+
+	/**
+	 * 将parameters的Schema加载到OrionRequest中data中,如果是body数据则将body返回
+	 * @param {Object} requestData OrionRequest 的数据
+	 * @param {Object} schema 要需要转换加载的数据
+	 * @param {Object} refs 可引用的对象集
+	 */
+	function loadParametersSchema(parameter, schema, refs) {
+		if (schema['$ref'] != null) {
+			schema = refs[schema['$ref']];
+		}
+		if (schema.schema != null) {
+			if (schema.schema['$ref'] != null) {
+				schema.schema = refs[schema.schema['$ref']];
+			}
+			if (schema.schema != null) {
+				if (schema.schema.type != null && schema.type == null) {
+					schema.type = schema.schema.type;
+				}
+				if (schema.schema.format != null && schema.format == null) {
+					schema.format = schema.schema.format;
+				}
+				if (schema.schema.description != null && schema.description == null) {
+					schema.description = schema.schema.description;
+				}
+				if (schema.schema['default'] != null && schema['default'] == null) {
+					schema['default'] = schema.schema['default'];
+				}
+				if (schema.schema.maximum != null && schema.maximum == null) {
+					schema.maximum = schema.schema.maximum;
+				}
+				if (schema.schema.minimum != null && schema.minimum == null) {
+					schema.minimum = schema.schema.minimum;
+				}
+				if (schema.schema.maxLength != null && schema.maxLength == null) {
+					schema.maxLength = schema.schema.maxLength;
+				}
+				if (schema.schema.pattern != null && schema.pattern == null) {
+					schema.pattern = schema.schema.pattern;
+				}
+				if (schema.schema['enum'] != null && schema['enum'] == null) {
+					schema['enum'] = schema.schema['enum'];
+				}
+				if (schema.schema.required != null && schema.required == null) {
+					schema.required = schema.schema.required;
+				}
+			}
+		}
+		if (schema['default'] != null) {
+			schema.def = schema['default'];
+		}
+		if (schema['enum'] != null) {
+			schema.enums = schema. ['enum'];
+		}
+		schema.type = getSchemaDataType(schema) || '';
+		if (schema.description != null) {
+			schema.description = marked(schema.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
+		}
+		if (schema.properties != null) {
+			schema.items = [];
+			loadParameterProperties(schema.items, schema.properties, schema.required);
+		}
+		if (schema.schema != null && schema.schema.properties != null) {
+			schema.items = [];
+			loadParameterProperties(schema.items, schema.schema.properties, schema.schema.required);
+		}
+		if (schema['in'] == 'formData') {
+			schema['in'] == 'body';
+		}
+		parameter.push(schema);
+	}
+	/**
+	 * 添加对象属性里面的子属性
+	 * @param {Object} items Orion的属性中的items
+	 * @param {Object} properties 需要加载的属性
+	 * @param {Object} required 需要加载的属性那些是必填
+	 */
+	function loadParameterProperties(items, properties, required) {
+		for (var pkey in properties) {
+			var pdata = properties[pkey];
+			if (pdata['$ref'] != null) {
+				pdata = pdata['$ref'];
+				if (pdata.properties != null) {
+					pdata.items = [];
+					for (var pdkey in pdata.properties) {
+						var pddata = pdata.properties[pdkey];
+						var item = {
+							name: pdkey
+						};
+						item.type = getSchemaDataType(pddata) || '';
+						item.description = pddata.description;
+						pdata.items.push(item);
+					}
+				}
+			}
+			var item = {
+				name: pkey
+			};
+			if (required != null && required.includes(pkey)) {
+				item.required = true;
+			}
+			item.type = getSchemaDataType(pdata);
+			if (pdata.description != null) {
+				item.description = marked(pdata.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
+			}
+			if (pdata.items != null) {
+				item.items = pdata.items;
+			}
+			items.push(item);
+		}
+	}
+
 	/**
 	 * 将Response的Schema加载到OrionResponse中data中
 	 * @param {Object} responseData OrionResponse 的数据
@@ -349,12 +475,6 @@ export default function(docs) {
 		var flag = 0;
 		if (schema['$ref'] != null) {
 			schema = refs[schema['$ref']];
-		}
-		if (schema.default != null) {
-			schema.def = schema.default;
-		}
-		if (schema['enum'] != null) {
-			schema.enums = schema.['enum'];
 		}
 		if (schema.type == 'array' && schema.items != null) {
 			if (schema.items['$ref'] != null) {
@@ -385,9 +505,11 @@ export default function(docs) {
 				rdata.in = 'body';
 				rdata.type = getSchemaDataType(schema.properties[skey]) || 'string';
 				rdata.name = skey;
-				rdata.description = schema.properties[skey].description || '';
+				var desc = schema.properties[skey].description || '';
+				if (desc != null) {
+					rdata.description = marked(desc).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
+				}
 				responseData.push(rdata);
-
 			}
 			flag++;
 		}
@@ -397,7 +519,10 @@ export default function(docs) {
 				rdata.in = 'body';
 				rdata.type = getSchemaDataType(schema.additionalProperties[skey]) || 'string';
 				rdata.name = skey;
-				rdata.description = schema.additionalProperties[skey].description || '';
+				var desc = schema.additionalProperties[skey].description || '';
+				if (desc != null) {
+					rdata.description = marked(desc).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
+				}
 				responseData.push(rdata);
 			}
 			flag++;
