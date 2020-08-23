@@ -158,7 +158,7 @@
 										>
 											<el-table-column prop="required" label="必填" width="100" align="right">
 												<template slot-scope="scope">
-													<span v-if="scope.row.required">{{ scope.row.required == 'true' || scope.row.required == true ? '是' : '否' }}</span>
+													<span v-if="scope.row.required != null">{{ scope.row.required == 'true' || scope.row.required == true ? '是' : '否' }}</span>
 												</template>
 											</el-table-column>
 											<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
@@ -179,9 +179,7 @@
 												</template>
 											</el-table-column>
 										</el-table>
-										<div v-if="api.body">
-											<json-viewer :expand-depth="10" :value="api.body" />
-										</div>
+										<div v-if="api.body"><json-viewer :expand-depth="10" :value="api.body" /></div>
 									</div>
 									<!-- 响应参数标题 -->
 									<div style="padding:10px;">
@@ -231,7 +229,33 @@ import axios from 'axios';
 import { saveProjectFronJsonAPI } from '@/api/Project';
 import JsonViewer from 'vue-json-viewer';
 import swaggerConvert from '@/utils/ConvertSwaggerDocs.js';
-
+import store from '@/store/index.js';
+/**WebSocket 的请求类型*/
+const WS_TYPE = 1000;
+/**WebSocket 响应状态码成功*/
+const WS_SUCCESS = 200;
+/**WebSocket 响应状态码登录超时*/
+const WS_LOGIN_TIMEOUT = 401;
+/**WebSocket 响应状态码失败*/
+const WS_FAILED = 500;
+/**WebSocket 响应状态码无法识别的type类型*/
+const WS_UNRECOGNIZED = 404;
+/**WebSocket 响应状态码操作完成*/
+const WS_COMPLETED = 999;
+/**WebSocket 保存项目检查1: project不能为空,应为项目的json字符串! */
+const WS_CHECK_PROJECT_JSON = 1000;
+/**WebSocket 保存项目检查2: 项目名称,服务集不能为空! */
+const WS_CHECK_PROJECT_NAME_SERVERS = 1001;
+/**WebSocket 保存项目,data=项目的名称 */
+const WS_PROJECT_SAVEING = 1002;
+/**WebSocket 保存项目成功,data=项目的名称 */
+const WS_PROJECT_SAVED = 1003;
+/**WebSocket 保存项目异常,data=项目的名称 */
+const WS_PROJECT_SAVE_EXCEPTION = 1004;
+/**WebSocket 保存分组,data:{name:"分组名称",index:当前第几个,count:总共多少个,result:受影响行数}  */
+const WS_GROUP_SAVED = 1005;
+/**WebSocket 保存API,data:{name:"API名称",index:当前第几个,count:总共多少个,result:受影响行数} */
+const WS_API_SAVED = 1006;
 export default {
 	components: {
 		JsonViewer
@@ -291,8 +315,16 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			//连接服务器的WebSocket
+			websocket: null
 		};
+	},
+	/**
+	 * 在离开当前页面之前关闭可能显示的进度提示
+	 */
+	beforeDestroy() {
+		this.$notify.closeAll();
 	},
 	methods: {
 		/**
@@ -329,7 +361,7 @@ export default {
 						this.loadDocument(res.data);
 					})
 					.catch(err => {
-						this.$message.error('代理请求项目信息失败,更多信息请查看控制台!');
+						this.$message.error('请求项目信息失败,更多信息请查看控制台!');
 						console.log(err);
 						this.requestLoading = false;
 					});
@@ -478,9 +510,158 @@ export default {
 			this.projectLoading = false;
 		},
 		/**
-		 * 提交保存项目
+		 * 提交保存项目,通过WebSocket通知
 		 */
 		saveSubmit() {
+			var sessionId = store.getters.sessionId;
+			if (sessionId == null) {
+				this.$message.warning('登录超时,请重新登录!');
+				return;
+			}
+			this.loadProjectSubmitInfo(reqData => {
+				if (reqData == null) {
+					return;
+				}
+				var host = process.env.VUE_APP_BASE_API;
+				if (host == null || host == '') {
+					host = window.location.host;
+				} else {
+					host = host.replace(/(http:\/\/)|(https:\/\/)/, '');
+				}
+				var wsUrl = 'ws://' + host + '/private/ws/project/fromJson/' + sessionId;
+				console.log(wsUrl);
+				this.websocket = new WebSocket(wsUrl);
+				var defaultProgressMsg = '正在导入项目...';
+				var node = this.$createElement('span', { ref: 'progressTips' }, defaultProgressMsg);
+				this.$notify({
+					title: '导入进度',
+					message: node,
+					position: 'bottom-right',
+					dangerouslyUseHTMLString: true,
+					duration: 0
+				});
+				var progressTips = this.$refs['progressTips'];
+				this.websocket.onopen = () => {
+					console.log('Websocket connection successful...');
+					console.log('执行保存项目(WebSocket)...');
+					console.log(reqData);
+					var msg = { type: WS_TYPE, data: JSON.stringify(reqData) };
+					this.websocket.send(JSON.stringify(msg));
+				};
+				this.websocket.onmessage = event => {
+					var res = JSON.parse(event.data);
+					switch (res.code) {
+						case WS_UNRECOGNIZED:
+							console.log(WS_UNRECOGNIZED);
+							progressTips.innerText = '无法识别的指令,请检查请求的type是否有误!';
+							break;
+						case WS_LOGIN_TIMEOUT:
+							console.log(WS_LOGIN_TIMEOUT);
+							progressTips.innerText = '登录超时,请重新登录!';
+							break;
+						case WS_CHECK_PROJECT_JSON:
+							progressTips.innerText = '导入失败,无效的API文档!';
+							break;
+						case WS_CHECK_PROJECT_NAME_SERVERS:
+							progressTips.innerText = '导入失败,项目名称,服务集不能为空!';
+							break;
+						case WS_PROJECT_SAVEING:
+							var msg = '正在导入项目' + res.data + '...';
+							progressTips.innerText = msg;
+							break;
+						case WS_PROJECT_SAVE_EXCEPTION:
+							var msg = '导入项目:' + res.data + '未达到预期结果,可返回列表查看导入是否成功';
+							progressTips.innerText = msg;
+							break;
+						case WS_PROJECT_SAVED:
+							var msg = '导入项目:' + res.data + '成功,开始导入分组数据';
+							progressTips.innerText = msg;
+							break;
+						case WS_GROUP_SAVED:
+							var d = JSON.parse(res.data);
+							var msg = '导入分组:<br>' + d.name + (d.result > 0 ? '成功' : '失败') + '!<br>当前进度' + d.index + '/' + d.count;
+							progressTips.innerHTML = msg;
+							break;
+						case WS_API_SAVED:
+							var d = JSON.parse(res.data);
+							var msg = '导入API:<br>' + d.name + (d.result > 0 ? '成功' : '失败') + '!<br>当前进度' + d.index + '/' + d.count;
+							progressTips.innerHTML = msg;
+							break;
+						case WS_COMPLETED:
+							this.$message.success('导入项目完成!');
+							progressTips.innerText = '导入项目完成!';
+							this.saving = false;
+							break;
+						default:
+							console.log('ws消息:');
+							console.log(res);
+							this.saving = false;
+							progressTips.innerText = '导入项目失败,更多信息请查看控制台!';
+					}
+				};
+				this.websocket.onclose = () => {
+					this.saving = false;
+					if (progressTips != null && progressTips.innerText == defaultProgressMsg) {
+						this.$notify.closeAll();
+					}
+					console.log('WebSocket connection closed...');
+				};
+				this.websocket.onerror = err => {
+					this.saving = false;
+					if (progressTips != null && progressTips.innerText == defaultProgressMsg) {
+						this.$notify.closeAll();
+					}
+					this.$message.error('导入连接异常,更多信息请查看控制台!');
+					console.log('WebSocket connection exception:');
+					console.log(err);
+				};
+			});
+		},
+		/**
+		 * 提交保存项目,通过http的方式提交,本方式已经过期,因为当导入的数据量大的时候不好表现
+		 */
+		saveSubmitHttpDeprecated() {
+			this.loadProjectSubmitInfo(reqData => {
+				if (reqData == null) {
+					return;
+				}
+				console.log('执行保存项目(http)...');
+				console.log(reqData);
+				saveProjectFronJsonAPI(
+					{
+						project: JSON.stringify(reqData)
+					},
+					res => {
+						console.log(data);
+						var data = res.data;
+						if (data.code == 200) {
+							this.$confirm('保存成功!', '提示', {
+								confirmButtonText: '返回列表',
+								cancelButtonText: '取消',
+								type: 'success'
+							})
+								.then(() => {
+									this.$router.push('/index');
+								})
+								.catch(() => {});
+						} else {
+							this.$message.error('保存失败:' + data.msg);
+						}
+						this.saving = false;
+					},
+					err => {
+						this.$message.error('保存失败,更多信息请查看控制台!');
+						console.log(err);
+						this.saving = false;
+					}
+				);
+			});
+		},
+		/**
+		 * 获取项目信息
+		 * @param {function} callback
+		 */
+		loadProjectSubmitInfo(callback) {
 			this.$refs.projectEditForm.validate(valid => {
 				if (valid) {
 					this.saving = true;
@@ -586,8 +767,8 @@ export default {
 											api.produces = JSON.stringify(produces);
 										}
 									}
-									if(ad.body!=null&&ad.body!=''){
-										api.body=ad.body;
+									if (ad.body != null && ad.body != '') {
+										api.body = ad.body;
 									}
 									// 请求参数开始
 									if (ad.parameters.length > 0) {
@@ -685,36 +866,7 @@ export default {
 						}
 					}
 					reqData.content = groups;
-					console.log('执行保存项目...');
-					console.log(reqData);
-					saveProjectFronJsonAPI(
-						{
-							project: JSON.stringify(reqData)
-						},
-						res => {
-							console.log(data);
-							var data = res.data;
-							if (data.code == 200) {
-								this.$confirm('保存成功!', '提示', {
-									confirmButtonText: '返回列表',
-									cancelButtonText: '取消',
-									type: 'success'
-								})
-									.then(() => {
-										this.$router.push('/index');
-									})
-									.catch(() => {});
-							} else {
-								this.$message.error('保存失败:' + data.msg);
-							}
-							this.saving = false;
-						},
-						err => {
-							this.$message.error('保存失败,更多信息请查看控制台!');
-							console.log(err);
-							this.saving = false;
-						}
-					);
+					callback(reqData);
 				} else {
 					this.$message.warning('保存失败,请按提示完善项目信息!');
 					return false;

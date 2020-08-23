@@ -70,6 +70,14 @@
 							</template>
 						</el-table-column>
 					</el-table>
+					<div>
+						<el-input
+							type="textarea"
+							:autosize="{ minRows: 1, maxRows: 10 }"
+							placeholder="请求的body,定义格式或占位或schema,比如请求格式要求为:{&quot;id&quot;:{id},&quot;name&quot;:&quot;userName&quot;},{id}代表变量请求时会自动填充body参数"
+							v-model="api.body"
+						></el-input>
+					</div>
 				</div>
 				<!-- 响应参数标题 -->
 				<div style="padding:10px;">

@@ -1,7 +1,4 @@
 import request from './utils/request'
-import qs from "qs"
-
-
 
 /**
  * 获取项目列表
@@ -28,7 +25,7 @@ export function getProjectAPI(pid, res, err) {
  * @param {Object} err
  */
 export function saveProjectAPI(data, res, err) {
-	request.post('/private/project/', qs.stringify(data)).then(res).catch(err);
+	request.post('/private/project/', data).then(res).catch(err);
 }
 
 /**
@@ -38,7 +35,7 @@ export function saveProjectAPI(data, res, err) {
  * @param {Object} err
  */
 export function saveProjectFronJsonAPI(data, res, err) {
-	request.post('/private/project/fromJson', qs.stringify(data)).then(res).catch(err);
+	request.post('/private/project/fromJson', data).then(res).catch(err);
 }
 
 /**
@@ -58,7 +55,7 @@ export function copyProjectAPI(pid, res, err) {
  * @param {Object} err
  */
 export function updateProjectAPI(data, res, err) {
-	request.put('/private/project/', qs.stringify(data)).then(res).catch(err);
+	request.put('/private/project/', data).then(res).catch(err);
 }
 /**
  * 项目排序上移
@@ -104,7 +101,7 @@ export function findGroupsByProjectId(pid, res, err) {
  * @param {Object} err
  */
 export function saveApiGroup(data, res, err) {
-	request.post('/private/apiGroup', qs.stringify(data)).then(res).catch(err);
+	request.post('/private/apiGroup', data).then(res).catch(err);
 }
 /**
  * 修改分组
@@ -113,7 +110,7 @@ export function saveApiGroup(data, res, err) {
  * @param {Object} err
  */
 export function putApiGroup(data, res, err) {
-	request.put('/private/apiGroup', qs.stringify(data)).then(res).catch(err);
+	request.put('/private/apiGroup', data).then(res).catch(err);
 }
 /**
  * 接口分组排序上移
@@ -160,7 +157,7 @@ export function getApiAPI(aid, res, err) {
  * @param {Object} err
  */
 export function saveApiAPI(data, res, err) {
-	request.post('/private/api' , qs.stringify(data)).then(res).catch(err);
+	request.post('/private/api' , data).then(res).catch(err);
 }
 /**
  * 修改API
@@ -169,7 +166,7 @@ export function saveApiAPI(data, res, err) {
  * @param {Object} err
  */
 export function updateApiAPI(data, res, err) {
-	request.put('/private/api' , qs.stringify(data)).then(res).catch(err);
+	request.put('/private/api' , data).then(res).catch(err);
 }
 
 /**

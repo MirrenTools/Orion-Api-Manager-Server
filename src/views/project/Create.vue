@@ -17,8 +17,15 @@
 			</el-form-item>
 			<el-form-item label="联系人" prop="contactName"><el-input v-model="projectEdit.contactName" placeholder="请输入联系人"></el-input></el-form-item>
 			<el-form-item label="联系信息" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息,支持HTML"></el-input></el-form-item>
-			<el-form-item label="附加文档描述" prop="exDdescription"><el-input v-model="projectEdit.exDdescription" placeholder="请输入附加文档描述,支持HTML"></el-input></el-form-item>
 			<el-form-item label="附加文档URL" prop="exDurl"><el-input v-model="projectEdit.exDurl" placeholder="请输入附加文档URL"></el-input></el-form-item>
+			<el-form-item label="附加文档描述" prop="exDdescription">
+				<el-input
+					v-model="projectEdit.exDdescription"
+					type="textarea"
+					:autosize="{ minRows: 2, maxRows: 10 }"
+					placeholder="请输入参数描述,支持HTML"
+				></el-input>
+			</el-form-item>
 			<el-form-item>
 				<div style="text-align: center;"><el-button type="primary" @click="saveSubmit()">提交</el-button></div>
 			</el-form-item>

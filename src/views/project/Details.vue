@@ -52,7 +52,7 @@
 					<td class="project-item" valign="top">附加文档</td>
 					<td>
 						<div v-show="project.exDdescription" v-html="project.exDdescription"></div>
-						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">{{projectEdit.exDurl}}</a>
+						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">{{ projectEdit.exDurl }}</a>
 					</td>
 				</tr>
 				<tr>
@@ -82,8 +82,8 @@
 				</el-form-item>
 				<el-form-item label="联系人" prop="contactName"><el-input v-model="projectEdit.contactName" placeholder="请输入联系人"></el-input></el-form-item>
 				<el-form-item label="联系信息" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息"></el-input></el-form-item>
-				<el-form-item label="附加文档描述" prop="exDdescription"><el-input v-model="projectEdit.exDdescription" placeholder="请输入附加文档描述,支持HTML"></el-input></el-form-item>
 				<el-form-item label="附加文档URL" prop="exDurl"><el-input v-model="projectEdit.exDurl" placeholder="请输入附加文档URL"></el-input></el-form-item>
+				<el-form-item label="附加文档描述" prop="exDdescription"><el-input v-model="projectEdit.exDdescription" 	type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" placeholder="请输入附加文档描述,支持HTML"></el-input></el-form-item>
 				<el-form-item>
 					<div style="text-align: center;"><el-button type="primary" @click="updateSubmit()">提交修改</el-button></div>
 				</el-form-item>
@@ -229,7 +229,7 @@
 										>
 											<el-table-column prop="required" label="必填" width="100" align="right">
 												<template slot-scope="scope">
-													<span v-if="scope.row.required">{{ scope.row.required === 'true' ? '是' : '否' }}</span>
+													<span>{{ scope.row.required == 'true' || scope.row.required == true ? '是' : '否' }}</span>
 												</template>
 											</el-table-column>
 											<el-table-column prop="in" label="参数位置" width="120"></el-table-column>
@@ -250,6 +250,7 @@
 												</template>
 											</el-table-column>
 										</el-table>
+										<div v-if="api.body && api.body != ''"><el-input type="textarea" :autosize="{ minRows: 1 }" v-model="api.body" style="border: 0;"></el-input></div>
 									</div>
 									<!-- 响应参数标题 -->
 									<div style="padding:10px;">

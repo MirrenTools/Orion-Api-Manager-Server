@@ -7,15 +7,14 @@ import store from '../../store/index.js'
 
 const request = axios.create({
 	baseURL: process.env.VUE_APP_BASE_API,
-	headers: {
-		'content-type': 'application/x-www-form-urlencoded'
-	},
+	// headers: {
+	// 	'content-type': 'application/x-www-form-urlencoded'
+	// },
 	timeout: 30000,
 });
 
 //请求拦截器
 request.interceptors.request.use(req => {
-
 		if (req.url.startsWith('/private')) {
 			if (store.getters.sessionId == null) {
 				console.log('用户未登录!');
@@ -24,7 +23,7 @@ request.interceptors.request.use(req => {
 					type: 'warning'
 				}).then(() => {
 					store.dispatch('app/logout');
-					location.href = '/#/login';
+					location.href = '#/login';
 				});
 				return Promise.reject('登录超时需要重新登录!')
 			} else {
@@ -48,7 +47,7 @@ request.interceptors.response.use(res => {
 				type: 'warning'
 			}).then(() => {
 				store.dispatch('app/logout');
-				location.href = '/#/login';
+				location.href = '#/login';
 			});
 			return Promise.reject('登录超时需要重新登录!');
 		} else {
