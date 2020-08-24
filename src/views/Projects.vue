@@ -20,7 +20,7 @@
 						<span>{{ formatDate(scope.row.time) }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="排序" width="120">
+				<el-table-column label="排序" width="130">
 					<template slot-scope="scope">
 						<span>{{ scope.row.sorts }}</span>
 						&nbsp;
