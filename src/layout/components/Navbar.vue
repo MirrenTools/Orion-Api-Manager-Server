@@ -4,12 +4,12 @@
 		<img src="../../assets/logo.png" class="hamburger-container" style="margin-left: 5px;" />
 		<breadcrumb class="breadcrumb-container" />
 		<div class="right-menu">
-			<el-popover placement="bottom" title="确定退出登录吗?" width="200" trigger="click" v-model="logoutVisible">
+			<el-popover placement="bottom" :title="$t('LogoutConfirm')" width="200" trigger="click" v-model="logoutVisible">
 				<div style="text-align: right; margin: 0">
-					<el-button size="mini" @click="logoutVisible = false">取消</el-button>
-					<el-button type="primary" size="mini" @click.native="logout">确定</el-button>
+					<el-button size="mini" @click="logoutVisible = false">{{$t('Cancel')}}</el-button>
+					<el-button type="primary" size="mini" @click.native="logout">{{$t('Confirm')}}</el-button>
 				</div>
-				<el-link type="info" slot="reference" style="margin-right: 0.5rem;">退出登录</el-link>
+				<el-link type="info" slot="reference" style="margin-right: 0.5rem;">{{$t('Logout')}}</el-link>
 			</el-popover>
 		</div>
 	</div>
@@ -47,7 +47,8 @@ export default {
 					this.$router.push(`/login?redirect=${this.$route.fullPath}`);
 				},
 				err => {
-					this.$message.error('请求失败,更多信息请查看浏览器控制台!');
+					var requestFailedTips = this.$t('RequestFailedSeeConsole');
+					this.$message.error(requestFailedTips);
 					console.log(err);
 				}
 			);

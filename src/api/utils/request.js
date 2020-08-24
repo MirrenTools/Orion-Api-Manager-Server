@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from '../../lang/index.js'
 import {
 	MessageBox,
 	Message
@@ -17,15 +18,15 @@ const request = axios.create({
 request.interceptors.request.use(req => {
 		if (req.url.startsWith('/private')) {
 			if (store.getters.sessionId == null) {
-				console.log('用户未登录!');
-				MessageBox.confirm('登录超时,请重新登录!', '登录超时', {
-					confirmButtonText: '确定',
+				console.log('User not logged in!');
+				MessageBox.confirm(i18n.t('LoginTimeoutLoginAgain'), i18n.t('LoginTimeout'), {
+					confirmButtonText: i18n.t('Confirm'),
 					type: 'warning'
 				}).then(() => {
 					store.dispatch('app/logout');
 					location.href = '#/login';
 				});
-				return Promise.reject('登录超时需要重新登录!')
+				return Promise.reject(i18n.t('LoginTimeoutLoginAgain'))
 			} else {
 				req.headers['x-session']=store.getters.sessionId;
 				return req;
@@ -42,14 +43,14 @@ request.interceptors.request.use(req => {
 //响应拦截器
 request.interceptors.response.use(res => {
 		if (res.data.code==401) {
-			MessageBox.confirm('登录超时,请重新登录!', '登录超时', {
-				confirmButtonText: '确定',
-				type: 'warning'
-			}).then(() => {
+			MessageBox.confirm(i18n.t('LoginTimeoutLoginAgain'), i18n.t('LoginTimeout'), {
+					confirmButtonText: i18n.t('Confirm'),
+					type: 'warning'
+				}).then(() => {
 				store.dispatch('app/logout');
 				location.href = '#/login';
 			});
-			return Promise.reject('登录超时需要重新登录!');
+			return Promise.reject(i18n.t('LoginTimeoutLoginAgain'));
 		} else {
 			return res;
 		}

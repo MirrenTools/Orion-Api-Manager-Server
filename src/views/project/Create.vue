@@ -1,33 +1,33 @@
 <template>
 	<div style="width: 98%; max-width: 1240px;margin: auto;padding-top: 15px;">
 		<el-form ref="projectEditForm" :rules="editRules" :model="projectEdit" label-width="120px">
-			<el-form-item label="项目名称" prop="name"><el-input v-model="projectEdit.name" placeholder="请输入项目名称"></el-input></el-form-item>
-			<el-form-item label="项目版本" prop="versions"><el-input v-model="projectEdit.versions" placeholder="请输入项目版本号"></el-input></el-form-item>
-			<el-form-item label="项目排序" prop="sorts"><el-input v-model.number="projectEdit.sorts" placeholder="请输入项目排序"></el-input></el-form-item>
-			<el-form-item label="项目描述" prop="description"><el-input v-model="projectEdit.description" type="textarea" placeholder="请输入项目描述,支持HTML"></el-input></el-form-item>
-			<el-form-item label="服务地址集" prop="servers">
+			<el-form-item :label="$t('ProjectName')" prop="name"><el-input v-model="projectEdit.name" :placeholder="$t('EnterProjectName')"></el-input></el-form-item>
+			<el-form-item :label="$t('ProjectVersion')"  prop="versions"><el-input v-model="projectEdit.versions" :placeholder="$t('EnterProjectVersion')"></el-input></el-form-item>
+			<el-form-item :label="$t('ProjectRanking')" prop="sorts"><el-input v-model.number="projectEdit.sorts" :placeholder="$t('EnterProjectRanking')"></el-input></el-form-item>
+			<el-form-item :label="$t('ProjectDescription')"  prop="description"><el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input></el-form-item>
+			<el-form-item :label="$t('Servers')" prop="servers">
 				<template>
 					<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers" :key="idx">
-						<el-input v-model="server.url" placeholder="请输入主机地址,必填,示例 http://127.0.0.1:8080/v1"></el-input>
-						<el-input v-model="server.description" placeholder="请输入主机说明,选填,示例 本地开发服务器" class="novalidate"></el-input>
-						<div style="text-align: right;padding-top: 3px;"><el-button size="mini" @click="removeServer(idx)">移除</el-button></div>
+						<el-input v-model="server.url" :placeholder="$t('EnterHostAddress')"></el-input>
+						<el-input v-model="server.description" :placeholder="$t('EnterHostDescription')" class="novalidate"></el-input>
+						<div style="text-align: right;padding-top: 3px;"><el-button size="mini" @click="removeServer(idx)">{{$t('Remove')}}</el-button></div>
 					</div>
-					<div style="text-align: right;"><el-button size="medium" @click="addServer()">添加更多</el-button></div>
+					<div style="text-align: right;"><el-button size="medium" @click="addServer()">{{$t('AddMore')}}</el-button></div>
 				</template>
 			</el-form-item>
-			<el-form-item label="联系人" prop="contactName"><el-input v-model="projectEdit.contactName" placeholder="请输入联系人"></el-input></el-form-item>
-			<el-form-item label="联系信息" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息,支持HTML"></el-input></el-form-item>
-			<el-form-item label="附加文档URL" prop="exDurl"><el-input v-model="projectEdit.exDurl" placeholder="请输入附加文档URL"></el-input></el-form-item>
-			<el-form-item label="附加文档描述" prop="exDdescription">
+			<el-form-item :label="$t('Contacts')" prop="contactName"><el-input v-model="projectEdit.contactName" :placeholder="$t('EnterContacts')"></el-input></el-form-item>
+			<el-form-item :label="$t('ContactInfo')" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" :placeholder="$t('EnterContactInfo')"></el-input></el-form-item>
+			<el-form-item :label="$t('ExtDocsURL')" prop="exDurl"><el-input v-model="projectEdit.exDurl" :placeholder="$t('EnterExtDocsURL')"></el-input></el-form-item>
+			<el-form-item :label="$t('ExtDocsDesc')" prop="exDdescription">
 				<el-input
 					v-model="projectEdit.exDdescription"
 					type="textarea"
 					:autosize="{ minRows: 2, maxRows: 10 }"
-					placeholder="请输入参数描述,支持HTML"
+					:placeholder="$t('EnterExtDocsDesc')"
 				></el-input>
 			</el-form-item>
 			<el-form-item>
-				<div style="text-align: center;"><el-button type="primary" @click="saveSubmit()">提交</el-button></div>
+				<div style="text-align: center;"><el-button type="primary" @click="saveSubmit()">{{$t('Submit')}}</el-button></div>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -50,7 +50,7 @@ export default {
 			if (flag) {
 				callback();
 			} else {
-				callback(new Error('请最少添加一个主机地址'));
+				callback(new Error(this.$t('LeastOneHostAddress')));
 			}
 		};
 		return {
@@ -70,14 +70,14 @@ export default {
 				name: [
 					{
 						required: true,
-						message: '请输入项目名称',
+						message: this.$t('EnterProjectName'),
 						trigger: 'blur'
 					}
 				],
 				versions: [
 					{
 						required: true,
-						message: '请输入项目版本号',
+						message:  this.$t('EnterProjectVersion'),
 						trigger: 'blur'
 					}
 				],
@@ -109,9 +109,10 @@ export default {
 			if (servers[idx].url == '' && servers[idx].description == '') {
 				servers.splice(idx, 1);
 			} else {
-				this.$confirm('确定移除数据吗?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
+				
+				this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
+					confirmButtonText: this.$t('Comfirm'),
+					cancelButtonText: this.$t('Cancel'),
 					type: 'warning'
 				})
 					.then(() => {
@@ -167,7 +168,7 @@ export default {
 					if (this.projectEdit.contactInfo != null && this.projectEdit.contactInfo != '') {
 						reqData.contactInfo = this.projectEdit.contactInfo;
 					}
-					console.log('执行新增项目...');
+					console.log('Submit new Project...');
 					console.log(reqData);
 					saveProjectAPI(
 						reqData,
@@ -175,9 +176,9 @@ export default {
 							console.log(data);
 							var data = res.data;
 							if (data.code == 200) {
-								this.$confirm('新增成功!', '提示', {
-									confirmButtonText: '继续新增',
-									cancelButtonText: '返回列表',
+								this.$confirm(this.$t('AddSuccess'), this.$t('Tips'), {
+									confirmButtonText: this.$t('Continued'),
+									cancelButtonText: this.$t('BackToList'),
 									type: 'success'
 								})
 									.then(() => {
@@ -191,16 +192,16 @@ export default {
 										this.$router.push('/index');
 									});
 							} else {
-								this.$message.error('新增失败:' + data.msg);
+								this.$message.error(this.$t('FailedToAdd')+':' + data.msg);
 							}
 						},
 						err => {
-							this.$message.error('新增失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToAddSeeConsole'));
 							console.log(err);
 						}
 					);
 				} else {
-					this.$message.warning('新增失败,请按提示完善项目信息!');
+					this.$message.warning(this.$t('MissingRequiredInformation'));
 					return false;
 				}
 			});

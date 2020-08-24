@@ -12,7 +12,7 @@
 						></path>
 					</svg>
 				</span>
-				<el-input ref="id" v-model="loginForm.id" placeholder="请输入账号" type="text" tabindex="1" autocomplete="off" />
+				<el-input ref="id" v-model="loginForm.id" :placeholder="$t('Account')" type="text" tabindex="1" autocomplete="off" />
 			</el-form-item>
 			<el-form-item prop="password">
 				<span class="svg-container">
@@ -34,7 +34,7 @@
 					ref="password"
 					v-model="loginForm.password"
 					:type="passwordType"
-					placeholder="请输入密码"
+					:placeholder="$t('Password')"
 					tabindex="2"
 					autocomplete="off"
 					@keyup.enter.native="loginHandler"
@@ -86,26 +86,28 @@
 					</svg>
 				</span>
 			</el-form-item>
-			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">登录失败!请检查账号密码是否正确!</p>
-			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginHandler">登录</el-button>
+			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">{{ $t('LoginFailed') }}</p>
+			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginHandler">{{ $t('Login') }}</el-button>
 		</el-form>
 	</div>
 </template>
 
 <script>
-import { apiLogin} from '@/api/Login';
+import { apiLogin } from '@/api/Login';
 export default {
 	data() {
 		var validateId = (rule, value, callback) => {
 			if (value.length < 4 || value.length > 32) {
-				callback(new Error('请输入4-32位账号'));
+				var tips = this.$t('AccountRequires_4_32');
+				callback(new Error(tips));
 			} else {
 				callback();
 			}
 		};
 		var validatePass = (rule, value, callback) => {
 			if (value.length < 4 || value.length > 32) {
-				callback(new Error('请输入4-32位密码'));
+				var tips = this.$t('PasswordRequires_4_32');
+				callback(new Error(tips));
 			} else {
 				callback();
 			}
@@ -153,16 +155,17 @@ export default {
 							if (resp.code == 200) {
 								var info = resp.data;
 								this.$store.dispatch('app/login', info);
-								console.log('登录成功!');
+								console.log('Login successful!');
 								this.$router.push('/index');
 							} else {
-								console.log('登录失败:'+resp.msg);
+								console.log('Login failed:' + resp.msg);
 								this.loginError = true;
 							}
 						},
 						err => {
-							this.$message.error('请求失败,更多信息请查看浏览器控制台!');
-							console.log('请求失败!');
+							var requestFailedTips = this.$t('RequestFailedSeeConsole');
+							this.$message.error(requestFailedTips);
+							console.log('Request failed!');
 							console.log(err);
 						}
 					);
@@ -176,8 +179,6 @@ export default {
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 $bg: #283443;
 $light_gray: #fff;
 $cursor: #fff;

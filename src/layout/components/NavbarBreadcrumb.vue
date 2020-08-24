@@ -67,11 +67,13 @@ export default {
 						}
 					}
 					breadcrumb.path = breadcrumbPath + (queryParams || '');
-					breadcrumb.title = route.title;
+					
+					
+					breadcrumb.title = this.$t(route.title);
 					this.breadcrumbList.push(breadcrumb);
 				}
 			}
-			var name = this.$route.name;
+			var name = this.$t(this.$route.name);
 			var breadcrumb = { title: name };
 			this.breadcrumbList.push(breadcrumb);
 		}
