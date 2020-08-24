@@ -59,7 +59,7 @@
 					<td class="project-item">操作</td>
 					<td>
 						<a :href="'/project/downJson/' + project.key" class="alink" style="margin-left: 0;">下载.json文件</a>
-						<a :href="'/Client-UI/index.html?file=/project/getJson/' + project.key + '&id=' + project.key" target="_blank" class="alink">在Client-UI中查看</a>
+						<a :href="'/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">在Client-UI中查看</a>
 					</td>
 				</tr>
 			</table>

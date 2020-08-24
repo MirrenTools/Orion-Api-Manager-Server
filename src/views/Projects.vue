@@ -32,7 +32,7 @@
 				<el-table-column label="操作" width="200">
 					<template slot-scope="scope">
 						<router-link :to="'/index/get/project/' + scope.row.key" class="alink">查看详情</router-link>
-						<a :href="'/Client-UI/index.html?file=/project/getJson/' + scope.row.key + '&id=' + scope.row.key" target="_blank"
+						<a :href="'/Client-UI/index.html?id=' + scope.row.key" target="_blank"
 						 class="alink">在客户端查看</a>
 					</template>
 				</el-table-column>
