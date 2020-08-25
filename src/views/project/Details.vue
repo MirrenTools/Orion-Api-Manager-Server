@@ -2,37 +2,39 @@
 	<div>
 		<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;align-items: center;">
 			<div>
-				<b>{{ mode === 'edit' ? '修改项目信息' : '项目信息' }}</b>
+				<b>{{ mode === 'edit' ? $t('ModifyProject') : $t('ProjectInformation') }}</b>
 			</div>
 			<div style="margin-left: auto;">
 				<div v-show="mode === 'view'">
-					<el-button size="mini" type="primary" @click="copySubmit()">复制副本</el-button>
-					<el-button size="mini" type="primary" @click="mode = 'edit'">修改</el-button>
-					<el-button size="mini" type="danger" @click="deleteSubmit()">删除</el-button>
+					<el-button size="mini" type="primary" @click="copySubmit()">{{ $t('MakeACopy') }}</el-button>
+					<el-button size="mini" type="primary" @click="mode = 'edit'">{{ $t('Modify') }}</el-button>
+					<el-button size="mini" type="danger" @click="deleteSubmit()">{{ $t('Delete') }}</el-button>
 				</div>
-				<div v-show="mode === 'edit'"><el-button size="mini" @click="mode = 'view'">取消</el-button></div>
+				<div v-show="mode === 'edit'">
+					<el-button size="mini" @click="mode = 'view'">{{ $t('Cancel') }}</el-button>
+				</div>
 			</div>
 		</div>
 		<div style="width: 98%; max-width: 1240px;margin: auto">
 			<!-- 显示的属性 -->
 			<table v-show="mode === 'view'" style="width: 100%;" cellspacing="10">
 				<tr>
-					<td width="120px" class="project-item">项目名称</td>
+					<td width="120px" class="project-item">{{ $t('ProjectName') }}</td>
 					<td>
 						{{ project.name }}
 						<span style="font-size: 0.8em;">{{ project.versions }}</span>
 					</td>
 				</tr>
 				<tr v-show="project.lastTime">
-					<td class="project-item">最后更新时间</td>
+					<td class="project-item">{{ $t('LastUpdateTime') }}</td>
 					<td>{{ formatDate(project.lastTime) }}</td>
 				</tr>
 				<tr v-show="project.description" valign="top">
-					<td width="120px" class="project-item">项目描述</td>
+					<td width="120px" class="project-item">{{ $t('ProjectDescription') }}</td>
 					<td v-html="project.description"></td>
 				</tr>
 				<tr>
-					<td class="project-item" valign="top">服务地址集</td>
+					<td class="project-item" valign="top">{{ $t('Servers') }}</td>
 					<td>
 						<div v-for="(item, idx) in project.servers" :key="idx">
 							<div>{{ item.url }}</div>
@@ -41,79 +43,91 @@
 					</td>
 				</tr>
 				<tr v-show="project.contactName">
-					<td class="project-item">联系人</td>
+					<td class="project-item">{{ $t('Contacts') }}</td>
 					<td>{{ project.contactName }}</td>
 				</tr>
 				<tr v-show="project.contactInfo">
-					<td class="project-item">联系信息</td>
+					<td class="project-item">{{ $t('ContactInfo') }}</td>
 					<td v-html="project.contactInfo"></td>
 				</tr>
 				<tr v-show="project.exDdescription && project.exDurl">
-					<td class="project-item" valign="top">附加文档</td>
+					<td class="project-item" valign="top">{{ $t('ExtDocsDesc') }}</td>
 					<td>
 						<div v-show="project.exDdescription" v-html="project.exDdescription"></div>
 						<a v-show="project.exDurl" :href="project.exDurl" target="_blank" class="alink" style="margin-left: 0;">{{ projectEdit.exDurl }}</a>
 					</td>
 				</tr>
 				<tr>
-					<td class="project-item">操作</td>
+					<td class="project-item">{{ $t('Operation') }}</td>
 					<td>
-						<a :href="'/project/downJson/' + project.key" class="alink" style="margin-left: 0;">下载.json文件</a>
-						<a :href="'/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">在Client-UI中查看</a>
+						<a :href="'/project/downJson/' + project.key" class="alink" style="margin-left: 0;">{{ $t('ExportDocument') }}</a>
+						<a :href="'/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
 					</td>
 				</tr>
 			</table>
 
 			<!-- 修改的属性 -->
 			<el-form v-show="mode === 'edit'" ref="projectEditForm" :rules="editRules" :model="projectEdit" label-width="120px">
-				<el-form-item label="项目名称" prop="name"><el-input v-model="projectEdit.name" placeholder="请输入项目名称"></el-input></el-form-item>
-				<el-form-item label="项目版本" prop="versions"><el-input v-model="projectEdit.versions" placeholder="请输入项目版本号"></el-input></el-form-item>
-				<el-form-item label="项目排序" prop="sorts"><el-input v-model.number="projectEdit.sorts" placeholder="请输入项目排序"></el-input></el-form-item>
-				<el-form-item label="项目描述" prop="description"><el-input v-model="projectEdit.description" type="textarea" placeholder="请输入项目描述"></el-input></el-form-item>
-				<el-form-item label="服务地址集" prop="servers">
+				<el-form-item :label="$t('ProjectName')" prop="name"><el-input v-model="projectEdit.name" :placeholder="$t('EnterProjectName')"></el-input></el-form-item>
+				<el-form-item :label="$t('ProjectVersion')" prop="versions"><el-input v-model="projectEdit.versions" :placeholder="$t('EnterProjectVersion')"></el-input></el-form-item>
+				<el-form-item :label="$t('ProjectRanking')" prop="sorts"><el-input v-model.number="projectEdit.sorts" :placeholder="$t('EnterProjectRanking')"></el-input></el-form-item>
+				<el-form-item :label="$t('ProjectDescription')" prop="description">
+					<el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input>
+				</el-form-item>
+				<el-form-item :label="$t('Servers')" prop="servers">
 					<template>
 						<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers" :key="idx">
-							<el-input v-model="server.url" placeholder="请输入主机地址,必填,示例 http://127.0.0.1:8080/v1"></el-input>
-							<el-input v-model="server.description" placeholder="请输入主机说明,选填,示例 本地开发服务器" class="novalidate"></el-input>
-							<div style="text-align: right;padding-top: 3px;"><el-button size="mini" @click="removeServer(idx)">移除</el-button></div>
+							<el-input v-model="server.url" :placeholder="$t('EnterHostAddress')"></el-input>
+							<el-input v-model="server.description" :placeholder="$t('EnterHostDescription')" class="novalidate"></el-input>
+							<div style="text-align: right;padding-top: 3px;">
+								<el-button size="mini" @click="removeServer(idx)">{{ $t('Remove') }}</el-button>
+							</div>
 						</div>
-						<div style="text-align: right;"><el-button size="medium" @click="addServer()">添加更多</el-button></div>
+						<div style="text-align: right;">
+							<el-button size="medium" @click="addServer()">{{ $t('AddMore') }}</el-button>
+						</div>
 					</template>
 				</el-form-item>
-				<el-form-item label="联系人" prop="contactName"><el-input v-model="projectEdit.contactName" placeholder="请输入联系人"></el-input></el-form-item>
-				<el-form-item label="联系信息" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" placeholder="请输入联系信息"></el-input></el-form-item>
-				<el-form-item label="附加文档URL" prop="exDurl"><el-input v-model="projectEdit.exDurl" placeholder="请输入附加文档URL"></el-input></el-form-item>
-				<el-form-item label="附加文档描述" prop="exDdescription"><el-input v-model="projectEdit.exDdescription" 	type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" placeholder="请输入附加文档描述,支持HTML"></el-input></el-form-item>
+				<el-form-item :label="$t('Contacts')" prop="contactName"><el-input v-model="projectEdit.contactName" :placeholder="$t('EnterContacts')"></el-input></el-form-item>
+				<el-form-item :label="$t('ContactInfo')" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" :placeholder="$t('EnterContactInfo')"></el-input></el-form-item>
+				<el-form-item :label="$t('ExtDocsURL')" prop="exDurl"><el-input v-model="projectEdit.exDurl" :placeholder="$t('EnterExtDocsURL')"></el-input></el-form-item>
+				<el-form-item :label="$t('ExtDocsDesc')" prop="exDdescription">
+					<el-input v-model="projectEdit.exDdescription" type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" :placeholder="$t('EnterExtDocsDesc')"></el-input>
+				</el-form-item>
 				<el-form-item>
-					<div style="text-align: center;"><el-button type="primary" @click="updateSubmit()">提交修改</el-button></div>
+					<div style="text-align: center;">
+						<el-button type="primary" @click="updateSubmit()">{{ $t('SubmitModify') }}</el-button>
+					</div>
 				</el-form-item>
 			</el-form>
 		</div>
 		<!-- 新增或修改分组的弹窗 -->
-		<el-dialog :title="groupDialogMode == 'view' ? '修改分组信息' : '新增分组信息'" :visible.sync="dialogCreateGroupVisible">
+		<el-dialog :title="groupDialogMode == 'view' ? $t('ModifyGroup') : $t('NewGroup')" :visible.sync="dialogCreateGroupVisible">
 			<el-form :model="groupData" :rules="groupDataRules" label-width="100px" ref="groupEditForm">
-				<el-form-item label="分组名称" prop="name"><el-input v-model="groupData.name" placeholder="请输入分组的名称(必填)"></el-input></el-form-item>
-				<el-form-item label="分组简介" prop="summary"><el-input v-model="groupData.summary" placeholder="请输入分组的简介(必填)"></el-input></el-form-item>
-				<el-form-item label="分组排序" prop="sorts"><el-input v-model="groupData.sorts" type="number" placeholder="请输入项目排序(选填)"></el-input></el-form-item>
-				<el-form-item label="分组描述" prop="description">
-					<el-input type="textarea" v-model="groupData.description" placeholder="请输入分组的详细描述,支持HTML(选填)"></el-input>
+				<el-form-item :label="$t('GroupName')" prop="name"><el-input v-model="groupData.name" :placeholder="$t('EnterTheGroupName')"></el-input></el-form-item>
+				<el-form-item :label="$t('GroupSummary')" prop="summary"><el-input v-model="groupData.summary" :placeholder="$t('EnterGroupSummary')"></el-input></el-form-item>
+				<el-form-item :label="$t('GroupRanking')" prop="sorts"><el-input v-model="groupData.sorts" type="number" :placeholder="$t('EnterGroupRanking')"></el-input></el-form-item>
+				<el-form-item :label="$t('GroupDescription')" prop="description">
+					<el-input type="textarea" v-model="groupData.description" :placeholder="$t('EnterGroupDescription')"></el-input>
 				</el-form-item>
-				<el-form-item label="附加文档URL" prop="externalUrl"><el-input v-model="groupData.externalUrl" placeholder="请输入附加文档URL(选填)"></el-input></el-form-item>
-				<el-form-item label="附加文档描述" prop="externalDesc">
-					<el-input type="textarea" v-model="groupData.externalDesc" placeholder="请输入附加文档详细描述,支持HTML(选填)"></el-input>
+				<el-form-item :label="$t('ExtDocsURL')" prop="externalUrl"><el-input v-model="groupData.externalUrl" :placeholder="$t('EnterExtDocsURL')"></el-input></el-form-item>
+				<el-form-item :label="$t('ExtDocsDesc')" prop="externalDesc">
+					<el-input type="textarea" v-model="groupData.externalDesc" :placeholder="$t('EnterExtDocsDesc')"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogCreateGroupVisible = false">取 消</el-button>
-				<el-button type="primary" @click="groupCreateSubmit" v-show="groupDialogMode == 'edit'">确定新增</el-button>
-				<el-button type="primary" @click="groupUpdateSubmit" v-show="groupDialogMode == 'view'">确定修改</el-button>
+				<el-button @click="dialogCreateGroupVisible = false">{{ $t('Cancel') }}</el-button>
+				<el-button type="primary" @click="groupCreateSubmit" v-show="groupDialogMode == 'edit'">{{ $t('Submit') }}</el-button>
+				<el-button type="primary" @click="groupUpdateSubmit" v-show="groupDialogMode == 'view'">{{ $t('SubmitModify') }}</el-button>
 			</div>
 		</el-dialog>
 
 		<!-- 分组列表 -->
 		<div v-show="mode === 'view'" style="width: 98%; max-width: 1240px;margin: auto;">
 			<div style="padding: 10px 0;display: flex;align-items: center;">
-				<div><b>分组列表</b></div>
+				<div>
+					<b>{{ $t('GroupList') }}</b>
+				</div>
 				<div style="margin-left: auto;">
 					<div v-show="mode === 'view'">
 						<el-button
@@ -125,7 +139,7 @@
 								groupData = {};
 							"
 						>
-							新增分组
+							{{ $t('NewGroup') }}
 						</el-button>
 					</div>
 				</div>
@@ -145,12 +159,12 @@
 						<!-- 分组的操作 -->
 						<div style="padding-bottom: 10px;">
 							<div style="display: flex;">
-								<el-button size="mini" @click="groupMoveUp(g.groupId)">上移</el-button>
-								<el-button size="mini" @click="groupMoveDown(g.groupId)">下移</el-button>
-								<el-button size="mini" type="primary" @click="showGroupUpdateDialog(g)">修改分组</el-button>
-								<el-button size="mini" type="danger" @click="groupDeleteSubmit(g.groupId)">删除分组</el-button>
+								<el-button size="mini" @click="groupMoveUp(g.groupId)">{{ $t('MoveUp') }}</el-button>
+								<el-button size="mini" @click="groupMoveDown(g.groupId)">{{ $t('MoveDown') }}</el-button>
+								<el-button size="mini" type="primary" @click="showGroupUpdateDialog(g)">{{ $t('ModifyGroup') }}</el-button>
+								<el-button size="mini" type="danger" @click="groupDeleteSubmit(g.groupId)">{{ $t('DeleteGroup') }}</el-button>
 								<el-button size="mini" type="primary" style="margin-left: auto;" @click="$router.push({ path: `/index/post/project/api/${project.key}/${g.groupId}` })">
-									新增接口
+									{{ $t('NewApi') }}
 								</el-button>
 							</div>
 							<!-- 分组的描述 -->
@@ -170,7 +184,9 @@
 								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']" @click="api.show = !api.show">
 									<div class="api-method">{{ api.method }}</div>
 									<div class="api-path-summary">
-										<span v-if="api.deprecated == true || api.deprecated == 'true'"><b>(已过期)</b></span>
+										<span v-if="api.deprecated == true || api.deprecated == 'true'">
+											<b>({{ $t('Deprecated') }})</b>
+										</span>
 										{{ api.path }}
 									</div>
 									<div class="api-path-summary">{{ api.title }}</div>
@@ -181,12 +197,12 @@
 								</div>
 								<!-- API操作 -->
 								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
-									<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">删除</el-button>
+									<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">{{ $t('Delete') }}</el-button>
 									<a :href="'#/index/put/project/api/' + project.key + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
-										<el-button size="mini" type="primary">修改</el-button>
+										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
 									</a>
-									<el-button size="mini" @click="apiMoveUp(api.apiId)">上移</el-button>
-									<el-button size="mini" @click="apiMoveDown(api.apiId)">下移</el-button>
+									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
+									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}</el-button>
 									<!-- 		<a :href="'#/index/get/project/api/'+project.key+'/'+api.groupId+'/'+api.apiId" target="_blank" style="margin-left: 10px;">
 											<el-button size="mini" type="primary">查看详情</el-button>
 										</a> -->
@@ -212,7 +228,9 @@
 									<!-- 请求参数标题 -->
 									<div style="padding:10px;">
 										<div style="display: flex;align-items: center;">
-											<div style="min-width: 60px;"><b>请求参数</b></div>
+											<div style="min-width: 60px;">
+												<b>{{ $t('Parameters') }}</b>
+											</div>
 											<div style="margin-left: auto;" v-if="api.consumes != null">Consumes: {{ api.consumes }}</div>
 										</div>
 									</div>
@@ -225,27 +243,27 @@
 											border
 											default-expand-all
 											:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
-											empty-text="无需请求数据"
+											:empty-text="$t('ThereIsNoNeedToRequestParameters')"
 										>
-											<el-table-column prop="required" label="必填" width="100" align="right">
+											<el-table-column prop="required" :label="$t('Required')" width="100" align="right">
 												<template slot-scope="scope">
-													<span>{{ scope.row.required == 'true' || scope.row.required == true ? '是' : '否' }}</span>
+													<span>{{ scope.row.required == 'true' || scope.row.required == true ? $t('True') : $t('False') }}</span>
 												</template>
 											</el-table-column>
-											<el-table-column prop="in" label="参数位置" width="120"></el-table-column>
-											<el-table-column prop="type" label="参数类型" width="120"></el-table-column>
-											<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
-											<el-table-column prop="description" label="参数描述">
+											<el-table-column prop="in" :label="$t('Position')" width="120"></el-table-column>
+											<el-table-column prop="type" :label="$t('Type')" width="120"></el-table-column>
+											<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
+											<el-table-column prop="description" :label="$t('ParamDescription')">
 												<template slot-scope="scope">
 													<div v-if="scope.row.description" v-html="scope.row.description"></div>
 													<div class="desc-constraint">
-														<span v-if="scope.row.def">默认值: {{ scope.row.def }}</span>
-														<span v-if="scope.row.minLength">最小长度: {{ scope.row.minLength }}</span>
-														<span v-if="scope.row.maxLength">最大长度: {{ scope.row.maxLength }}</span>
-														<span v-if="scope.row.minimum">最小值: {{ scope.row.minimum }}</span>
-														<span v-if="scope.row.maximum">最大值: {{ scope.row.maximum }}</span>
-														<span v-if="scope.row.enums">枚举值: {{ scope.row.enums }}</span>
-														<span v-if="scope.row.pattern">正则: {{ scope.row.pattern }}</span>
+														<span v-if="scope.row.def">{{ $t('Default') }}: {{ scope.row.def }}</span>
+														<span v-if="scope.row.minLength">{{ $t('MinLength') }}: {{ scope.row.minLength }}</span>
+														<span v-if="scope.row.maxLength">{{ $t('MaxLength') }}: {{ scope.row.maxLength }}</span>
+														<span v-if="scope.row.minimum">{{ $t('Minimum') }}: {{ scope.row.minimum }}</span>
+														<span v-if="scope.row.maximum">{{ $t('Maximum') }}: {{ scope.row.maximum }}</span>
+														<span v-if="scope.row.enums">{{ $t('Enums') }}: {{ scope.row.enums }}</span>
+														<span v-if="scope.row.pattern">{{ $t('Pattern') }}: {{ scope.row.pattern }}</span>
 													</div>
 												</template>
 											</el-table-column>
@@ -255,14 +273,16 @@
 									<!-- 响应参数标题 -->
 									<div style="padding:10px;">
 										<div style="display: flex;align-items: center;">
-											<div style="min-width: 60px;"><b>响应参数</b></div>
+											<div style="min-width: 60px;">
+												<b>{{ $t('Responses') }}</b>
+											</div>
 											<div style="margin-left: auto;" v-if="api.produces != null">Produces: {{ api.produces }}</div>
 										</div>
 									</div>
 									<!-- 响应参数 -->
 									<div style="padding:5px 10px;background-color: white">
 										<div v-for="(resp, idx) in api.responses" :key="idx">
-											<p>状态码: {{ resp.status }} 状态信息: {{ resp.msg }}</p>
+											<p>{{ $t('Status') }}: {{ resp.status }} {{ $t('StatusMsg') }}: {{ resp.msg }}</p>
 											<el-table
 												:data="resp.data"
 												style="width: 100%;"
@@ -271,10 +291,10 @@
 												default-expand-all
 												:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
 											>
-												<el-table-column prop="in" label="参数位置" width="120" align="right"></el-table-column>
-												<el-table-column prop="type" label="参数类型" width="100" align="right"></el-table-column>
-												<el-table-column prop="name" label="参数名称" width="300"></el-table-column>
-												<el-table-column prop="description" label="参数描述">
+												<el-table-column prop="in" :label="$t('Position')" width="120" align="right"></el-table-column>
+												<el-table-column prop="type" :label="$t('Type')" width="100" align="right"></el-table-column>
+												<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
+												<el-table-column prop="description" :label="$t('ParamDescription')">
 													<template slot-scope="scope">
 														<div v-if="scope.row.description" v-html="scope.row.description"></div>
 													</template>
@@ -329,7 +349,7 @@ export default {
 			if (flag) {
 				callback();
 			} else {
-				callback(new Error('请最少添加一个主机地址'));
+				callback(new Error(this.$t('LeastOneHostAddress')));
 			}
 		};
 		return {
@@ -342,14 +362,14 @@ export default {
 				name: [
 					{
 						required: true,
-						message: '请输入项目名称',
+						message: this.$t('EnterProjectName'),
 						trigger: 'blur'
 					}
 				],
 				versions: [
 					{
 						required: true,
-						message: '请输入项目版本号',
+						message: this.$t('EnterProjectVersion'),
 						trigger: 'blur'
 					}
 				],
@@ -380,14 +400,14 @@ export default {
 				name: [
 					{
 						required: true,
-						message: '请输入分组的名称',
+						message: this.$t('EnterTheGroupName'),
 						trigger: 'blur'
 					}
 				],
 				summary: [
 					{
 						required: true,
-						message: '请输入分组的简介',
+						message: this.$t('EnterGroupSummary'),
 						trigger: 'blur'
 					}
 				]
@@ -401,7 +421,7 @@ export default {
 	created() {
 		var pid = this.$route.params.pid;
 		if (pid == null) {
-			this.$message.warning('加载项目信息失败!项目的id不能为空!');
+			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
 			return;
 		}
 		this.loadProject(pid);
@@ -416,11 +436,11 @@ export default {
 				id,
 				resp => {
 					var data = resp.data;
-					console.log('获取项目...');
+					console.log('get project...');
 					console.log(data);
 					if (data.code == 200) {
 						if (data.data == null) {
-							this.$message.error('获取项目信息失败:请检查项目id是否正确!');
+							this.$message.error(this.$t('FailedToLoadTheProjectInvalidID'));
 							return;
 						}
 						this.project = data.data;
@@ -437,11 +457,11 @@ export default {
 						}
 						this.projectEdit = JSON.parse(JSON.stringify(this.project));
 					} else {
-						this.$message.error('获取项目信息失败:' + data.msg);
+						this.$message.error(this.$t('FailedToGetProjectInfo') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('获取项目信息失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('FailedToGetProjectInfoSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -463,9 +483,9 @@ export default {
 			if (servers[idx].url == '' && servers[idx].description == '') {
 				servers.splice(idx, 1);
 			} else {
-				this.$confirm('确定移除数据吗?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
+				this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
+					confirmButtonText: this.$t('Comfirm'),
+					cancelButtonText: this.$t('Cancel'),
 					type: 'warning'
 				})
 					.then(() => {
@@ -522,7 +542,7 @@ export default {
 					if (this.projectEdit.contactInfo != null && this.projectEdit.contactInfo != '') {
 						reqData.contactInfo = this.projectEdit.contactInfo;
 					}
-					console.log('执行修改项目...');
+					console.log('Modify project...');
 					console.log(reqData);
 					updateProjectAPI(
 						reqData,
@@ -530,28 +550,28 @@ export default {
 							console.log(data);
 							var data = res.data;
 							if (data.code == 200) {
-								this.$message.success('修改成功!');
+								this.$message.success(this.$t('ModifySuccess'));
 								this.loadProject(reqData.key);
 								this.mode = MODE_VIEW;
 							} else {
-								this.$message.error('修改失败:' + data.msg);
+								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 						},
 						err => {
-							this.$message.error('修改失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
 				} else {
-					this.$message.error('修改失败,请按提示完善项目信息!');
+					this.$message.error(this.$t('MissingRequiredInformation'));
 					return false;
 				}
 			});
 		},
 		copySubmit() {
-			this.$confirm('确定复制该项目吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('CopyConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Comfirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
@@ -561,14 +581,14 @@ export default {
 							console.log(data);
 							var data = res.data;
 							if (data.code == 200) {
-								this.$message.success('复制成功!');
+								this.$message.success(this.$t('CopySuccess'));
 								this.$router.push('/index');
 							} else {
-								this.$message.error('复制失败:' + data.msg);
+								this.$message.error(this.$t('CopyFailed') + ':' + data.msg);
 							}
 						},
 						er => {
-							this.$message.error('复制失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
@@ -579,9 +599,9 @@ export default {
 		 * 删除项目
 		 */
 		deleteSubmit() {
-			this.$confirm('确定删除该项目吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Comfirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
@@ -591,14 +611,14 @@ export default {
 							console.log(data);
 							var data = res.data;
 							if (data.code == 200) {
-								this.$message.success('删除成功!');
+								this.$message.success(this.$t('DeleteSuccess'));
 								this.$router.push('/index');
 							} else {
-								this.$message.error('删除失败:' + data.msg);
+								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						er => {
-							this.$message.error('删除失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
@@ -618,7 +638,7 @@ export default {
 				pid,
 				resp => {
 					var data = resp.data;
-					console.log('获取项目分组...');
+					console.log('get project list...');
 					console.log(data);
 					if (data.code == 200) {
 						for (var g = 0; g < data.data.length; g++) {
@@ -666,11 +686,11 @@ export default {
 						this.groups = data.data;
 						this.groupsLoading = false;
 					} else {
-						this.$message.error('获取项目分组信息失败:' + data.msg);
+						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('获取项目分组信息失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('FailedToGetGroupInfoSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -702,18 +722,18 @@ export default {
 						reqData,
 						resp => {
 							var data = resp.data;
-							console.log('新增分组...');
+							console.log('new group...');
 							console.log(data);
 							if (data.code == 200) {
 								this.loadProjectGroups(pid);
 								this.groupData = {};
 							} else {
-								this.$message.error('新增分组失败:' + data.msg);
+								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 							this.dialogCreateGroupVisible = false;
 						},
 						err => {
-							this.$message.error('新增分组失败,更多信息请查看浏览器控制台!');
+							this.$message.error(this.$t('FailedToAddSeeConsole'));
 							console.log(err);
 							this.dialogCreateGroupVisible = false;
 						}
@@ -766,17 +786,17 @@ export default {
 						reqData,
 						resp => {
 							var data = resp.data;
-							console.log('新增分组...');
+							console.log('modify group ...');
 							console.log(data);
 							if (data.code == 200) {
 								this.loadProjectGroups(pid);
 							} else {
-								this.$message.error('新增分组失败:' + data.msg);
+								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 							this.dialogCreateGroupVisible = false;
 						},
 						err => {
-							this.$message.error('新增分组失败,更多信息请查看浏览器控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 							this.dialogCreateGroupVisible = false;
 						}
@@ -789,27 +809,27 @@ export default {
 		 * @param {Object} gid
 		 */
 		groupDeleteSubmit(gid) {
-			this.$confirm('确定删除分组吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Comfirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
 					daleteApiGroup(
 						gid,
 						res => {
-							console.log('删除分组...');
+							console.log('delete group ...');
 							console.log(data);
 							var data = res.data;
 							if (data.code == 200) {
-								this.$message.success('删除成功!');
+								this.$message.success(this.$t('DeleteSuccess'));
 								this.loadProjectGroups(this.project.key);
 							} else {
-								this.$message.error('删除失败:' + data.msg);
+								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {
-							this.$message.error('删除失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
@@ -825,15 +845,17 @@ export default {
 				gid,
 				res => {
 					var data = res.data;
+					console.log('group move up...');
+					console.log(data);
 					if (data.code == 200) {
-						this.$message.success('移动成功!');
+						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.project.key);
 					} else {
-						this.$message.error('分组排序上移失败:' + data.msg);
+						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('分组排序上移失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('MoveFailedSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -847,15 +869,17 @@ export default {
 				gid,
 				res => {
 					var data = res.data;
+					console.log('group move down...');
+					console.log(data);
 					if (data.code == 200) {
-						this.$message.success('移动成功!');
+						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.project.key);
 					} else {
-						this.$message.error('分组排序上移失败:' + data.msg);
+						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('分组排序上移失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('MoveFailedSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -865,9 +889,9 @@ export default {
 		 * @param {Object} aid
 		 */
 		apiDeleteSubmit(aid) {
-			this.$confirm('确定删除API吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Comfirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
@@ -875,17 +899,17 @@ export default {
 						aid,
 						res => {
 							var data = res.data;
-							console.log('删除API...');
+							console.log('delete API...');
 							console.log(data);
 							if (data.code == 200) {
-								this.$message.success('删除成功!');
+								this.$message.success(this.$t('DeleteSuccess'));
 								this.loadProjectGroups(this.project.key);
 							} else {
-								this.$message.error('删除失败:' + data.msg);
+								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {
-							this.$message.error('删除失败,更多信息请查看控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
@@ -901,17 +925,17 @@ export default {
 				aid,
 				res => {
 					var data = res.data;
-					console.log('API排序上移动...');
+					console.log('API move up...');
 					console.log(data);
 					if (data.code == 200) {
-						this.$message.success('移动成功!');
+						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.project.key);
 					} else {
-						this.$message.error('API排序上移失败:' + data.msg);
+						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('API排序上移失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('MoveFailedSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -925,17 +949,17 @@ export default {
 				aid,
 				res => {
 					var data = res.data;
-					console.log('API排序下移动...');
+					console.log('API move down...');
 					console.log(data);
 					if (data.code == 200) {
-						this.$message.success('移动成功!');
+						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.project.key);
 					} else {
-						this.$message.error('API排序上移失败:' + data.msg);
+						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
-					this.$message.error('API排序上移失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('MoveFailedSeeConsole'));
 					console.log(err);
 				}
 			);
