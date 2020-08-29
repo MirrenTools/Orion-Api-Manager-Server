@@ -1,12 +1,14 @@
 <template>
 	<div>
 		<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;align-items: center;">
-			<div><b>修改API</b></div>
+			<div>
+				<b>{{ $t('ModifyApi') }}</b>
+			</div>
 		</div>
 		<div style="width: 98%; max-width: 1240px;margin:0 auto 50px;" v-loading="dataLoading">
 			<el-form ref="apiForm" label-position="right" label-width="120px" :model="api" :rules="apiRules">
 				<el-form-item label="Method">
-					<el-select v-model="api.method" placeholder="请选择">
+					<el-select v-model="api.method" :placeholder="$t('Select')">
 						<el-option value="get">get</el-option>
 						<el-option value="head">head</el-option>
 						<el-option value="post">post</el-option>
@@ -19,19 +21,17 @@
 						<el-option value="other">other</el-option>
 					</el-select>
 					<div style="display: inline-block;margin-left: 10px;">
-						<span>接口状态: </span>
-						<el-radio v-model="api.deprecated" label="false">服务中</el-radio>
-						<el-radio v-model="api.deprecated" label="true">已过期(以后会删除)</el-radio>
+						<span>{{ $t('ApiStatus') }}:</span>
+						<el-radio v-model="api.deprecated" label="false">{{ $t('InService') }}</el-radio>
+						<el-radio v-model="api.deprecated" label="true">{{ $t('DeprecatedWillDelete') }}</el-radio>
 					</div>
 				</el-form-item>
-				<el-form-item prop="path" label="Path">
-					<el-input v-model="api.path" placeholder="URL上的path,必填,已/开始,如果没有系统会自动加上/ ,path参数请加上英文{},示例:{id}"></el-input>
-				</el-form-item>
-				<el-form-item prop="title" label="接口名称"><el-input v-model="api.title" placeholder="接口的名称,必填 "></el-input></el-form-item>
-				<el-form-item label="详细说明"><el-input type="textarea" v-model="api.description" placeholder="接口的详细描述,支持HTML"></el-input></el-form-item>
-				<el-form-item label="排序"><el-input v-model="api.sorts" type="number" placeholder="接口在分组中的排序"></el-input></el-form-item>
-				<el-form-item label="Consumes"><el-input v-model="api.consumes" placeholder="consumes 多个以英文的,号分开"></el-input></el-form-item>
-				<el-form-item label="请求参数">
+				<el-form-item prop="path" label="Path"><el-input v-model="api.path" :placeholder="$t('EnterPath')"></el-input></el-form-item>
+				<el-form-item prop="title" :label="$t('ApiName')"><el-input v-model="api.title" :placeholder="$t('EnterApiName')"></el-input></el-form-item>
+				<el-form-item :label="$t('ApiDescription')"><el-input type="textarea" v-model="api.description" :placeholder="$t('EnterApiDescription')"></el-input></el-form-item>
+				<el-form-item :label="$t('Ranking')"><el-input v-model="api.sorts" type="number" :placeholder="$t('EnterRanking')"></el-input></el-form-item>
+				<el-form-item label="Consumes"><el-input v-model="api.consumes" :placeholder="$t('EnterConsumes')"></el-input></el-form-item>
+				<el-form-item :label="$t('Parameters')">
 					<div>
 						<el-table
 							:data="parameters"
@@ -42,12 +42,12 @@
 							default-expand-all
 							:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
 						>
-							<el-table-column prop="required" label="必填" width="80" align="right">
+							<el-table-column prop="required" :label="$t('Required')" width="80" align="right">
 								<template v-slot="scope">
 									<el-checkbox v-model="scope.row.required" v-show="scope.row.tableRowLevel == 1" style="width:100%;"></el-checkbox>
 								</template>
 							</el-table-column>
-							<el-table-column prop="in" label="参数位置" width="120">
+							<el-table-column prop="in" :label="$t('Position')" width="120">
 								<template v-slot="scope">
 									<el-select v-model="scope.row.in" placeholder="请选择" v-show="scope.row.tableRowLevel == 1">
 										<el-option value="query">query</el-option>
@@ -57,9 +57,9 @@
 									</el-select>
 								</template>
 							</el-table-column>
-							<el-table-column prop="type" label="参数类型" width="140">
+							<el-table-column prop="type" :label="$t('Type')" width="140">
 								<template v-slot="scope">
-									<el-select v-model="scope.row.type" placeholder="请选择" style="width: 120px;">
+									<el-select v-model="scope.row.type" :placeholder="$t('Select')" style="width: 120px;">
 										<el-option value="string">string</el-option>
 										<el-option value="int">int</el-option>
 										<el-option value="long">long</el-option>
@@ -72,58 +72,53 @@
 									</el-select>
 								</template>
 							</el-table-column>
-							<el-table-column prop="name" label="参数名称" width="250">
+							<el-table-column prop="name" :label="$t('ParamName')" width="250">
 								<template v-slot="scope">
-									<el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
+									<el-input v-model="scope.row.name" :placeholder="$t('EnterParamName')"></el-input>
 								</template>
 							</el-table-column>
-							<el-table-column prop="description" label="参数描述">
+							<el-table-column prop="description" :label="$t('ParamDescription')">
 								<template v-slot="scope">
 									<el-input
 										v-model="scope.row.description"
 										type="textarea"
 										:autosize="{ minRows: 1, maxRows: 3 }"
-										placeholder="请输入参数描述,支持HTML"
+										:placeholder="$t('EnterParamDescription')"
 										style="margin: 5px auto;"
 									></el-input>
 								</template>
 							</el-table-column>
-							<el-table-column label="操作" width="65">
+							<el-table-column :label="$t('Operation')" width="65">
 								<template v-slot="scope">
 									<el-popover placement="left-start" trigger="click">
-										<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">上移</el-button>
-										<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">下移</el-button>
-										<el-button v-show="scope.row.type != 'boolean'" size="mini" type="primary" @click="showParameterEdit(scope.row)">编辑</el-button>
-										<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">删除</el-button>
+										<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">{{ $t('MoveUp') }}</el-button>
+										<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">{{ $t('MoveDown') }}</el-button>
+										<el-button v-show="scope.row.type != 'boolean'" size="mini" type="primary" @click="showParameterEdit(scope.row)">{{ $t('Edit') }}</el-button>
+										<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">{{ $t('Delete') }}</el-button>
 										<el-button slot="reference" size="mini" icon="el-icon-edit"></el-button>
 									</el-popover>
 								</template>
 							</el-table-column>
 						</el-table>
-						<div style="text-align: right;margin-top: 5px;">
-							<div style="text-align: right;"><el-button @click="addParameter()">添加参数</el-button></div>
+						<div style="text-align: right;margin: 5px 0 3px;">
+							<div style="text-align: right;">
+								<el-button @click="addParameter()">{{ $t('AddParam') }}</el-button>
+							</div>
 						</div>
-						<div>
-							<el-input
-								type="textarea"
-								:autosize="{ minRows: 1, maxRows: 10 }"
-								placeholder="请求的body,定义格式或占位或schema,比如请求格式要求为:{&quot;id&quot;:{id},&quot;name&quot;:&quot;userName&quot;},{id}代表变量请求时会自动填充body参数"
-								v-model="api.body"
-							></el-input>
-						</div>
+						<div><el-input type="textarea" :autosize="{ minRows: 1, maxRows: 10 }" :placeholder="$t('EnterRequestBody')" v-model="api.body"></el-input></div>
 					</div>
 				</el-form-item>
-				<el-form-item label="Produces"><el-input v-model="api.produces" placeholder="produces 多个以英文的,号分开"></el-input></el-form-item>
-				<el-form-item label="响应结果">
+				<el-form-item label="Produces"><el-input v-model="api.produces" :placeholder="$t('EnterProduces')"></el-input></el-form-item>
+				<el-form-item :label="$t('ResponsesResult')">
 					<div>
 						<div v-for="(resp, idx) in responses" :key="idx" style="border: 1px solid #c6e2ff; padding: 5px;margin-bottom: 5px;">
 							<div style="display: flex;">
-								<div style="width: 10%;min-width: 50px;margin-right: 5px;">状态码:</div>
-								<div style="width: 30%;margin-right: 5px;"><el-input v-model="resp.status" placeholder="响应状态码"></el-input></div>
-								<div style="width: 10%;min-width: 60px;margin-right: 5px;">状态信息:</div>
-								<div style="width: 100%;"><el-input v-model="resp.msg" placeholder="响应状态信息"></el-input></div>
+								<div style="width: 10%;min-width: 50px;margin-right: 5px;">{{ $t('Status') }}:</div>
+								<div style="width: 30%;margin-right: 5px;"><el-input v-model="resp.status" :placeholder="$t('ResponseStatus')"></el-input></div>
+								<div style="width: 10%;min-width: 60px;margin-right: 5px;">{{ $t('StatusMsg') }}:</div>
+								<div style="width: 100%;"><el-input v-model="resp.msg" :placeholder="$t('ResponseStatusMsg')"></el-input></div>
 							</div>
-							<div>响应数据:</div>
+							<div>{{ $t('Responses') }}:</div>
 							<el-table
 								:data="resp.data"
 								style="width: 100%;"
@@ -133,18 +128,18 @@
 								default-expand-all
 								:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
 							>
-								<el-table-column prop="in" label="位置" width="180" align="right">
+								<el-table-column prop="in" :label="$t('Position')" width="180" align="right">
 									<template v-slot="scope">
-										<el-select v-model="scope.row.in" placeholder="请选择" v-if="scope.row.tableRowLevel == 1" style="width: 100px;">
+										<el-select v-model="scope.row.in" :placeholder="$t('Select')" v-if="scope.row.tableRowLevel == 1" style="width: 100px;">
 											<el-option value="body">body</el-option>
 											<el-option value="header">header</el-option>
 										</el-select>
 									</template>
 								</el-table-column>
-								<el-table-column prop="tableRowLevel" label="层级" width="60"></el-table-column>
-								<el-table-column prop="type" label="参数类型" width="120">
+								<el-table-column prop="tableRowLevel" :label="$t('Level')" width="60"></el-table-column>
+								<el-table-column prop="type" :label="$t('Type')" width="120">
 									<template v-slot="scope">
-										<el-select v-model="scope.row.type" placeholder="请选择" style="width: 100px;">
+										<el-select v-model="scope.row.type" :placeholder="$t('Select')" style="width: 100px;">
 											<el-option value="string">string</el-option>
 											<el-option value="int">int</el-option>
 											<el-option value="long">long</el-option>
@@ -157,56 +152,67 @@
 										</el-select>
 									</template>
 								</el-table-column>
-								<el-table-column prop="name" label="参数名称" width="250">
+								<el-table-column prop="name" :label="$t('ParamName')" width="250">
 									<template v-slot="scope">
-										<el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
+										<el-input v-model="scope.row.name" :placeholder="$t('EnterParamName')"></el-input>
 									</template>
 								</el-table-column>
-								<el-table-column prop="description" label="参数描述">
+								<el-table-column prop="description" :label="$t('ParamDescription')">
 									<template v-slot="scope">
 										<el-input
 											v-model="scope.row.description"
 											type="textarea"
 											:autosize="{ minRows: 1, maxRows: 3 }"
-											placeholder="请输入参数描述,支持HTML"
+											:placeholder="$t('EnterParamDescription')"
 											style="margin: 5px auto;"
 										></el-input>
 									</template>
 								</el-table-column>
-								<el-table-column label="操作" width="65">
+								<el-table-column :label="$t('Operation')" width="65">
 									<template v-slot="scope">
 										<el-popover placement="left-start" trigger="click">
-											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">上移</el-button>
-											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">下移</el-button>
-											<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">添加参数</el-button>
-											<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">删除</el-button>
+											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">{{ $t('MoveUp') }}</el-button>
+											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">{{ $t('MoveDown') }}</el-button>
+											<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">
+												{{ $t('AddParam') }}
+											</el-button>
+											<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">{{ $t('Delete') }}</el-button>
 											<el-button slot="reference" size="mini" icon="el-icon-edit"></el-button>
 										</el-popover>
 									</template>
 								</el-table-column>
 							</el-table>
-							<div style="text-align: right;padding-top: 3px;"><el-button size="mini" type="danger" @click="removeResponseData(idx)">移除</el-button> <el-button size="mini" @click="addResponseData(resp.data)">添加参数</el-button></div>
+							<div style="text-align: right;padding-top: 3px;">
+								<el-button size="mini" type="danger" @click="removeResponseData(idx)">{{ $t('Remove') }}</el-button>
+								<el-button size="mini" @click="addResponseData(resp.data)">{{ $t('AddParam') }}</el-button>
+							</div>
 						</div>
-						<div style="text-align: right;"><el-button @click="addResponse()">添加更多</el-button></div>
+						<div style="text-align: right;">
+							<el-button @click="addResponse()">{{ $t('AddMore') }}</el-button>
+						</div>
 					</div>
 				</el-form-item>
-				<el-form-item label="附加文档URL"><el-input v-model="api.exDurl" placeholder="请输入附加文档的URL"></el-input></el-form-item>
-				<el-form-item label="附加文档说明"><el-input type="textarea" v-model="api.exDdescription" placeholder="请输入附加文档的描述,支持HTML"></el-input></el-form-item>
-				<el-form-item label="附加说明" v-if="additional.length > 0">
+				<el-form-item :label="$t('ExtDocsURL')"><el-input v-model="api.exDurl" :placeholder="$t('EnterExtDocsURL')"></el-input></el-form-item>
+				<el-form-item :label="$t('ExtDocsDesc')"><el-input type="textarea" v-model="api.exDdescription" :placeholder="$t('EnterExtDocsDesc')"></el-input></el-form-item>
+				<el-form-item :label="$t('AdditionalNotes')" v-if="additional.length > 0">
 					<div style="border: 1px solid #CCC;padding: 5px;margin-bottom: 5px;" v-for="(add, idx) in additional" :key="idx">
-						<el-input v-model="add.title" placeholder="附加标题标题"></el-input>
-						<el-input type="textarea" v-model="add.description" placeholder="附加说明描述"></el-input>
-						<div style="text-align: right;padding-top: 3px;"><el-button size="mini" @click="removeAdditional(idx)">移除</el-button></div>
+						<el-input v-model="add.title" :placeholder="$t('AdditionalTitle')"></el-input>
+						<el-input type="textarea" v-model="add.description" :placeholder="$t('AdditionalDescription')"></el-input>
+						<div style="text-align: right;padding-top: 3px;">
+							<el-button size="mini" @click="removeAdditional(idx)">{{ $t('Remove') }}</el-button>
+						</div>
 					</div>
 				</el-form-item>
-				<el-form-item><el-button type="primary" @click="submitUpdateApi()">提交修改</el-button></el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="submitUpdateApi()">{{ $t('Submit') }}</el-button>
+				</el-form-item>
 			</el-form>
 		</div>
 
-		<el-dialog title="数据编辑" width="80%" style="max-width: 1240px;" :visible.sync="dialogDataEditVisible">
+		<el-dialog :title="$t('Edit')" width="80%" style="max-width: 1240px;" :visible.sync="dialogDataEditVisible">
 			<el-form :model="parameterData" label-width="100px">
-				<el-form-item label="数据类型">
-					<el-select v-model="parameterData.type" placeholder="请选择">
+				<el-form-item :label="$t('Type')">
+					<el-select v-model="parameterData.type" :placeholder="$t('Select')">
 						<el-option value="string">string</el-option>
 						<el-option value="int">int</el-option>
 						<el-option value="long">long</el-option>
@@ -218,7 +224,7 @@
 						<el-option value="boolean">boolean</el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="参数说明" v-show="parameterData.type == 'object' || parameterData.type == 'array'">
+				<el-form-item :label="$t('ParamDescription')" v-show="parameterData.type == 'object' || parameterData.type == 'array'">
 					<el-table
 						:data="parameterData.items"
 						style="width: 100%;"
@@ -228,9 +234,9 @@
 						default-expand-all
 						:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
 					>
-						<el-table-column prop="type" label="参数类型" align="right">
+						<el-table-column prop="type" :label="$t('Type')" align="right">
 							<template v-slot="scope">
-								<el-select v-model="scope.row.type" placeholder="请选择" style="width: 120px;">
+								<el-select v-model="scope.row.type" :placeholder="$t('Select')" style="width: 120px;">
 									<el-option value="string">string</el-option>
 									<el-option value="int">int</el-option>
 									<el-option value="long">long</el-option>
@@ -243,45 +249,55 @@
 								</el-select>
 							</template>
 						</el-table-column>
-						<el-table-column prop="name" label="参数名称">
+						<el-table-column prop="name" :label="$t('ParamName')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
+								<el-input v-model="scope.row.name" :placeholder="$t('EnterParamName')"></el-input>
 							</template>
 						</el-table-column>
-						<el-table-column prop="description" label="参数描述">
+						<el-table-column prop="description" :label="$t('ParamDescription')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.description" type="textarea" :rows="1" placeholder="请输入参数描述,支持HTML" style="margin: 5px auto;"></el-input>
+								<el-input v-model="scope.row.description" type="textarea" :rows="1" :placeholder="$t('EnterParamDescription')" style="margin: 5px auto;"></el-input>
 							</template>
 						</el-table-column>
-						<el-table-column label="操作" width="65">
+						<el-table-column :label="$t('Operation')" width="65">
 							<template v-slot="scope">
 								<el-popover placement="left-start" trigger="click">
-									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">上移</el-button>
-									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">下移</el-button>
-									<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">添加参数</el-button>
-									<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">删除</el-button>
+									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">{{ $t('MoveUp') }}</el-button>
+									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">{{ $t('MoveDown') }}</el-button>
+									<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">
+										{{ $t('AddParam') }}
+									</el-button>
+									<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">{{ $t('Delete') }}</el-button>
 									<el-button slot="reference" size="mini" icon="el-icon-edit"></el-button>
 								</el-popover>
 							</template>
 						</el-table-column>
 					</el-table>
-					<div style="text-align: right;"><el-button size="mini" @click="addDataItems(parameterData)">添加参数</el-button></div>
+					<div style="text-align: right;">
+						<el-button size="mini" @click="addDataItems(parameterData)">{{ $t('AddParam') }}</el-button>
+					</div>
 				</el-form-item>
-				<el-form-item label="最大长度" v-show="parameterData.type == 'string'"><el-input v-model="parameterData.maxLength" placeholder="最大长度"></el-input></el-form-item>
-				<el-form-item label="最小长度" v-show="parameterData.type == 'string'"><el-input v-model="parameterData.minLength" placeholder="最小长度"></el-input></el-form-item>
-				<el-form-item label="最大值" v-show="isNumber(parameterData.type)"><el-input v-model="parameterData.maximum" placeholder="最大值"></el-input></el-form-item>
-				<el-form-item label="最小值" v-show="isNumber(parameterData.type)"><el-input v-model="parameterData.minimum" placeholder="最小值"></el-input></el-form-item>
-				<el-form-item label="默认值" v-show="isCanEnumsOrRegex(parameterData.type)"><el-input v-model="parameterData.def" placeholder="默认值"></el-input></el-form-item>
-				<el-form-item label="枚举值" v-show="isCanEnumsOrRegex(parameterData.type)">
-					<el-input v-model="parameterData.enums" placeholder="枚举值,英文,号分隔"></el-input>
+				<el-form-item :label="$t('MaxLength')" v-show="parameterData.type == 'string'">
+					<el-input v-model="parameterData.maxLength" :placeholder="$t('MaxLength')"></el-input>
 				</el-form-item>
-				<el-form-item label="正则表达式" v-show="isCanEnumsOrRegex(parameterData.type)">
-					<el-input v-model="parameterData.pattern" placeholder="正则表达式"></el-input>
+				<el-form-item :label="$t('MinLength')" v-show="parameterData.type == 'string'">
+					<el-input v-model="parameterData.minLength" :placeholder="$t('MinLength')"></el-input>
+				</el-form-item>
+				<el-form-item :label="$t('Maximum')" v-show="isNumber(parameterData.type)"><el-input v-model="parameterData.maximum" :placeholder="$t('Maximum')"></el-input></el-form-item>
+				<el-form-item :label="$t('Minimum')" v-show="isNumber(parameterData.type)"><el-input v-model="parameterData.minimum" :placeholder="$t('Minimum')"></el-input></el-form-item>
+				<el-form-item :label="$t('Default')" v-show="isCanEnumsOrRegex(parameterData.type)">
+					<el-input v-model="parameterData.def" :placeholder="$t('Default')"></el-input>
+				</el-form-item>
+				<el-form-item :label="$t('Enums')" v-show="isCanEnumsOrRegex(parameterData.type)">
+					<el-input v-model="parameterData.enums" :placeholder="$t('EnterEnums')"></el-input>
+				</el-form-item>
+				<el-form-item :label="$t('Pattern')" v-show="isCanEnumsOrRegex(parameterData.type)">
+					<el-input v-model="parameterData.pattern" :placeholder="$t('Pattern')"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogDataEditVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogDataEditVisible = false">确 定</el-button>
+				<el-button @click="dialogDataEditVisible = false">{{ $t('Cancel') }}</el-button>
+				<el-button type="primary" @click="dialogDataEditVisible = false">{{ $t('Confirm') }}</el-button>
 			</div>
 		</el-dialog>
 	</div>
@@ -331,14 +347,14 @@ export default {
 				path: [
 					{
 						required: true,
-						message: '请输入Path',
+						message: this.$t('EnterPath'),
 						trigger: 'blur'
 					}
 				],
 				title: [
 					{
 						required: true,
-						message: '请输入接口的名称',
+						message: this.$t('EnterApiName'),
 						trigger: 'blur'
 					}
 				]
@@ -362,7 +378,7 @@ export default {
 		this.groupId = this.$route.params.gid;
 		this.apiId = this.$route.params.aid;
 		if (this.apiId == null) {
-			this.$message.warning('加载信息失败!API的id不能为空!');
+			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
 			return;
 		}
 		this.loadApi(this.apiId);
@@ -381,11 +397,11 @@ export default {
 				aid,
 				res => {
 					var data = res.data;
-					console.log('加载API...');
+					console.log('load API...');
 					console.log(data);
 					if (data.code == 200) {
 						if (data.data.apiId == null || data.data.apiId == '') {
-							this.$message.error('获取API信息失败:数据不存在,请检查id是否有误!');
+							this.$message.error(this.$t('FailedToLoadTheProjectInvalidID'));
 							return;
 						}
 						if (data.data.additional != null && data.data.additional != '') {
@@ -463,12 +479,12 @@ export default {
 						}
 						this.api = data.data;
 					} else {
-						this.$message.error('获取API信息失败:' + data.msg);
+						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 					this.dataLoading = false;
 				},
 				err => {
-					this.$message.error('获取API信息失败,更多信息请查看浏览器控制台!');
+					this.$message.error(this.$t('FailedToGetGroupInfoSeeConsole'));
 					console.log(err);
 				}
 			);
@@ -653,16 +669,16 @@ export default {
 					if (this.additional != null && this.additional.length > 0) {
 						reqData.additional = JSON.stringify(this.additional);
 					}
-					console.log('修改API');
+					console.log('update API');
 					console.log(reqData);
 					updateApiAPI(
 						reqData,
 						res => {
 							var data = res.data;
 							if (data.code == 200) {
-								this.$confirm('修改成功,是否返回上一页?', '修改成功!', {
-									confirmButtonText: '返回',
-									cancelButtonText: '取消',
+								this.$confirm(this.$t('ModifySuccessAskReturn'), this.$t('ModifySuccess'), {
+									confirmButtonText: this.$t('GoBack'),
+									cancelButtonText: this.$t('Cancel'),
 									type: 'success'
 								})
 									.then(() => {
@@ -672,16 +688,16 @@ export default {
 										location.reload();
 									});
 							} else {
-								this.$message.error('修改成功失败:' + data.msg);
+								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 						},
 						err => {
-							this.$message.error('修改成功失败,更多信息请查看浏览器控制台!');
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}
 					);
 				} else {
-					this.$message.warning('修改失败,请按提示完善项目信息!');
+					this.$message.warning(this.$t('MissingRequiredInformation'));
 					return false;
 				}
 			});
@@ -752,19 +768,19 @@ export default {
 				items: [],
 				ref: data
 			});
-		},	
+		},
 		/**
 		 * 移除响应数据
 		 * @param {Object} index
 		 */
-		removeResponseData(index){
-			this.$confirm('确定移除本响应结果吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+		removeResponseData(index) {
+			this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
-					this.responses.splice(index,1)
+					this.responses.splice(index, 1);
 				})
 				.catch(() => {});
 		},
@@ -825,9 +841,9 @@ export default {
 		 * @param {Object} row
 		 */
 		tableColumnRemove(row) {
-			this.$confirm('确定移除行数据吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {
@@ -852,9 +868,9 @@ export default {
 			}
 		},
 		removeAdditional(idx) {
-			this.$confirm('确定移除数据吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
+			this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
 				.then(() => {

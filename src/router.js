@@ -70,21 +70,6 @@ export const constantRoutes = [{
 				}]
 			}
 		}, {
-			path: 'get/project/api/:pid/:gid/:aid',
-			name: 'ApiDetails',
-			component: () => import('./views/project_api/Details'),
-			meta: {
-				title: 'ApiDetails',
-				breadcrumb: [{
-					path: '/index',
-					title: 'ProjectList'
-				},{
-					path: '/index/get/project/:pid',
-					title: 'ProjectDetails',
-					pathKeys:['pid']
-				}]
-			}
-		}, {
 			path: 'post/project/api/:pid/:gid',
 			name: 'NewApi',
 			component: () => import('./views/project_api/Create'),
@@ -96,6 +81,10 @@ export const constantRoutes = [{
 				},{
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
+					pathKeys:['pid']
+				},{
+					path: '/index/get/groups/:pid',
+					title: 'GroupList',
 					pathKeys:['pid']
 				}]
 			}
@@ -111,6 +100,10 @@ export const constantRoutes = [{
 				},{
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
+					pathKeys:['pid']
+				},{
+					path: '/index/get/groups/:pid',
+					title: 'GroupList',
 					pathKeys:['pid']
 				}]
 			}

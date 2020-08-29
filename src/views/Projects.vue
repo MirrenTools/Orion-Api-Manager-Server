@@ -1,39 +1,39 @@
 <template>
 	<div>
 		<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin: auto;display: flex;justify-content: center;align-items: center;">
-			<div>项目数量:{{ projectList.length || 0 }}</div>
+			<div>{{$t('ProjectQuantity')}}{{ projectList.length || 0 }}</div>
 			<div style="margin-left: auto;">
 				<router-link class="alink" to="/index/import">
-					<el-button type="primary">导入API</el-button>
+					<el-button type="primary">{{$t('ImportAPI')}}</el-button>
 				</router-link>
 				<router-link class="alink" style="margin-right: 0;" to="/index/new/project">
-					<el-button type="primary">新建项目</el-button>
+					<el-button type="primary">{{$t('NewProjects')}}</el-button>
 				</router-link>
 			</div>
 		</div>
 		<div style="width: 98%;max-width: 1240px;margin: auto;">
 			<el-table :data="projectList" style="width: 100%" border v-loading="projectListLoading">
-				<el-table-column prop="name" label="项目名称"></el-table-column>
-				<el-table-column prop="version" label="版本号" width="120"></el-table-column>
-				<el-table-column prop="time" label="更新时间" width="200">
+				<el-table-column prop="name" :label="$t('ProjectName')" min-width="300"></el-table-column>
+				<el-table-column prop="version" :label="$t('ProjectVersion')" width="120"></el-table-column>
+				<el-table-column prop="time" :label="$t('LastUpdateTime')" width="200">
 					<template slot-scope="scope">
 						<span>{{ formatDate(scope.row.time) }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="排序" width="130">
+				<el-table-column :label="$t('ProjectRanking')" width="130">
 					<template slot-scope="scope">
 						<span>{{ scope.row.sorts }}</span>
 						&nbsp;
-						<el-link type="primary" :underline="false" @click="moveUp(scope.row.key)">上移</el-link>
+						<el-link type="primary" :underline="false" @click="moveUp(scope.row.key)">{{$t('MoveUp')}}</el-link>
 						&nbsp;
-						<el-link type="primary" :underline="false" @click="moveDown(scope.row.key)">下移</el-link>
+						<el-link type="primary" :underline="false" @click="moveDown(scope.row.key)">{{$t('MoveDown')}}</el-link>
 					</template>
 				</el-table-column>
-				<el-table-column label="操作" width="200">
+				<el-table-column :label="$t('Operation')" width="300">
 					<template slot-scope="scope">
-						<router-link :to="'/index/get/project/' + scope.row.key" class="alink">查看详情</router-link>
-						<a :href="'/Client-UI/index.html?id=' + scope.row.key" target="_blank"
-						 class="alink">在客户端查看</a>
+						<router-link :to="'/index/get/project/' + scope.row.key" class="alink">{{$t('CheckDetails')}}</router-link>
+						<router-link :to="'/index/get/groups/' + scope.row.key" class="alink">{{$t('ApiManage')}}</router-link>
+						<a :href="exportServerHost+'/Client-UI/index.html?id=' + scope.row.key" target="_blank" class="alink">{{$t('OpenOnClient')}}</a>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -53,7 +53,11 @@
 	export default {
 		data() {
 			return {
+				/**服务器的地址*/
+				exportServerHost:process.env.VUE_APP_BASE_API,
+				/**项目列表*/
 				projectList: [],
+				/**项目是否加载中*/
 				projectListLoading: true
 			};
 		},
