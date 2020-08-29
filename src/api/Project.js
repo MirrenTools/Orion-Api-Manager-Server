@@ -141,6 +141,16 @@ export function daleteApiGroup(gid, res, err) {
 	request.delete('/private/apiGroup/' + gid).then(res).catch(err);
 }
 /**
+ * 获取分组的所有接口数据
+ * @param {Object} gid 分组的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function findApisAPI(gid, res, err) {
+	request.get('/private/apis/' + gid).then(res).catch(err);
+}
+
+/**
  * 获取指定API
  * @param {Object} aid API的id
  * @param {Object} res

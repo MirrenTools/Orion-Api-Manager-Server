@@ -305,6 +305,7 @@
 								</div>
 							</div>
 						</div>
+					
 					</el-collapse-item>
 				</el-collapse>
 			</div>
@@ -484,7 +485,7 @@ export default {
 				servers.splice(idx, 1);
 			} else {
 				this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
-					confirmButtonText: this.$t('Comfirm'),
+					confirmButtonText: this.$t('Confirm'),
 					cancelButtonText: this.$t('Cancel'),
 					type: 'warning'
 				})
@@ -570,7 +571,7 @@ export default {
 		},
 		copySubmit() {
 			this.$confirm(this.$t('CopyConfirm'), this.$t('Tips'), {
-				confirmButtonText: this.$t('Comfirm'),
+				confirmButtonText: this.$t('Confirm'),
 				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
@@ -600,7 +601,7 @@ export default {
 		 */
 		deleteSubmit() {
 			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
-				confirmButtonText: this.$t('Comfirm'),
+				confirmButtonText: this.$t('Confirm'),
 				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
@@ -810,7 +811,7 @@ export default {
 		 */
 		groupDeleteSubmit(gid) {
 			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
-				confirmButtonText: this.$t('Comfirm'),
+				confirmButtonText: this.$t('Confirm'),
 				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})
@@ -890,7 +891,7 @@ export default {
 		 */
 		apiDeleteSubmit(aid) {
 			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
-				confirmButtonText: this.$t('Comfirm'),
+				confirmButtonText: this.$t('Confirm'),
 				cancelButtonText: this.$t('Cancel'),
 				type: 'warning'
 			})

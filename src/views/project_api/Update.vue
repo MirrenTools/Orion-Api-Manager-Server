@@ -603,7 +603,7 @@ export default {
 						var params = [];
 						for (var i = 0; i < this.responses.length; i++) {
 							var p = this.responses[i];
-							if (p.status == null || p.status == '' || (p.data == null || p.data.length == 0)) {
+							if ((p.status == null || p.status == '') && (p.data == null || p.data.length == 0)) {
 								continue;
 							}
 							var d = {

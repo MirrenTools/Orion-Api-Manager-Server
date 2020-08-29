@@ -111,7 +111,7 @@ export default {
 			} else {
 				
 				this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
-					confirmButtonText: this.$t('Comfirm'),
+					confirmButtonText: this.$t('Confirm'),
 					cancelButtonText: this.$t('Cancel'),
 					type: 'warning'
 				})
