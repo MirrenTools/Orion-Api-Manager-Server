@@ -1,7 +1,7 @@
 <template>
 	<div class="login-container">
 		<el-form ref="loginForm" :model="loginForm" :rules="rules" class="login-form">
-			<div class="title-container"><h3 class="title">Orion-API-Manager</h3></div>
+			<div class="title-container"><h3 class="title">Welcome to Orion-API-Manager</h3></div>
 			<el-form-item prop="id">
 				<span class="svg-container">
 					<svg t="1594903948207" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4053" width="16" height="16">
@@ -86,15 +86,33 @@
 					</svg>
 				</span>
 			</el-form-item>
-			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">{{ $t('LoginFailed') }}</p>
+			<el-form-item>
+				<div style="display: flex;justify-content: right;padding: 3px 10px;">
+					<Verification
+						:tipsColor="'#C0C4CC'"
+						:resetColor="'#EEE'"
+						:dataUrl="exportServerHost + '/verification/data'"
+						:imgPrefix="exportServerHost + '/verification/img/'"
+						:loadDataErrHandler="verifyErr"
+						:clickFinishHandler="verifyFinish"
+						ref="verification"
+					/>
+				</div>
+			</el-form-item>
+			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">{{ loginFailedTips }}</p>
 			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginHandler">{{ $t('Login') }}</el-button>
 		</el-form>
 	</div>
 </template>
 
 <script>
+import MD5 from '@/utils/md5.js';
 import { apiLogin } from '@/api/Login';
+import Verification from './components/VerificationCode.vue';
 export default {
+	components: {
+		Verification
+	},
 	data() {
 		var validateId = (rule, value, callback) => {
 			if (value.length < 4 || value.length > 32) {
@@ -113,20 +131,36 @@ export default {
 			}
 		};
 		return {
+			/**服务器的地址*/
+			exportServerHost: process.env.VUE_APP_BASE_API,
+			/**验证码的下标*/
+			verifyIndex: '',
+			/**验证码的值*/
+			verifyValue: '',
+			/**登录的表单*/
 			loginForm: {
 				id: '',
 				password: ''
 			},
+			/**表单的验证*/
 			rules: {
 				id: [{ validator: validateId, trigger: 'blur' }],
 				password: [{ validator: validatePass, trigger: 'blur' }]
 			},
+			/**密码显示的类型*/
 			passwordType: 'password',
+			/**是否登录中*/
 			loading: false,
-			loginError: false
+			/**登录失败了*/
+			loginError: false,
+			/**登录失败的提示*/
+			loginFailedTips: this.$t('LoginFailed')
 		};
 	},
 	methods: {
+		/**
+		 * 显示与隐藏密码
+		 */
 		showPwd() {
 			if (this.passwordType === 'password') {
 				this.passwordType = '';
@@ -138,33 +172,74 @@ export default {
 			});
 		},
 		/**
+		 * 验证码组件加载异常
+		 * @param {Object} err
+		 */
+		verifyErr(err) {
+			console.log(err);
+		},
+		/**
+		 * 验证码选择完毕
+		 * @param {Object} index
+		 * @param {Object} value
+		 */
+		verifyFinish(index, value) {
+			this.verifyIndex = index;
+			this.verifyValue = value;
+			if (this.loginForm.id != '' && this.loginForm.password != '') {
+				this.loginHandler();
+			}
+		},
+		/**
 		 * 执行登录
 		 * @param {String} index 验证码下表
 		 * @param {String} value 验证码
 		 */
 		loginHandler() {
 			this.loading = true;
+			this.loginError = false;
 			this.$refs.loginForm.validate(Verified => {
 				if (Verified) {
-					this.loading = false;
-					var data = { id: this.loginForm.id, pwd: this.loginForm.password };
+					if (this.verifyValue.length != 8) {
+						this.loginError = true;
+						this.loginFailedTips = this.$t('PleaseSelectCaptcha');
+						this.loading = false;
+						return;
+					}
+					var data = {
+						id: this.loginForm.id,
+						pwd: MD5(this.loginForm.password),
+						index: this.verifyIndex,
+						value: this.verifyValue
+					};
 					apiLogin(
 						data,
 						res => {
+							this.loading = false;
 							var resp = res.data;
 							if (resp.code == 200) {
 								var info = resp.data;
 								this.$store.dispatch('app/login', info);
 								console.log('Login successful!');
 								this.$router.push('/index');
+							}else if(resp.code == 403){
+								console.log('Login failed:' + resp.msg);
+								this.loginError = true;
+								this.loginFailedTips = this.$t('CaptchaIsIncorrectPleaseSelectAgain');
+								this.$refs.verification.reset();
 							} else {
 								console.log('Login failed:' + resp.msg);
 								this.loginError = true;
+								this.loginFailedTips = this.$t('LoginFailed');
+								this.$refs.verification.reset();
 							}
 						},
 						err => {
+							this.loading = false;
 							var requestFailedTips = this.$t('RequestFailedSeeConsole');
 							this.$message.error(requestFailedTips);
+							this.loginError = true;
+							this.loginFailedTips = requestFailedTips;
 							console.log('Request failed!');
 							console.log(err);
 						}
@@ -272,33 +347,4 @@ $light_gray: #eee;
 		}
 	}
 }
-</style>
-
-<style>
-/* 
-.login-container {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: #283443;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.from-box {
-	width: 450px;
-}
-
-.el-input-group__prepend {
-	background-color: #fff;
-	border-color: #fff;
-}
-.el-input__inner::placeholder {
-	color: #666;
-}
-@media (max-width: 450px) {
-	.from-box {
-		width: 90%;
-	}
-}*/
 </style>

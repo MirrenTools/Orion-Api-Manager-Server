@@ -53,10 +53,10 @@
 									<td v-html="group.description"></td>
 								</tr>
 								<tr v-if="group.externalDocs != null && group.externalDocs != '{}'">
-									<td class="td-item" valign="top">{{ $t('GroupDescription') }}</td>
+									<td class="td-item" valign="top">{{ $t('ExtDocsDesc') }}</td>
 									<td>
 										<div v-if="JSON.parse(group.externalDocs).description != null" v-html="JSON.parse(group.externalDocs).description"></div>
-										<a v-if="JSON.parse(group.externalDocs).url != null" :href="JSON.parse(group.externalDocs).url" target="_blank" class="alink">
+										<a v-if="JSON.parse(group.externalDocs).url != null" :href="JSON.parse(group.externalDocs).url" target="_blank" class="alink" style="margin-left: 0;">
 											{{ JSON.parse(group.externalDocs).url }}
 										</a>
 									</td>
@@ -242,6 +242,7 @@ import {
 	apiMoveUpAPI,
 	apiMoveDownAPI
 } from '@/api/Project';
+import store from '@/store/index.js';
 /**查看模式*/
 const MODE_VIEW = 'view';
 /**编辑模式*/
@@ -295,13 +296,18 @@ export default {
 		};
 	},
 	created() {
-		var pid = this.$route.params.pid;
-		if (pid == null || pid == '') {
-			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
-			return;
+		var role = store.getters.role;
+		if (role != 'ROOT' && role != 'SERVER') {
+			this.$router.push('/index');
+		} else {
+			var pid = this.$route.params.pid;
+			if (pid == null || pid == '') {
+				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
+				return;
+			}
+			this.projectId = pid;
+			this.loadProjectGroups(pid);
 		}
-		this.projectId = pid;
-		this.loadProjectGroups(pid);
 	},
 	methods: {
 		/**

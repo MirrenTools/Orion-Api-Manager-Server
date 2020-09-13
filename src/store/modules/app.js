@@ -8,7 +8,8 @@ const state = {
 	},
 	device: 'desktop',
 	uid: null,
-	sessionId: null
+	sessionId: null,
+	role: null
 }
 
 const mutations = {
@@ -32,10 +33,12 @@ const mutations = {
 	LOGIN: (state, data) => {
 		state.uid = data.uid;
 		state.sessionId = data.sessionId;
+		state.role = data.role;
 	},
 	LOGOUT: state => {
 		state.uid = null;
 		state.sessionId = null;
+		state.role = null;
 	}
 }
 

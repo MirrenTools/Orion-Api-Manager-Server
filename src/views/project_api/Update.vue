@@ -305,6 +305,7 @@
 
 <script>
 import { getApiAPI, updateApiAPI } from '@/api/Project';
+import store from '@/store/index.js';
 export default {
 	data() {
 		return {
@@ -374,14 +375,19 @@ export default {
 		};
 	},
 	created() {
-		this.projectId = this.$route.params.pid;
-		this.groupId = this.$route.params.gid;
-		this.apiId = this.$route.params.aid;
-		if (this.apiId == null) {
-			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
-			return;
+		var role = store.getters.role;
+		if (role != 'ROOT' && role != 'SERVER') {
+			this.$router.push('/index');
+		} else {
+			this.projectId = this.$route.params.pid;
+			this.groupId = this.$route.params.gid;
+			this.apiId = this.$route.params.aid;
+			if (this.apiId == null) {
+				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
+				return;
+			}
+			this.loadApi(this.apiId);
 		}
-		this.loadApi(this.apiId);
 	},
 	methods: {
 		/**

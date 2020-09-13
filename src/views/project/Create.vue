@@ -2,32 +2,35 @@
 	<div style="width: 98%; max-width: 1240px;margin: auto;padding-top: 15px;">
 		<el-form ref="projectEditForm" :rules="editRules" :model="projectEdit" label-width="120px">
 			<el-form-item :label="$t('ProjectName')" prop="name"><el-input v-model="projectEdit.name" :placeholder="$t('EnterProjectName')"></el-input></el-form-item>
-			<el-form-item :label="$t('ProjectVersion')"  prop="versions"><el-input v-model="projectEdit.versions" :placeholder="$t('EnterProjectVersion')"></el-input></el-form-item>
+			<el-form-item :label="$t('ProjectVersion')" prop="versions"><el-input v-model="projectEdit.versions" :placeholder="$t('EnterProjectVersion')"></el-input></el-form-item>
 			<el-form-item :label="$t('ProjectRanking')" prop="sorts"><el-input v-model.number="projectEdit.sorts" :placeholder="$t('EnterProjectRanking')"></el-input></el-form-item>
-			<el-form-item :label="$t('ProjectDescription')"  prop="description"><el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input></el-form-item>
+			<el-form-item :label="$t('ProjectDescription')" prop="description">
+				<el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input>
+			</el-form-item>
 			<el-form-item :label="$t('Servers')" prop="servers">
 				<template>
 					<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers" :key="idx">
 						<el-input v-model="server.url" :placeholder="$t('EnterHostAddress')"></el-input>
 						<el-input v-model="server.description" :placeholder="$t('EnterHostDescription')" class="novalidate"></el-input>
-						<div style="text-align: right;padding-top: 3px;"><el-button size="mini" @click="removeServer(idx)">{{$t('Remove')}}</el-button></div>
+						<div style="text-align: right;padding-top: 3px;">
+							<el-button size="mini" @click="removeServer(idx)">{{ $t('Remove') }}</el-button>
+						</div>
 					</div>
-					<div style="text-align: right;"><el-button size="medium" @click="addServer()">{{$t('AddMore')}}</el-button></div>
+					<div style="text-align: right;">
+						<el-button size="medium" @click="addServer()">{{ $t('AddMore') }}</el-button>
+					</div>
 				</template>
 			</el-form-item>
 			<el-form-item :label="$t('Contacts')" prop="contactName"><el-input v-model="projectEdit.contactName" :placeholder="$t('EnterContacts')"></el-input></el-form-item>
 			<el-form-item :label="$t('ContactInfo')" prop="contactInfo"><el-input v-model="projectEdit.contactInfo" :placeholder="$t('EnterContactInfo')"></el-input></el-form-item>
 			<el-form-item :label="$t('ExtDocsURL')" prop="exDurl"><el-input v-model="projectEdit.exDurl" :placeholder="$t('EnterExtDocsURL')"></el-input></el-form-item>
 			<el-form-item :label="$t('ExtDocsDesc')" prop="exDdescription">
-				<el-input
-					v-model="projectEdit.exDdescription"
-					type="textarea"
-					:autosize="{ minRows: 2, maxRows: 10 }"
-					:placeholder="$t('EnterExtDocsDesc')"
-				></el-input>
+				<el-input v-model="projectEdit.exDdescription" type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" :placeholder="$t('EnterExtDocsDesc')"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<div style="text-align: center;"><el-button type="primary" @click="saveSubmit()">{{$t('Submit')}}</el-button></div>
+				<div style="text-align: center;">
+					<el-button type="primary" @click="saveSubmit()">{{ $t('Submit') }}</el-button>
+				</div>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -35,6 +38,7 @@
 
 <script>
 import { saveProjectAPI } from '@/api/Project';
+import store from '@/store/index.js';
 export default {
 	data() {
 		var validateServers = (rule, value, callback) => {
@@ -77,7 +81,7 @@ export default {
 				versions: [
 					{
 						required: true,
-						message:  this.$t('EnterProjectVersion'),
+						message: this.$t('EnterProjectVersion'),
 						trigger: 'blur'
 					}
 				],
@@ -90,6 +94,12 @@ export default {
 				]
 			}
 		};
+	},
+	created() {
+		var role = store.getters.role;
+		if (role != 'ROOT' && role != 'SERVER') {
+			this.$router.push('/index');
+		}
 	},
 	methods: {
 		/**
@@ -109,7 +119,6 @@ export default {
 			if (servers[idx].url == '' && servers[idx].description == '') {
 				servers.splice(idx, 1);
 			} else {
-				
 				this.$confirm(this.$t('RemoveConfirm'), this.$t('Tips'), {
 					confirmButtonText: this.$t('Confirm'),
 					cancelButtonText: this.$t('Cancel'),
@@ -192,7 +201,7 @@ export default {
 										this.$router.push('/index');
 									});
 							} else {
-								this.$message.error(this.$t('FailedToAdd')+':' + data.msg);
+								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 						},
 						err => {

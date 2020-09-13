@@ -33,6 +33,28 @@ export const constantRoutes = [{
 			name: 'ProjectList',
 			component: () => import('./views/Projects')
 		}, {
+			path: 'members',
+			name: 'Members',
+			component: () => import('./views/members/Members'),
+			meta: {
+				title: 'Members',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				}]
+			}
+		}, {
+			path: 'import',
+			name: 'ImportAPI',
+			component: () => import('./views/ImportApi'),
+			meta: {
+				title: 'ImportAPI',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				}]
+			}
+		}, {
 			path: 'new/project',
 			name: 'NewProjects',
 			component: () => import('./views/project/Create'),
@@ -63,10 +85,10 @@ export const constantRoutes = [{
 				breadcrumb: [{
 					path: '/index',
 					title: 'ProjectList'
-				},{
+				}, {
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
-					pathKeys:['pid']
+					pathKeys: ['pid']
 				}]
 			}
 		}, {
@@ -78,14 +100,14 @@ export const constantRoutes = [{
 				breadcrumb: [{
 					path: '/index',
 					title: 'ProjectList'
-				},{
+				}, {
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
-					pathKeys:['pid']
-				},{
+					pathKeys: ['pid']
+				}, {
 					path: '/index/get/groups/:pid',
 					title: 'GroupList',
-					pathKeys:['pid']
+					pathKeys: ['pid']
 				}]
 			}
 		}, {
@@ -97,25 +119,14 @@ export const constantRoutes = [{
 				breadcrumb: [{
 					path: '/index',
 					title: 'ProjectList'
-				},{
+				}, {
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
-					pathKeys:['pid']
-				},{
+					pathKeys: ['pid']
+				}, {
 					path: '/index/get/groups/:pid',
 					title: 'GroupList',
-					pathKeys:['pid']
-				}]
-			}
-		}, {
-			path: 'import',
-			name: 'ImportAPI',
-			component: () => import('./views/ImportApi'),
-			meta: {
-				title: 'ImportAPI',
-				breadcrumb: [{
-					path: '/index',
-					title: 'ProjectList'
+					pathKeys: ['pid']
 				}]
 			}
 		}]

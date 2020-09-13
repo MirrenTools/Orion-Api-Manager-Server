@@ -61,8 +61,8 @@
 					<td class="project-item">{{ $t('Operation') }}</td>
 					<td>
 						<a :href="'#/index/get/groups/' + project.key" class="alink" style="margin-left: 0;">{{ $t('ApiManage') }}</a>
-						<a :href="exportServerHost+'/project/downJson/' + project.key" class="alink">{{ $t('ExportDocument') }}</a>
-						<a :href="exportServerHost+'/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
+						<a :href="exportServerHost + '/project/downJson/' + project.key" class="alink">{{ $t('ExportDocument') }}</a>
+						<a :href="exportServerHost + '/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
 					</td>
 				</tr>
 			</table>
@@ -106,14 +106,9 @@
 </template>
 
 <script>
-import {
-	getProjectAPI,
-	saveProjectAPI,
-	copyProjectAPI,
-	updateProjectAPI,
-	deleteProjectAPI
-} from '@/api/Project';
+import { getProjectAPI, saveProjectAPI, copyProjectAPI, updateProjectAPI, deleteProjectAPI } from '@/api/Project';
 import { datetimeFormat } from '@/utils/DataFormat';
+import store from '@/store/index.js';
 /**查看模式*/
 const MODE_VIEW = 'view';
 /**编辑模式*/
@@ -137,7 +132,7 @@ export default {
 			}
 		};
 		return {
-			exportServerHost:process.env.VUE_APP_BASE_API,
+			exportServerHost: process.env.VUE_APP_BASE_API,
 			/**查看项目的属性*/
 			project: {},
 			/**编辑的项目属性*/
@@ -173,12 +168,17 @@ export default {
 		};
 	},
 	created() {
-		var pid = this.$route.params.pid;
-		if (pid == null) {
-			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
-			return;
+		var role = store.getters.role;
+		if (role != 'ROOT' && role != 'SERVER') {
+			this.$router.push('/index');
+		} else {
+			var pid = this.$route.params.pid;
+			if (pid == null) {
+				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
+				return;
+			}
+			this.loadProject(pid);
 		}
-		this.loadProject(pid);
 	},
 	methods: {
 		/**
@@ -307,7 +307,7 @@ export default {
 								this.loadProject(reqData.key);
 								this.mode = MODE_VIEW;
 							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
+								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 						},
 						err => {
@@ -373,7 +373,7 @@ export default {
 								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
-						er => {
+						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
 							console.log(err);
 						}

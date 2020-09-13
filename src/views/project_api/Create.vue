@@ -291,6 +291,7 @@
 
 <script>
 import { saveApiAPI } from '@/api/Project';
+import store from '@/store/index.js';
 export default {
 	data() {
 		return {
@@ -358,11 +359,16 @@ export default {
 		};
 	},
 	created() {
-		this.projectId = this.$route.params.pid;
-		this.groupId = this.$route.params.gid;
-		if (this.groupId == null) {
-			this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
-			return;
+		var role = store.getters.role;
+		if (role != 'ROOT' && role != 'SERVER') {
+			this.$router.push('/index');
+		} else {
+			this.projectId = this.$route.params.pid;
+			this.groupId = this.$route.params.gid;
+			if (this.groupId == null) {
+				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
+				return;
+			}
 		}
 	},
 	methods: {
