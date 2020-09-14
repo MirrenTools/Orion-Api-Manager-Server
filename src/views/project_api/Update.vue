@@ -484,8 +484,6 @@ export default {
 							}
 						}
 						this.api = data.data;
-					} else {
-						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 					this.dataLoading = false;
 				},
@@ -693,8 +691,6 @@ export default {
 									.catch(() => {
 										location.reload();
 									});
-							} else {
-								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 						},
 						err => {

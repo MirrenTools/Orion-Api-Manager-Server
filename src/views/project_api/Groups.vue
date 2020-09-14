@@ -342,8 +342,6 @@ export default {
 							this.loadApis(this.groups[0]);
 						}
 						this.groupsLoading = false;
-					} else {
-						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -421,8 +419,6 @@ export default {
 							}
 							this.apis.push(api);
 						}
-					} else {
-						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 					this.dialogCreateGroupVisible = false;
 				},
@@ -464,8 +460,6 @@ export default {
 							if (data.code == 200) {
 								this.loadProjectGroups(this.projectId);
 								this.groupData = {};
-							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 							this.dialogCreateGroupVisible = false;
 						},
@@ -532,8 +526,6 @@ export default {
 								this.loadProjectGroups(this.projectId);
 								this.group = reqData;
 								this.$message.success(this.$t('ModifySuccess'));
-							} else {
-								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 							this.dialogCreateGroupVisible = false;
 						},
@@ -566,8 +558,6 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								location.reload();
-							} else {
-								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {
@@ -592,8 +582,6 @@ export default {
 					if (data.code == 200) {
 						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.projectId);
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -616,8 +604,6 @@ export default {
 					if (data.code == 200) {
 						this.$message.success(this.$t('MoveSuccess'));
 						this.loadProjectGroups(this.projectId);
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -646,8 +632,6 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.findApisAndLoad(this.group.groupId);
-							} else {
-								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {
@@ -672,8 +656,6 @@ export default {
 					if (data.code == 200) {
 						this.$message.success(this.$t('MoveSuccess'));
 						this.findApisAndLoad(this.group.groupId);
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -696,8 +678,6 @@ export default {
 					if (data.code == 200) {
 						this.$message.success(this.$t('MoveSuccess'));
 						this.findApisAndLoad(this.group.groupId);
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {

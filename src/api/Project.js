@@ -1,4 +1,4 @@
-import request from './utils/request'
+import request from './utils/Request'
 
 /**
  * 获取项目列表
@@ -25,7 +25,7 @@ export function getProjectAPI(pid, res, err) {
  * @param {Object} err
  */
 export function saveProjectAPI(data, res, err) {
-	request.post('/private/project/', data).then(res).catch(err);
+	request.post('/private/server/project/', data).then(res).catch(err);
 }
 
 /**
@@ -35,7 +35,7 @@ export function saveProjectAPI(data, res, err) {
  * @param {Object} err
  */
 export function saveProjectFronJsonAPI(data, res, err) {
-	request.post('/private/project/fromJson', data).then(res).catch(err);
+	request.post('/private/server/project/fromJson', data).then(res).catch(err);
 }
 
 /**
@@ -45,7 +45,7 @@ export function saveProjectFronJsonAPI(data, res, err) {
  * @param {Object} err
  */
 export function copyProjectAPI(pid, res, err) {
-	request.post('/private/project/copy/' + pid).then(res).catch(err);
+	request.post('/private/server/project/copy/' + pid).then(res).catch(err);
 }
 
 /**
@@ -55,7 +55,7 @@ export function copyProjectAPI(pid, res, err) {
  * @param {Object} err
  */
 export function updateProjectAPI(data, res, err) {
-	request.put('/private/project/', data).then(res).catch(err);
+	request.put('/private/server/project/', data).then(res).catch(err);
 }
 /**
  * 项目排序上移
@@ -64,7 +64,7 @@ export function updateProjectAPI(data, res, err) {
  * @param {Object} err
  */
 export function projectMoveUpAPI(pid, res, err) {
-	request.put('/private/project/moveUp/' + pid).then(res).catch(err);
+	request.put('/private/server/project/moveUp/' + pid).then(res).catch(err);
 }
 /**
  * 项目排序下移
@@ -73,7 +73,7 @@ export function projectMoveUpAPI(pid, res, err) {
  * @param {Object} err
  */
 export function projectMoveDownAPI(pid, res, err) {
-	request.put('/private/project/moveDown/' + pid).then(res).catch(err);
+	request.put('/private/server/project/moveDown/' + pid).then(res).catch(err);
 }
 /**
  * 删除项目
@@ -82,7 +82,7 @@ export function projectMoveDownAPI(pid, res, err) {
  * @param {Object} err
  */
 export function deleteProjectAPI(pid, res, err) {
-	request.delete('/private/project/' + pid).then(res).catch(err);
+	request.delete('/private/server/project/' + pid).then(res).catch(err);
 }
 
 /**
@@ -92,7 +92,7 @@ export function deleteProjectAPI(pid, res, err) {
  * @param {Object} err
  */
 export function findGroupsByProjectId(pid, res, err) {
-	request.get('/private/project/apiGroup/' + pid).then(res).catch(err);
+	request.get('/private/server/project/apiGroup/' + pid).then(res).catch(err);
 }
 /**
  * 新建分组
@@ -101,7 +101,7 @@ export function findGroupsByProjectId(pid, res, err) {
  * @param {Object} err
  */
 export function saveApiGroup(data, res, err) {
-	request.post('/private/apiGroup', data).then(res).catch(err);
+	request.post('/private/server/apiGroup', data).then(res).catch(err);
 }
 /**
  * 修改分组
@@ -110,7 +110,7 @@ export function saveApiGroup(data, res, err) {
  * @param {Object} err
  */
 export function putApiGroup(data, res, err) {
-	request.put('/private/apiGroup', data).then(res).catch(err);
+	request.put('/private/server/apiGroup', data).then(res).catch(err);
 }
 /**
  * 接口分组排序上移
@@ -119,7 +119,7 @@ export function putApiGroup(data, res, err) {
  * @param {Object} err
  */
 export function apiGroupMoveUpAPI(gid, res, err) {
-	request.put('/private/apiGroup/moveUp/' + gid).then(res).catch(err);
+	request.put('/private/server/apiGroup/moveUp/' + gid).then(res).catch(err);
 }
 /**
  * 接口分组排序下移
@@ -128,7 +128,7 @@ export function apiGroupMoveUpAPI(gid, res, err) {
  * @param {Object} err
  */
 export function apiGroupMoveDownAPI(gid, res, err) {
-	request.put('/private/apiGroup/moveDown/' + gid).then(res).catch(err);
+	request.put('/private/server/apiGroup/moveDown/' + gid).then(res).catch(err);
 }
 
 /**
@@ -138,7 +138,7 @@ export function apiGroupMoveDownAPI(gid, res, err) {
  * @param {Object} err
  */
 export function daleteApiGroup(gid, res, err) {
-	request.delete('/private/apiGroup/' + gid).then(res).catch(err);
+	request.delete('/private/server/apiGroup/' + gid).then(res).catch(err);
 }
 /**
  * 获取分组的所有接口数据
@@ -147,7 +147,7 @@ export function daleteApiGroup(gid, res, err) {
  * @param {Object} err
  */
 export function findApisAPI(gid, res, err) {
-	request.get('/private/apis/' + gid).then(res).catch(err);
+	request.get('/private/server/apis/' + gid).then(res).catch(err);
 }
 
 /**
@@ -157,7 +157,7 @@ export function findApisAPI(gid, res, err) {
  * @param {Object} err
  */
 export function getApiAPI(aid, res, err) {
-	request.get('/private/api/' + aid).then(res).catch(err);
+	request.get('/private/server/api/' + aid).then(res).catch(err);
 }
 
 /**
@@ -167,7 +167,7 @@ export function getApiAPI(aid, res, err) {
  * @param {Object} err
  */
 export function saveApiAPI(data, res, err) {
-	request.post('/private/api' , data).then(res).catch(err);
+	request.post('/private/server/api' , data).then(res).catch(err);
 }
 /**
  * 修改API
@@ -176,7 +176,7 @@ export function saveApiAPI(data, res, err) {
  * @param {Object} err
  */
 export function updateApiAPI(data, res, err) {
-	request.put('/private/api' , data).then(res).catch(err);
+	request.put('/private/server/api' , data).then(res).catch(err);
 }
 
 /**
@@ -186,7 +186,7 @@ export function updateApiAPI(data, res, err) {
  * @param {Object} err
  */
 export function apiMoveUpAPI(aid, res, err) {
-	request.put('/private/api/moveUp/' + aid).then(res).catch(err);
+	request.put('/private/server/api/moveUp/' + aid).then(res).catch(err);
 }
 /**
  * API排序排序下移
@@ -195,7 +195,7 @@ export function apiMoveUpAPI(aid, res, err) {
  * @param {Object} err
  */
 export function apiMoveDownAPI(aid, res, err) {
-	request.put('/private/api/moveDown/' + aid).then(res).catch(err);
+	request.put('/private/server/api/moveDown/' + aid).then(res).catch(err);
 }
 /**
  * 删除API
@@ -204,5 +204,5 @@ export function apiMoveDownAPI(aid, res, err) {
  * @param {Object} err
  */
 export function deleteAPI(aid, res, err) {
-	request.delete('/private/api/' + aid).then(res).catch(err);
+	request.delete('/private/server/api/' + aid).then(res).catch(err);
 }

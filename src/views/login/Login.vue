@@ -12,7 +12,7 @@
 						></path>
 					</svg>
 				</span>
-				<el-input ref="id" v-model="loginForm.id" :placeholder="$t('Account')" type="text" tabindex="1" autocomplete="off" />
+				<el-input ref="id" v-model="loginForm.id" :placeholder="$t('EnterAccount')" type="text" tabindex="1" autocomplete="off" />
 			</el-form-item>
 			<el-form-item prop="password">
 				<span class="svg-container">
@@ -34,7 +34,7 @@
 					ref="password"
 					v-model="loginForm.password"
 					:type="passwordType"
-					:placeholder="$t('Password')"
+					:placeholder="$t('EnterPassword')"
 					tabindex="2"
 					autocomplete="off"
 					@keyup.enter.native="loginHandler"
@@ -222,10 +222,10 @@ export default {
 								this.$store.dispatch('app/login', info);
 								console.log('Login successful!');
 								this.$router.push('/index');
-							}else if(resp.code == 403){
+							}else if(resp.code == 1304){
 								console.log('Login failed:' + resp.msg);
 								this.loginError = true;
-								this.loginFailedTips = this.$t('CaptchaIsIncorrectPleaseSelectAgain');
+								this.loginFailedTips = this.$t('ResultStatus1304');
 								this.$refs.verification.reset();
 							} else {
 								console.log('Login failed:' + resp.msg);

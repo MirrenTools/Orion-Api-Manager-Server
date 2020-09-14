@@ -209,8 +209,6 @@ export default {
 							}
 						}
 						this.projectEdit = JSON.parse(JSON.stringify(this.project));
-					} else {
-						this.$message.error(this.$t('FailedToGetProjectInfo') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -306,8 +304,6 @@ export default {
 								this.$message.success(this.$t('ModifySuccess'));
 								this.loadProject(reqData.key);
 								this.mode = MODE_VIEW;
-							} else {
-								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
 							}
 						},
 						err => {
@@ -339,8 +335,6 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('CopySuccess'));
 								this.$router.push('/index');
-							} else {
-								this.$message.error(this.$t('CopyFailed') + ':' + data.msg);
 							}
 						},
 						er => {
@@ -369,8 +363,6 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.$router.push('/index');
-							} else {
-								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {

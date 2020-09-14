@@ -2,16 +2,16 @@
 	<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin:auto;">
 		<div style="padding-left: 5px;margin-bottom: 15px;">
 			<div style="display: flex;justify-content: center;align-items: center;margin-bottom: 5px;">
-				<div>{{ $t('标签列表: ') }}{{ tagsList.length || 0 }}</div>
+				<div>{{ $t('TagList') }}: {{ tagsList.length || 0 }}</div>
 				<div style="margin-left: auto;">
 					<div style="display: flex;">
-						<el-button type="primary" @click="showNewTags">{{ $t('NewMember') }}</el-button>
+						<el-button type="primary" @click="showNewTags">{{ $t('NewTags') }}</el-button>
 					</div>
 				</div>
 			</div>
 			<div>
 				<el-popover placement="left-start" trigger="click" v-for="tag in tagsList" :key="tag.tid">
-					<el-button size="mini" @click="loadUserByTag(tag.tid)">{{ $t('查看用户') }}</el-button>
+					<el-button size="mini" @click="loadUserByTag(tag.tid)">{{ $t('QueryUsers') }}</el-button>
 					<el-button size="mini" type="primary" @click="showUpdateTags(tag)">{{ $t('Modify') }}</el-button>
 					<el-button size="mini" type="danger" @click="deleteTagSubmit(tag)">{{ $t('Delete') }}</el-button>
 					<el-link slot="reference" style="margin-right: 10px;">{{ tag.tname }}</el-link>
@@ -19,38 +19,38 @@
 			</div>
 		</div>
 		<div style="display: flex;justify-content: center;align-items: center;margin-bottom: 5px;">
-			<div style="padding-left: 5px;">{{ $t('用户列表') }}{{ pages.totals }}</div>
+			<div style="padding-left: 5px;">{{ $t('UserList') }}: {{ pages.totals }}</div>
 			<div style="margin-left: auto;">
 				<div style="display: flex;">
 					<div style="margin-right: 5px;">
-						<el-input placeholder="搜索用户,默认所有" v-model="keywords" class="input-with-select" clearable>
+						<el-input :placeholder="$t('SearchUsersAllByDefault')" v-model="keywords" class="input-with-select" clearable>
 							<el-button slot="append" icon="el-icon-search" @click="loadUserBySearch()"></el-button>
 						</el-input>
 					</div>
-					<el-button type="primary" @click="showNewMembers">{{ $t('NewMember') }}</el-button>
+					<el-button type="primary" @click="showNewMembers">{{ $t('NewUsers') }}</el-button>
 				</div>
 			</div>
 		</div>
 		<div>
 			<div style="padding-left: 5px;">
 				<el-table :data="membersList" style="width: 100%" border>
-					<el-table-column prop="uid" :label="$t('登录账号')"></el-table-column>
-					<el-table-column prop="nickname" :label="$t('用户昵称')"></el-table-column>
-					<el-table-column prop="role" :label="$t('用户角色')">
+					<el-table-column prop="uid" :label="$t('Account')"></el-table-column>
+					<el-table-column prop="nickname" :label="$t('Nickname')"></el-table-column>
+					<el-table-column prop="role" :label="$t('UserRole')">
 						<template slot-scope="scope">
-							<span>{{ scope.row.role == 'SERVER' ? '管理员' : '普通用户' }}</span>
+							<span>{{ scope.row.role == 'SERVER' ? $t('Administrator') : $t('CommonUser') }}</span>
 						</template>
 					</el-table-column>
-					<el-table-column prop="summary" :label="$t('用户简介')"></el-table-column>
-					<el-table-column prop="contact" :label="$t('联系信息')"></el-table-column>
-					<el-table-column prop="lasttime" :label="$t('最后登录时间')">
+					<el-table-column prop="summary" :label="$t('UserSummary')"></el-table-column>
+					<el-table-column prop="contact" :label="$t('UserContact')"></el-table-column>
+					<el-table-column prop="lasttime" :label="$t('LastLoginTime')">
 						<template slot-scope="scope">
 							<span>{{ formatDate(scope.row.lasttime) }}</span>
 						</template>
 					</el-table-column>
-					<el-table-column :label="$t('操作')" width="120">
+					<el-table-column :label="$t('Operation')" width="120">
 						<template slot-scope="scope">
-							<el-button type="primary" size="mini" @click="showUpdateMembers(scope.row)">{{ $t('编辑') }}</el-button>
+							<el-button type="primary" size="mini" @click="showUpdateMembers(scope.row)">{{ $t('Edit') }}</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -68,10 +68,10 @@
 		</div>
 
 		<!-- 新增标签或修改标签的弹窗 -->
-		<el-dialog :title="dialogMode == 'view' ? $t('修改标签') : $t('新增标签')" :visible.sync="dialogTagsVisible">
+		<el-dialog :title="dialogMode == 'view' ? $t('ModifyTags') : $t('NewTags')" :visible.sync="dialogTagsVisible">
 			<el-form :model="tagData" :rules="tagDataRules" label-width="100px" ref="tagsEditForm">
-				<el-form-item :label="$t('标签名称')" prop="tname"><el-input v-model="tagData.tname" :placeholder="$t('请输入标签的名称')"></el-input></el-form-item>
-				<el-form-item :label="$t('标签排序')" prop="sorts"><el-input v-model="tagData.sorts" type="number" :placeholder="$t('请输入标签的排序,默认0')"></el-input></el-form-item>
+				<el-form-item :label="$t('TagsName')" prop="tname"><el-input v-model="tagData.tname" :placeholder="$t('EnterTagsName')"></el-input></el-form-item>
+				<el-form-item :label="$t('TagsSorts')" prop="sorts"><el-input v-model="tagData.sorts" type="number" :placeholder="$t('EnterTagsRanking')"></el-input></el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="danger" v-show="isShowDeleteBtn()">{{ $t('Delete') }}</el-button>
@@ -82,26 +82,26 @@
 		</el-dialog>
 
 		<!-- 新增用户或修改用户的弹窗 -->
-		<el-dialog :title="dialogMode == 'view' ? $t('修改用户') : $t('NewMember')" :visible.sync="dialogVisible">
+		<el-dialog :title="dialogMode == 'view' ? $t('ModifyUsers') : $t('NewUsers')" :visible.sync="dialogVisible">
 			<el-form :model="membersData" :rules="membersDataRules" label-width="100px" ref="membersEditForm">
-				<el-form-item :label="$t('登录账号')" prop="uid">
-					<el-input v-model="membersData.uid" :placeholder="$t('EnterTheGroupName')" :disabled="dialogMode == 'view'"></el-input>
+				<el-form-item :label="$t('Account')" prop="uid">
+					<el-input @blur="membersData.uid=membersData.uid.replace('X-','')" v-model="membersData.uid" :placeholder="$t('EnterAccount')" :disabled="dialogMode == 'view'"></el-input>
 				</el-form-item>
-				<el-form-item :label="$t('登录密码')" prop="pwd"><el-input v-model="membersData.pwd" :placeholder="$t('EnterGroupSummary')"></el-input></el-form-item>
-				<el-form-item :label="$t('用户昵称')" prop="nickname"><el-input v-model="membersData.nickname" :placeholder="$t('EnterTheGroupName')"></el-input></el-form-item>
-				<el-form-item :label="$t('联系信息')" prop="contact"><el-input v-model="membersData.contact" :placeholder="$t('EnterGroupRanking')"></el-input></el-form-item>
-				<el-form-item :label="$t('用户简介')" prop="summary">
-					<el-input type="textarea" v-model="membersData.summary" :placeholder="$t('EnterGroupDescription')"></el-input>
+				<el-form-item :label="$t('Password')" prop="pwd"><el-input v-model="membersData.pwd" :placeholder="$t('EnterPassword')"></el-input></el-form-item>
+				<el-form-item :label="$t('Nickname')" prop="nickname"><el-input v-model="membersData.nickname" :placeholder="$t('EnterNickname')"></el-input></el-form-item>
+				<el-form-item :label="$t('UserContact')" prop="contact"><el-input v-model="membersData.contact" :placeholder="$t('EnterUserContact')"></el-input></el-form-item>
+				<el-form-item :label="$t('UserSummary')" prop="summary">
+					<el-input type="textarea" v-model="membersData.summary" :placeholder="$t('EnterUserSummary')"></el-input>
 				</el-form-item>
-				<el-form-item :label="$t('用户的标签')" prop="tags">
+				<el-form-item :label="$t('UserTags')" prop="tags">
 					<el-select v-model="membersData.tags" :placeholder="$t('Select')" style="width: 100%;" multiple>
 						<el-option v-for="tag in tagsList" :key="tag.tid" :value="tag.tid" :label="tag.tname"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item :label="$t('用户角色')" prop="role">
+				<el-form-item :label="$t('UserRole')" prop="role">
 					<el-select v-model="membersData.role" :placeholder="$t('Select')" style="width: 100%;">
-						<el-option value="CLIENT" label="普通用户" v-if="userRole == 'ROOT'"></el-option>
-						<el-option value="SERVER" label="管理员"></el-option>
+						<el-option value="CLIENT" :label="$t('CommonUser')" v-if="userRole == 'ROOT'"></el-option>
+						<el-option value="SERVER" :label="$t('Administrator')"></el-option>
 					</el-select>
 				</el-form-item>
 			</el-form>
@@ -162,7 +162,7 @@ export default {
 				tname: [
 					{
 						required: true,
-						message: this.$t('请输入标签的名称'),
+						message: this.$t('EnterTagsName'),
 						trigger: 'blur'
 					}
 				]
@@ -251,9 +251,7 @@ export default {
 					console.log(data);
 					if (data.code == 200) {
 						this.tagsList = data.data;
-					} else {
-						this.$message.error(this.$t('加载标签列表') + ':' + data.msg);
-					}
+					} 
 				},
 				err => {
 					this.$message.error(this.$t('FailedToLoadSeeConsole'));
@@ -318,9 +316,7 @@ export default {
 						this.pages.page = res.page;
 						this.pages.size = res.size;
 						this.membersList = res.data || [];
-					} else {
-						this.$message.error(this.$t('加载标签列表') + ':' + data.msg);
-					}
+					} 
 				},
 				err => {
 					this.$message.error(this.$t('FailedToLoadSeeConsole'));
@@ -397,12 +393,10 @@ export default {
 							console.log('new tag result...');
 							console.log(data);
 							if (data.code == 200) {
-								this.$message.success('新增成功!');
+								this.$message.success(this.$t('AddSuccess'));
 								this.dialogTagsVisible = false;
 								this.findTags();
-							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
-							}
+							} 
 						},
 						err => {
 							this.$message.error(this.$t('FailedToAddSeeConsole'));
@@ -432,12 +426,10 @@ export default {
 							console.log('update tag result...');
 							console.log(data);
 							if (data.code == 200) {
-								this.$message.success('修改成功!');
+								this.$message.success(this.$t('ModifySuccess'));
 								this.dialogTagsVisible = false;
 								this.findTags();
-							} else {
-								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
-							}
+							} 
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -470,9 +462,7 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.findTags();
-							} else {
-								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
-							}
+							} 
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -502,12 +492,10 @@ export default {
 							console.log('new user result...');
 							console.log(data);
 							if (data.code == 200) {
-								this.$message.success('新增成功!');
+								this.$message.success(this.$t('AddSuccess'));
 								this.dialogVisible = false;
 								this.findUser();
-							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
-							}
+							} 
 						},
 						err => {
 							this.$message.error(this.$t('FailedToAddSeeConsole'));
@@ -541,12 +529,10 @@ export default {
 							console.log('update user result...');
 							console.log(data);
 							if (data.code == 200) {
-								this.$message.success('修改成功!');
+								this.$message.success(this.$t('ModifySuccess'));
 								this.dialogVisible = false;
 								this.findUser();
-							} else {
-								this.$message.error(this.$t('FailedToModify') + ':' + data.msg);
-							}
+							} 
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -580,8 +566,6 @@ export default {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.dialogVisible = false;
 								this.findUser();
-							} else {
-								this.$message.error(this.$t('FailedToDelete') + ':' + data.msg);
 							}
 						},
 						err => {

@@ -539,8 +539,6 @@ export default {
 								}).then(() => {
 									this.$router.go(-1);
 								});
-							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 						},
 						err => {

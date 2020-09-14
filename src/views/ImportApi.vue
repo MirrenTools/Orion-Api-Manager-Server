@@ -552,7 +552,7 @@ export default {
 				} else {
 					host = host.replace(/(http:\/\/)|(https:\/\/)/, '');
 				}
-				var wsUrl = 'ws://' + host + '/private/ws/project/fromJson/' + sessionId;
+				var wsUrl = 'ws://' + host + '/private/server/ws/project/fromJson/' + sessionId;
 				console.log(wsUrl);
 				this.websocket = new WebSocket(wsUrl);
 				var defaultProgressMsg = this.$t('ImportingProject') + '...';

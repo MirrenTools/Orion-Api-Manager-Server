@@ -200,8 +200,6 @@ export default {
 									.catch(() => {
 										this.$router.push('/index');
 									});
-							} else {
-								this.$message.error(this.$t('FailedToAdd') + ':' + data.msg);
 							}
 						},
 						err => {
