@@ -7,7 +7,7 @@
 			<div style="margin-left: auto;">
 				<div v-show="mode === 'view'">
 					<el-button size="mini" type="primary" @click="copySubmit()">{{ $t('MakeACopy') }}</el-button>
-					<el-button size="mini" type="primary" @click="mode = 'edit'">{{ $t('Modify') }}</el-button>
+					<el-button size="mini" type="primary" @click="showUpdateView()">{{ $t('Modify') }}</el-button>
 					<el-button size="mini" type="danger" @click="deleteSubmit()">{{ $t('Delete') }}</el-button>
 				</div>
 				<div v-show="mode === 'edit'">
@@ -32,6 +32,33 @@
 				<tr v-show="project.description" valign="top">
 					<td width="120px" class="project-item">{{ $t('ProjectDescription') }}</td>
 					<td v-html="project.description"></td>
+				</tr>
+				<tr valign="top">
+					<td width="120px" class="project-item">{{ $t('Owner') }}</td>
+					<td>
+						<div v-if="project.ownerInfo">
+							<el-popover placement="right" width="400" trigger="click">
+								<p>{{ $t('Account') }}: {{ project.ownerInfo.uid }}</p>
+								<p>{{ $t('Nickname') }}: {{ project.ownerInfo.nickname }}</p>
+								<p>{{ $t('UserContact') }}: {{ project.ownerInfo.contact }}</p>
+								<p>{{ $t('UserSummary') }}: {{ project.ownerInfo.summary }}</p>
+								<p>{{ $t('LastLoginTime') }}: {{ formatDate(project.ownerInfo.lasttime) }}</p>
+								<span slot="reference" class="user-tag">{{ project.ownerInfo.nickname }}</span>
+							</el-popover>
+						</div>
+						<div v-else>{{ $t('SuperAdministrator') }}</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="project-item" valign="top">{{ $t('ProjectAllowedTags') }}</td>
+					<td>
+						<div v-if="project.owners == null || project.owners.length == 0">{{ $t('AllUsers') }}</div>
+						<div v-else>
+							<span v-for="item in getUserTags(project.owners)" class="user-tag" :key="item.tid" @click="$router.push({ path: '/index/members', query: { tid: item.tid } })">
+								{{ item.tname }}
+							</span>
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td class="project-item" valign="top">{{ $t('Servers') }}</td>
@@ -75,6 +102,16 @@
 				<el-form-item :label="$t('ProjectDescription')" prop="description">
 					<el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input>
 				</el-form-item>
+				<el-form-item :label="$t('Owner')" prop="owner">
+					<el-select filterable v-model="projectEdit.owner" :placeholder="$t('SelectOwner')" style="width:100%">
+						<el-option v-for="item in userList" :key="item.uid" :label="item.nickname" :value="item.uid"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item :label="$t('ProjectAllowedTags')" prop="owners">
+					<el-select v-model="projectEdit.owners" multiple :placeholder="$t('SelectTheUserAllowedToAccessAllByDefault')" style="width:100%">
+						<el-option v-for="item in userTags" :key="item.tid" :label="item.tname" :value="item.tid"></el-option>
+					</el-select>
+				</el-form-item>
 				<el-form-item :label="$t('Servers')" prop="servers">
 					<template>
 						<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers" :key="idx">
@@ -107,6 +144,7 @@
 
 <script>
 import { getProjectAPI, saveProjectAPI, copyProjectAPI, updateProjectAPI, deleteProjectAPI } from '@/api/Project';
+import { findTagsAPI, findServerUsersAPI } from '@/api/Members';
 import { datetimeFormat } from '@/utils/DataFormat';
 import store from '@/store/index.js';
 /**查看模式*/
@@ -164,7 +202,11 @@ export default {
 			/**当前的模式*/
 			mode: MODE_VIEW,
 			/**分组列表加载中*/
-			groupsLoading: true
+			groupsLoading: true,
+			/**用户标签列表*/
+			userTags: [],
+			/**用户列表*/
+			userList: []
 		};
 	},
 	created() {
@@ -177,10 +219,59 @@ export default {
 				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
 				return;
 			}
+			this.loadUserTags();
 			this.loadProject(pid);
 		}
 	},
 	methods: {
+		/**
+		 * 加载用户标签列表
+		 */
+		loadUserTags() {
+			findTagsAPI(
+				resp => {
+					var data = resp.data;
+					console.log('load tags...');
+					console.log(data);
+					if (data.code == 200) {
+						this.userTags = data.data;
+					}
+				},
+				err => {
+					this.$message.error(this.$t('FailedToLoadSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 获取项目允许访问的组
+		 * @param {Object} owners
+		 */
+		getUserTags(owners) {
+			if (owners == null) {
+				return [];
+			}
+			var tagMaps = {};
+			var tagIndex = 0;
+			var result = [];
+			for (var i = 0; i < owners.length; i++) {
+				var key = owners[i];
+				if (tagMaps[key]) {
+					result.push(tagMaps[key]);
+					continue;
+				}
+				while (tagIndex < this.userTags.length) {
+					var tag = this.userTags[tagIndex];
+					tagIndex++;
+					tagMaps[tag.tid] = tag;
+					if (tag.tid == key) {
+						result.push(tag);
+						break;
+					}
+				}
+			}
+			return result;
+		},
 		/**
 		 * 加载项目信息
 		 * @param {Object} id
@@ -198,6 +289,11 @@ export default {
 							return;
 						}
 						this.project = data.data;
+						if (this.project.owners) {
+							this.project.owners = JSON.parse(this.project.owners);
+						} else {
+							this.project.owners = [];
+						}
 						this.project.servers = JSON.parse(this.project.servers);
 						if (this.project.externalDocs != null) {
 							this.project.externalDocs = JSON.parse(this.project.externalDocs);
@@ -246,6 +342,26 @@ export default {
 			}
 		},
 		/**
+		 * 显示修改信息
+		 */
+		showUpdateView() {
+			this.mode = MODE_EDIT;
+			findServerUsersAPI(
+				res => {
+					console.log('get user list...');
+					var data = res.data;
+					console.log(data);
+					if (data.code == 200) {
+						this.userList = data.data;
+					}
+				},
+				err => {
+					this.$message.error(this.$t('LoadUserListFailed'));
+					console.log(err);
+				}
+			);
+		},
+		/**
 		 * 提交修改项目信息
 		 */
 		updateSubmit() {
@@ -258,6 +374,10 @@ export default {
 					if (this.projectEdit.description != null) {
 						reqData.description = this.projectEdit.description;
 					}
+					if (this.projectEdit.owner != null && this.projectEdit.owner != '') {
+						reqData.owner = this.projectEdit.owner;
+					}
+					reqData.owners = JSON.stringify(this.projectEdit.owners);
 					if (!isNaN(this.projectEdit.sorts)) {
 						reqData.sorts = parseInt(this.projectEdit.sorts);
 					}
@@ -298,8 +418,8 @@ export default {
 					updateProjectAPI(
 						reqData,
 						res => {
-							console.log(data);
 							var data = res.data;
+							console.log(data);
 							if (data.code == 200) {
 								this.$message.success(this.$t('ModifySuccess'));
 								this.loadProject(reqData.key);
@@ -414,5 +534,14 @@ export default {
 .desc-constraint span {
 	display: inline-block;
 	padding-right: 10px;
+}
+
+.user-tag {
+	padding: 3px 10px;
+	background-color: #f0f2f5;
+	border-radius: 3px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	cursor: pointer;
 }
 </style>

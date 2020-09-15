@@ -45,7 +45,7 @@ request.interceptors.response.use(res => {
 		var code = res.data.code;
 		if (code == 200) {
 			return res;
-		}else if (code==202) {
+		} else if (code == 202) {
 			Message.success(i18n.t('ResultStatus202'));
 			return res;
 		} else if (code == 401) {
@@ -56,7 +56,7 @@ request.interceptors.response.use(res => {
 				store.dispatch('app/logout');
 				location.href = '#/login';
 			});
-			return Promise.reject(i18n.t('ResultStatus401'));
+			return res;
 		} else if (code == 403) {
 			MessageBox.confirm(i18n.t('ResultStatus403'), i18n.t('LoginTimeout'), {
 				confirmButtonText: i18n.t('Confirm'),
@@ -65,32 +65,32 @@ request.interceptors.response.use(res => {
 				store.dispatch('app/logout');
 				location.href = '#/login';
 			});
-			return Promise.reject(i18n.t('ResultStatus403'));
-		} else if (code==412) {
+			return res;
+		} else if (code == 412) {
 			Message.warning(i18n.t('ResultStatus412'));
 			return res;
-		} else if (code==555) {
+		} else if (code == 555) {
 			Message.error(i18n.t('ResultStatus555'));
 			return res;
-		}else if (code==1001) {
+		} else if (code == 1001) {
 			Message.error(i18n.t('ResultStatus1001'));
 			return res;
-		} else if (code==1002) {
+		} else if (code == 1002) {
 			Message.error(i18n.t('ResultStatus1002'));
 			return res;
-		} else if (code==1003) {
+		} else if (code == 1003) {
 			Message.error(i18n.t('ResultStatus1003'));
 			return res;
-		} else if (code==1010) {
+		} else if (code == 1010) {
 			Message.error(i18n.t('ResultStatus1010'));
 			return res;
-		} else if (code==1011) {
+		} else if (code == 1011) {
 			Message.error(i18n.t('ResultStatus1011'));
 			return res;
-		} else if (code==1100) {
+		} else if (code == 1100) {
 			Message.error(i18n.t('ResultStatus1100'));
 			return res;
-		}else if (code==1101) {
+		} else if (code == 1101) {
 			Message.error(i18n.t('ResultStatus1101'));
 			return res;
 		} else {

@@ -9,12 +9,12 @@
 					</div>
 				</div>
 			</div>
-			<div>
+			<div class="user-tag-box">
 				<el-popover placement="left-start" trigger="click" v-for="tag in tagsList" :key="tag.tid">
 					<el-button size="mini" @click="loadUserByTag(tag.tid)">{{ $t('QueryUsers') }}</el-button>
 					<el-button size="mini" type="primary" @click="showUpdateTags(tag)">{{ $t('Modify') }}</el-button>
 					<el-button size="mini" type="danger" @click="deleteTagSubmit(tag)">{{ $t('Delete') }}</el-button>
-					<el-link slot="reference" style="margin-right: 10px;">{{ tag.tname }}</el-link>
+					<span slot="reference" :class="['user-tag', tagid == tag.tid ? 'user-tag-current' : '']">{{ tag.tname }}</span>
 				</el-popover>
 			</div>
 		</div>
@@ -85,7 +85,12 @@
 		<el-dialog :title="dialogMode == 'view' ? $t('ModifyUsers') : $t('NewUsers')" :visible.sync="dialogVisible">
 			<el-form :model="membersData" :rules="membersDataRules" label-width="100px" ref="membersEditForm">
 				<el-form-item :label="$t('Account')" prop="uid">
-					<el-input @blur="membersData.uid=membersData.uid.replace('X-','')" v-model="membersData.uid" :placeholder="$t('EnterAccount')" :disabled="dialogMode == 'view'"></el-input>
+					<el-input
+						@blur="membersData.uid = membersData.uid.replace('X-', '')"
+						v-model="membersData.uid"
+						:placeholder="$t('EnterAccount')"
+						:disabled="dialogMode == 'view'"
+					></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('Password')" prop="pwd"><el-input v-model="membersData.pwd" :placeholder="$t('EnterPassword')"></el-input></el-form-item>
 				<el-form-item :label="$t('Nickname')" prop="nickname"><el-input v-model="membersData.nickname" :placeholder="$t('EnterNickname')"></el-input></el-form-item>
@@ -222,7 +227,12 @@ export default {
 			this.$router.push('/index');
 		} else {
 			this.findTags();
-			this.findUser();
+			var tid = this.$route.query.tid;
+			if (tid != null && tid != '') {
+				this.loadUserByTag(tid);
+			} else {
+				this.findUser();
+			}
 		}
 	},
 	methods: {
@@ -251,7 +261,7 @@ export default {
 					console.log(data);
 					if (data.code == 200) {
 						this.tagsList = data.data;
-					} 
+					}
 				},
 				err => {
 					this.$message.error(this.$t('FailedToLoadSeeConsole'));
@@ -272,7 +282,7 @@ export default {
 		 */
 		loadUserBySearch() {
 			if (this.keywords == '') {
-				this.tagid='';
+				this.tagid = '';
 				this.findUser();
 			} else {
 				this.findUser({ keywords: this.keywords });
@@ -316,7 +326,7 @@ export default {
 						this.pages.page = res.page;
 						this.pages.size = res.size;
 						this.membersList = res.data || [];
-					} 
+					}
 				},
 				err => {
 					this.$message.error(this.$t('FailedToLoadSeeConsole'));
@@ -396,7 +406,7 @@ export default {
 								this.$message.success(this.$t('AddSuccess'));
 								this.dialogTagsVisible = false;
 								this.findTags();
-							} 
+							}
 						},
 						err => {
 							this.$message.error(this.$t('FailedToAddSeeConsole'));
@@ -429,7 +439,7 @@ export default {
 								this.$message.success(this.$t('ModifySuccess'));
 								this.dialogTagsVisible = false;
 								this.findTags();
-							} 
+							}
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -462,7 +472,7 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.findTags();
-							} 
+							}
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -495,7 +505,7 @@ export default {
 								this.$message.success(this.$t('AddSuccess'));
 								this.dialogVisible = false;
 								this.findUser();
-							} 
+							}
 						},
 						err => {
 							this.$message.error(this.$t('FailedToAddSeeConsole'));
@@ -532,7 +542,7 @@ export default {
 								this.$message.success(this.$t('ModifySuccess'));
 								this.dialogVisible = false;
 								this.findUser();
-							} 
+							}
 						},
 						err => {
 							this.$message.error(this.$t('FailedToModifySeeConsole'));
@@ -590,4 +600,24 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.user-tag-box {
+	display: flex;
+	flex-wrap: wrap;
+	padding-top: 5px;
+}
+.user-tag-box span {
+	margin-bottom: 10px;
+}
+.user-tag {
+	padding: 3px 10px;
+	background-color: #f0f2f5;
+	border: 2px solid #f0f2f5;
+	border-radius: 3px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+.user-tag-current {
+	border: 2px solid #409eff;
+}
+</style>

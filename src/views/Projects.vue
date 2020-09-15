@@ -11,7 +11,7 @@
 					<div v-if="userRole == 'ROOT' || userRole == 'SERVER'">
 						<router-link class="alink" to="/index/members">
 							<el-button type="primary">{{ $t('Members') }}</el-button>
-						</router-link>	
+						</router-link>
 						<router-link class="alink" to="/index/import">
 							<el-button type="primary">{{ $t('ImportAPI') }}</el-button>
 						</router-link>
@@ -40,7 +40,7 @@
 							<el-link type="primary" :underline="false" @click="moveDown(scope.row.key)">{{ $t('MoveDown') }}</el-link>
 						</template>
 					</el-table-column>
-					<el-table-column :label="$t('Operation')" width="300" >
+					<el-table-column :label="$t('Operation')" width="300">
 						<template slot-scope="scope">
 							<div v-if="userRole == 'ROOT' || userRole == 'SERVER'">
 								<router-link :to="'/index/get/project/' + scope.row.key" class="alink">{{ $t('CheckDetails') }}</router-link>

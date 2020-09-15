@@ -56,6 +56,14 @@ export function findUsersAPI(data, res, err) {
 	}).then(res).catch(err);
 }
 /**
+ * 获取所有管理员用户,返回管理员的id与名称
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function findServerUsersAPI(res, err) {
+	request.get('/private/server/find/server/users').then(res).catch(err);
+}
+/**
  * 获取指定用户
  * @param {Object} uid 用户的id
  * @param {Object} res

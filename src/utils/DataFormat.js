@@ -2,6 +2,9 @@
  * 把Long类型的1527672756454日期还原yyyy-MM-dd 00:00:00格式日期 
  */ 
 export function datetimeFormat(longTypeDate){  
+	if(longTypeDate==null||longTypeDate==0){
+		return '';
+	}
  var dateTypeDate = "";  
  var date = new Date();  
  date.setTime(longTypeDate);  
@@ -19,6 +22,9 @@ export function datetimeFormat(longTypeDate){
  * 把Long类型的1527672756454日期还原yyyy-MM-dd格式日期 
  */ 
 export function dateFormat(longTypeDate){  
+	if(longTypeDate==null||longTypeDate==0){
+		return '';
+	}
  var dateTypeDate = "";  
  var date = new Date();  
  date.setTime(longTypeDate);  

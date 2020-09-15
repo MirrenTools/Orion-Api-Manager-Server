@@ -7,6 +7,16 @@
 			<el-form-item :label="$t('ProjectDescription')" prop="description">
 				<el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input>
 			</el-form-item>
+			<el-form-item :label="$t('Owner')" prop="owner" v-if="userRole == 'ROOT'">
+				<el-select filterable v-model="projectEdit.owner" :placeholder="$t('SelectOwner')" style="width:100%">
+					<el-option v-for="item in userList" :key="item.uid" :label="item.nickname" :value="item.uid"></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item :label="$t('ProjectAllowedTags')" prop="owners">
+				<el-select v-model="projectEdit.owners" multiple :placeholder="$t('SelectTheUserAllowedToAccessAllByDefault')" style="width:100%">
+					<el-option v-for="item in userTags" :key="item.tid" :label="item.tname" :value="item.tid"></el-option>
+				</el-select>
+			</el-form-item>
 			<el-form-item :label="$t('Servers')" prop="servers">
 				<template>
 					<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers" :key="idx">
@@ -38,7 +48,9 @@
 
 <script>
 import { saveProjectAPI } from '@/api/Project';
+import { findTagsAPI, findServerUsersAPI } from '@/api/Members';
 import store from '@/store/index.js';
+
 export default {
 	data() {
 		var validateServers = (rule, value, callback) => {
@@ -62,6 +74,7 @@ export default {
 			projectEdit: {
 				versions: '1.0.0',
 				sorts: 0,
+				owners: [],
 				servers: [
 					{
 						url: 'http://127.0.0.1:8080',
@@ -92,16 +105,66 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			/**用户的角色*/
+			userRole: '',
+			/**用户标签列表*/
+			userTags: [],
+			/**用户列表*/
+			userList: []
 		};
 	},
 	created() {
 		var role = store.getters.role;
 		if (role != 'ROOT' && role != 'SERVER') {
 			this.$router.push('/index');
+		} else {
+			this.userRole = role;
+			this.loadUserTags();
+			if (role == 'ROOT') {
+				this.loadServerUsers();
+			}
 		}
 	},
 	methods: {
+		/**
+		 * 加载用户标签列表
+		 */
+		loadUserTags() {
+			findTagsAPI(
+				resp => {
+					var data = resp.data;
+					console.log('load tags...');
+					console.log(data);
+					if (data.code == 200) {
+						this.userTags = data.data;
+					}
+				},
+				err => {
+					this.$message.error(this.$t('FailedToLoadSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 加载管理员列表
+		 */
+		loadServerUsers() {
+			findServerUsersAPI(
+				res => {
+					console.log('load user list...');
+					var data = res.data;
+					console.log(data);
+					if (data.code == 200) {
+						this.userList = data.data;
+					}
+				},
+				err => {
+					this.$message.error(this.$t('LoadUserListFailed'));
+					console.log(err);
+				}
+			);
+		},
 		/**
 		 * 添加服务地址
 		 */
@@ -142,6 +205,10 @@ export default {
 					if (this.projectEdit.description != null) {
 						reqData.description = this.projectEdit.description;
 					}
+					if (this.projectEdit.owner != null && this.projectEdit.owner != '') {
+						reqData.owner = this.projectEdit.owner;
+					}
+					reqData.owners = JSON.stringify(this.projectEdit.owners);
 					if (!isNaN(this.projectEdit.sorts)) {
 						reqData.sorts = parseInt(this.projectEdit.sorts);
 					}
