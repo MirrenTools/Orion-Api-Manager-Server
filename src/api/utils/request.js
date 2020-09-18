@@ -50,7 +50,7 @@ request.interceptors.response.use(res => {
 			return res;
 		} else if (code == 401) {
 			MessageBox.confirm(i18n.t('ResultStatus401'), i18n.t('LoginTimeout'), {
-				confirmButtonText: i18n.t('Confirm'),
+				confirmButtonText: i18n.t('Login'),
 				type: 'warning'
 			}).then(() => {
 				store.dispatch('app/logout');
@@ -58,8 +58,8 @@ request.interceptors.response.use(res => {
 			});
 			return res;
 		} else if (code == 403) {
-			MessageBox.confirm(i18n.t('ResultStatus403'), i18n.t('LoginTimeout'), {
-				confirmButtonText: i18n.t('Confirm'),
+			MessageBox.confirm(i18n.t('ResultStatus403'), i18n.t('Tips'), {
+				confirmButtonText: i18n.t('Login'),
 				type: 'warning'
 			}).then(() => {
 				store.dispatch('app/logout');

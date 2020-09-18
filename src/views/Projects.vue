@@ -8,7 +8,7 @@
 			<div style="display: flex;justify-content: center;align-items: center;margin-bottom: 5px;">
 				<div>{{ $t('ProjectQuantity') }}{{ projectList.length || 0 }}</div>
 				<div style="margin-left: auto;">
-					<div v-if="userRole == 'ROOT' || userRole == 'SERVER'">
+					<div v-if="sessionUserRole == 'ROOT' || sessionUserRole == 'SERVER'">
 						<router-link class="alink" to="/index/members">
 							<el-button type="primary">{{ $t('Members') }}</el-button>
 						</router-link>
@@ -31,24 +31,38 @@
 							<span>{{ formatDate(scope.row.time) }}</span>
 						</template>
 					</el-table-column>
-					<el-table-column :label="$t('ProjectRanking')" width="130" v-if="userRole == 'ROOT' || userRole == 'SERVER'">
+					<el-table-column :label="$t('ProjectRanking')" width="130" v-if="sessionUserRole == 'ROOT' || sessionUserRole == 'SERVER'">
 						<template slot-scope="scope">
 							<span>{{ scope.row.sorts }}</span>
 							&nbsp;
-							<el-link type="primary" :underline="false" @click="moveUp(scope.row.key)">{{ $t('MoveUp') }}</el-link>
+							<el-link
+								type="primary"
+								:underline="false"
+								@click="moveUp(scope.row.key)"
+								v-if="sessionUserRole == 'ROOT' || (sessionUserRole == 'SERVER' && sessionUserId == scope.row.owner)"
+							>
+								{{ $t('MoveUp') }}
+							</el-link>
 							&nbsp;
-							<el-link type="primary" :underline="false" @click="moveDown(scope.row.key)">{{ $t('MoveDown') }}</el-link>
+							<el-link
+								type="primary"
+								:underline="false"
+								@click="moveDown(scope.row.key)"
+								v-if="sessionUserRole == 'ROOT' || (sessionUserRole == 'SERVER' && sessionUserId == scope.row.owner)"
+							>
+								{{ $t('MoveDown') }}
+							</el-link>
 						</template>
 					</el-table-column>
 					<el-table-column :label="$t('Operation')" width="300">
 						<template slot-scope="scope">
-							<div v-if="userRole == 'ROOT' || userRole == 'SERVER'">
+							<div v-if="sessionUserRole == 'ROOT' || (sessionUserRole == 'SERVER' && sessionUserId == scope.row.owner)">
 								<router-link :to="'/index/get/project/' + scope.row.key" class="alink">{{ $t('CheckDetails') }}</router-link>
 								<router-link :to="'/index/get/groups/' + scope.row.key" class="alink">{{ $t('ApiManage') }}</router-link>
-								<a :href="exportServerHost + '/Client-UI/index.html?id=' + scope.row.key" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
+								<a :href="exportServerHost + '/client/index.html?id=' + scope.row.key + '&token=' + sessionId" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
 							</div>
 							<div v-else>
-								<a :href="exportServerHost + '/Client-UI/index.html?id=' + scope.row.key" class="alink">{{ $t('OpenOnClient') }}</a>
+								<a :href="exportServerHost + '/client/index.html?id=' + scope.row.key + '&token=' + sessionId" class="alink">{{ $t('OpenOnClient') }}</a>
 							</div>
 						</template>
 					</el-table-column>
@@ -68,7 +82,11 @@ export default {
 			/**服务器的地址*/
 			exportServerHost: process.env.VUE_APP_BASE_API,
 			/**用户的角色ROOT:超级管理员,SERVER:普通管理员,CLIENT:普通用户*/
-			userRole: store.getters.role,
+			sessionUserRole: store.getters.role,
+			/**用户的id*/
+			sessionUserId: store.getters.uid,
+			/**用户的会话id*/
+			sessionId: store.getters.sessionId,
 			/**项目列表*/
 			projectList: [],
 			/**项目是否加载中*/
@@ -97,8 +115,6 @@ export default {
 					if (data.code == 200) {
 						this.projectList = data.data;
 						this.projectListLoading = false;
-					} else {
-						this.$message.error(this.$t('FailedToGetGroupInfo') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -119,8 +135,6 @@ export default {
 					var data = res.data;
 					if (data.code == 200) {
 						this.loadProjects();
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {
@@ -140,8 +154,6 @@ export default {
 					var data = res.data;
 					if (data.code == 200) {
 						this.loadProjects();
-					} else {
-						this.$message.error(this.$t('MoveFailed') + ':' + data.msg);
 					}
 				},
 				err => {

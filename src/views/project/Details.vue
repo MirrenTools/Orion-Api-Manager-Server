@@ -88,8 +88,8 @@
 					<td class="project-item">{{ $t('Operation') }}</td>
 					<td>
 						<a :href="'#/index/get/groups/' + project.key" class="alink" style="margin-left: 0;">{{ $t('ApiManage') }}</a>
-						<a :href="exportServerHost + '/project/downJson/' + project.key" class="alink">{{ $t('ExportDocument') }}</a>
-						<a :href="exportServerHost + '/Client-UI/index.html?id=' + project.key" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
+						<a :href="exportServerHost + '/private/download/' + project.key+'?token='+sessionId" class="alink">{{ $t('ExportDocument') }}</a>
+						<a :href="exportServerHost + '/client/index.html?id=' + project.key+'&token='+sessionId" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
 					</td>
 				</tr>
 			</table>
@@ -170,7 +170,10 @@ export default {
 			}
 		};
 		return {
+			/**服务器的地址*/
 			exportServerHost: process.env.VUE_APP_BASE_API,
+			/**用户的会话id*/
+			sessionId: store.getters.sessionId,
 			/**查看项目的属性*/
 			project: {},
 			/**编辑的项目属性*/
