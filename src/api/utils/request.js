@@ -14,6 +14,7 @@ const request = axios.create({
 	timeout: 30000,
 });
 
+
 //请求拦截器
 request.interceptors.request.use(req => {
 		if (req.url.startsWith('/private')) {
