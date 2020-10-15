@@ -1,6 +1,7 @@
 export default {
 	OrionApiManager:'Orion-API-Manager',
 	Login: '登录',
+	EditProfile: '编辑个人信息',
 	Logout: '退出登录',
 	LogoutConfirm: '确定退出登录吗?',
 	LoginTimeout: '登录超时',

@@ -1,6 +1,7 @@
 export default {
 	OrionApiManager: 'Orion-API-Manager',
 	Login: 'Login',
+	EditProfile:'Edit profile',
 	Logout: 'Logout',
 	LogoutConfirm: 'Are you sure you want to log out?',
 	LoginTimeout: 'Login timeout',

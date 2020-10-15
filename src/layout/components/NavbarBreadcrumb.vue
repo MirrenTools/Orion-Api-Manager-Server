@@ -1,6 +1,8 @@
 <template>
 	<el-breadcrumb class="app-breadcrumb" separator-class="el-icon-arrow-right">
-		<el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path" :to="item.path">{{ item.title }}</el-breadcrumb-item>
+		<el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path">
+			<router-link :to="{ path: item.path }">{{ item.title }}</router-link>
+		</el-breadcrumb-item>
 	</el-breadcrumb>
 </template>
 
@@ -58,8 +60,8 @@ export default {
 							}
 							if (val != null) {
 								if (breadcrumbPath.endsWith(k)) {
-									var reg = new RegExp('(.*):' + k); 
-									breadcrumbPath = breadcrumbPath.replace(reg, '$1'+val);
+									var reg = new RegExp('(.*):' + k);
+									breadcrumbPath = breadcrumbPath.replace(reg, '$1' + val);
 								} else {
 									breadcrumbPath = breadcrumbPath.replace(':' + k + '/', val);
 								}
@@ -67,8 +69,7 @@ export default {
 						}
 					}
 					breadcrumb.path = breadcrumbPath + (queryParams || '');
-					
-					
+
 					breadcrumb.title = this.$t(route.title);
 					this.breadcrumbList.push(breadcrumb);
 				}

@@ -143,7 +143,8 @@
 										>
 											<el-table-column prop="required" :label="$t('Required')" width="100" align="right">
 												<template slot-scope="scope">
-													<span>{{ scope.row.required == 'true' || scope.row.required == true ? $t('True') : $t('False') }}</span>
+													<span v-if="scope.row.required == 'true' || scope.row.required == true">{{ $t('True')}}</span>
+													<span v-if="scope.row.required == 'false' || scope.row.required == false">{{ $t('False')}}</span>
 												</template>
 											</el-table-column>
 											<el-table-column prop="in" :label="$t('Position')" width="120"></el-table-column>

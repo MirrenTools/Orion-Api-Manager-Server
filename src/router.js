@@ -33,6 +33,17 @@ export const constantRoutes = [{
 			name: 'ProjectList',
 			component: () => import('./views/Projects')
 		}, {
+			path: 'profile',
+			name: 'EditProfile',
+			component: () => import('./views/members/Profile'),
+			meta: {
+				title: 'EditProfile',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				}]
+			}
+		}, {
 			path: 'members',
 			name: 'Members',
 			component: () => import('./views/members/Members'),
