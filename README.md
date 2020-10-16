@@ -29,8 +29,4 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## TODO list
-- 普通用户可以修改密码
-- 配置文件动态
-- 代理请求是否需要鉴权
-- 是否允许访问客户端
 - 新建API增加模板

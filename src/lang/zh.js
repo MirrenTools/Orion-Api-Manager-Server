@@ -1,7 +1,7 @@
 export default {
 	OrionApiManager:'Orion-API-Manager',
 	Login: '登录',
-	EditProfile: '编辑个人信息',
+	Profile: '登录信息',
 	Logout: '退出登录',
 	LogoutConfirm: '确定退出登录吗?',
 	LoginTimeout: '登录超时',
@@ -50,6 +50,8 @@ export default {
 	Account: '登录账号',
 	EnterAccount:'请输入4-32位账号',
 	Password: '登录密码',
+	ModifyPassword: '修改登录密码',
+	IfSuperAdministratorWantsToChangeThePasswordNeedsToBeModifiedInConf:'超级管理员修改密码需要在配置文件中修改',
 	EnterPassword:'请输入4-32位密码',
 	LoginFailed: '登录失败!请检查账号密码是否正确!',
 	AccountRequires_4_32: '请输入4-32位账号',
@@ -210,7 +212,7 @@ export default {
 	EnterUserContact:'请输入联系信息',
 	UserTags:'所属标签',
 	LastLoginTime:'最后登录时间',
-		
+	
 	ResultStatus0:'未知错误',
 	ResultStatus200:'成功',
 	ResultStatus202:'操作完成,但需要你检查是否成功',

@@ -34,10 +34,10 @@ export const constantRoutes = [{
 			component: () => import('./views/Projects')
 		}, {
 			path: 'profile',
-			name: 'EditProfile',
+			name: 'Profile',
 			component: () => import('./views/members/Profile'),
 			meta: {
-				title: 'EditProfile',
+				title: 'Profile',
 				breadcrumb: [{
 					path: '/index',
 					title: 'ProjectList'

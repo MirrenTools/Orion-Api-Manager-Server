@@ -1,7 +1,7 @@
 export default {
 	OrionApiManager: 'Orion-API-Manager',
 	Login: 'Login',
-	EditProfile:'Edit profile',
+	Profile:'Profile',
 	Logout: 'Logout',
 	LogoutConfirm: 'Are you sure you want to log out?',
 	LoginTimeout: 'Login timeout',
@@ -52,6 +52,8 @@ export default {
 	Account: 'Account',
 	EnterAccount:'Please enter account 4-32 words',
 	Password: 'Password',
+	ModifyPassword:'Modify password',
+	IfSuperAdministratorWantsToChangeThePasswordNeedsToBeModifiedInConf:'If super administrator wants to change the password needs to be modified in conf',
 	EnterPassword:'Please enter password 4-32 words',
 	LoginFailed: 'Login failed! Please check whether the account password is correct!',
 	AccountRequires_4_32: 'Account requires 4-32 words',

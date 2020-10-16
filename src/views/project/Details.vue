@@ -532,6 +532,7 @@ export default {
 .project-item {
 	text-align: right;
 	padding-right: 5px;
+	color: #666;
 }
 
 .desc-constraint span {

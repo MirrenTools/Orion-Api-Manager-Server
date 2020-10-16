@@ -4,7 +4,7 @@
 		<img src="../../assets/logo.png" class="hamburger-container" style="margin-left: 5px;" />
 		<breadcrumb class="breadcrumb-container" />
 		<div class="right-menu">
-			<el-link type="info" href="#/index/profile" style="margin-right: 1rem;">{{$t('EditProfile')}}</el-link>
+			<el-link type="info" href="#/index/profile" style="margin-right: 1rem;">{{$t('Profile')}}</el-link>
 			<el-popover placement="bottom" :title="$t('LogoutConfirm')" width="200" trigger="click" v-model="logoutVisible">
 				<div style="text-align: right; margin: 0">
 					<el-button size="mini" @click="logoutVisible = false">{{ $t('Cancel') }}</el-button>

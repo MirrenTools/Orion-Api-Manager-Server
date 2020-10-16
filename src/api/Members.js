@@ -1,5 +1,17 @@
 import request from './utils/Request'
 
+
+/**
+ * 修改登录密码
+ * @param {Object} data: {id(String):登录的id,pwd(String):登录的密码}
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function putPasswordAPI(data, res, err) {
+	request.put('/private/profile/password',data).then(res).catch(err);
+}
+
+
 /**
  * 获取所有标签
  * @param {Object} res
@@ -19,7 +31,7 @@ export function getTagAPI(tid, res, err) {
 }
 /**
  * 新增标签
- * @param {Object} data {tname(String):标签的名称,sorts(0):标签的排序}
+ * @param {Object} data {tname(String):标签的名称,sorts(int):标签的排序}
  * @param {Object} res
  * @param {Object} err
  */
@@ -28,7 +40,7 @@ export function postTagAPI(data, res, err) {
 }
 /**
  * 修改标签
- * @param {Object} data {tid(String):标签的id,tname(String):标签的名称,sorts(0):标签的排序}
+ * @param {Object} data {tid(String):标签的id,tname(String):标签的名称,sorts(int):标签的排序}
  * @param {Object} res
  * @param {Object} err
  */

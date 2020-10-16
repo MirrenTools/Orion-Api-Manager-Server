@@ -195,7 +195,8 @@
 			</el-form>
 		</div>
 
-		<el-dialog :title="$t('Edit')" width="80%" style="max-width: 1240px;" :visible.sync="dialogDataEditVisible">
+		<!-- 编辑参数的弹窗 -->
+		<el-dialog :title="$t('Edit')" :visible.sync="dialogDataEditVisible">
 			<el-form :model="parameterData" label-width="100px">
 				<el-form-item :label="$t('Type')">
 					<el-select v-model="parameterData.type" :placeholder="$t('Select')">
