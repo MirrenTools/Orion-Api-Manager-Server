@@ -8,24 +8,39 @@
 		<div style="width: 98%; max-width: 1240px;margin:0 auto 50px;">
 			<el-form ref="apiForm" label-position="right" label-width="120px" :model="api" :rules="apiRules">
 				<el-form-item label="Method">
-					<el-select v-model="api.method" :placeholder="$t('Select')">
-						<el-option value="get">get</el-option>
-						<el-option value="head">head</el-option>
-						<el-option value="post">post</el-option>
-						<el-option value="put">put</el-option>
-						<el-option value="delete">delete</el-option>
-						<el-option value="options">options</el-option>
-						<el-option value="patch">patch</el-option>
-						<el-option value="trace">trace</el-option>
-						<el-option value="connect">connect</el-option>
-						<el-option value="other">other</el-option>
-					</el-select>
+					<div style="display: flex;">
+						<div>
+							<el-select v-model="api.method" :placeholder="$t('Select')">
+								<el-option value="get">get</el-option>
+								<el-option value="head">head</el-option>
+								<el-option value="post">post</el-option>
+								<el-option value="put">put</el-option>
+								<el-option value="delete">delete</el-option>
+								<el-option value="options">options</el-option>
+								<el-option value="patch">patch</el-option>
+								<el-option value="trace">trace</el-option>
+								<el-option value="connect">connect</el-option>
+								<el-option value="other">other</el-option>
+							</el-select>
+						</div>
+						<div style="margin-left: auto;">
+							<el-select v-model="selectTemplate" :placeholder="$t('TemplateList')" @change="loadTemplate">
+								<el-option v-for="item in templateList" :key="item.tid" :value="item.tid" :label="item.name">
+									<span style="float: left;max-width: 500px;overflow: hidden;text-overflow: ellipsis;white-space:nowrap;">{{ item.name }}</span>
+									<div style="float: right;display: inline-block;margin-left: 10px;">
+										<el-link type="danger" @click="deleteTemplate(item.tid)">{{ $t('Delete') }}</el-link>
+									</div>
+								</el-option>
+							</el-select>
+						</div>
+					</div>
 				</el-form-item>
 				<el-form-item prop="path" label="Path"><el-input v-model="api.path" :placeholder="$t('EnterPath')"></el-input></el-form-item>
 				<el-form-item prop="title" :label="$t('ApiName')"><el-input v-model="api.title" :placeholder="$t('EnterApiName')"></el-input></el-form-item>
 				<el-form-item :label="$t('ApiDescription')"><el-input type="textarea" v-model="api.description" :placeholder="$t('EnterApiDescription')"></el-input></el-form-item>
 				<el-form-item :label="$t('Ranking')"><el-input v-model="api.sorts" type="number" :placeholder="$t('EnterRanking')"></el-input></el-form-item>
 				<el-form-item label="Consumes"><el-input v-model="api.consumes" :placeholder="$t('EnterConsumes')"></el-input></el-form-item>
+				<!-- 请求参数 -->
 				<el-form-item :label="$t('Parameters')">
 					<div>
 						<el-table
@@ -97,6 +112,7 @@
 						</el-table>
 						<div style="text-align: right;margin-top: 5px;margin-bottom: 3px;">
 							<div style="text-align: right;">
+								<el-button @click="saveParameterToLocal()">{{ $t('Lock') }}</el-button>
 								<el-button @click="addParameter()">{{ $t('AddParam') }}</el-button>
 							</div>
 						</div>
@@ -104,6 +120,7 @@
 					</div>
 				</el-form-item>
 				<el-form-item label="Produces"><el-input v-model="api.produces" :placeholder="$t('EnterProduces')"></el-input></el-form-item>
+				<!-- 响应结果 -->
 				<el-form-item :label="$t('ResponsesResult')">
 					<div>
 						<div v-for="(resp, idx) in responses" :key="idx" style="border: 1px solid #c6e2ff; padding: 5px;margin-bottom: 5px;">
@@ -183,6 +200,7 @@
 							</div>
 						</div>
 						<div style="text-align: right;">
+							<el-button @click="saveResponseToLocal()">{{ $t('Lock') }}</el-button>
 							<el-button @click="addResponse()">{{ $t('AddMore') }}</el-button>
 						</div>
 					</div>
@@ -191,6 +209,7 @@
 				<el-form-item :label="$t('ExtDocsDesc')"><el-input type="textarea" v-model="api.exDdescription" :placeholder="$t('EnterExtDocsDesc')"></el-input></el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="submitCreateApi()">{{ $t('Submit') }}</el-button>
+					<el-button @click="saveAsTemplate()">{{ $t('SaveAsTemplate') }}</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -243,7 +262,7 @@
 						</el-table-column>
 						<el-table-column prop="description" :label="$t('ParamDescription')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.description" type="textarea" :rows="1" :placeholder="$t('EnterParamDescription')" style="margin: 5px auto;"></el-input>
+								<el-input v-model="scope.row.description" type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" :placeholder="$t('EnterParamDescription')" style="margin: 5px auto;"></el-input>
 							</template>
 						</el-table-column>
 						<el-table-column :label="$t('Operation')" width="65">
@@ -291,13 +310,20 @@
 </template>
 
 <script>
-import { saveApiAPI } from '@/api/Project';
+import { saveApiAPI, findApiTemplateListAPI, getApiTemplateAPI, postApiTemplateAPI, deleteApiTemplateAPI } from '@/api/Project';
 import store from '@/store/index.js';
+/**保存请求参数的key*/
+const LOCALSTORAGE_CACHE_KEY_PARAMETER = 'localstorage_cache_key_parameter';
+/**保存响应参数的key*/
+const LOCALSTORAGE_CACHE_KEY_RESPONSE = 'localstorage_cache_key_response';
 export default {
 	data() {
 		return {
+			/**项目的id*/
 			projectId: '',
+			/**分组的id*/
 			groupId: '',
+			/**API信息*/
 			api: {
 				// apiId: 'apiId',
 				// deprecated: true,
@@ -329,6 +355,7 @@ export default {
 				// }],
 				// responses: []
 			},
+			/**API的参数检查*/
 			apiRules: {
 				path: [
 					{
@@ -345,17 +372,25 @@ export default {
 					}
 				]
 			},
+			/**API中的请求参数*/
 			parameters: [],
 			/**是否显示数据编辑框*/
 			dialogDataEditVisible: false,
+			/**请求参数*/
 			parameterData: {},
+			/***响应数据*/
 			responses: [
 				{
 					status: 200,
 					msg: 'ok',
 					data: []
 				}
-			]
+			],
+			/**选中的模板id*/
+			selectTemplate: '',
+			/**模板列表*/
+			templateList: [{ tid: 'template id', name: 'template name' }]
+			/**附加请求说明*/
 			// additional:[{title:'title',description:'description'}]
 		};
 	},
@@ -369,6 +404,26 @@ export default {
 			if (this.groupId == null) {
 				this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
 				return;
+			}
+			//加载模板列表
+			this.loadTemplateList();
+			//加载锁定的请求参数
+			var parameters = localStorage.getItem(LOCALSTORAGE_CACHE_KEY_PARAMETER);
+			if (parameters != null && parameters != '') {
+				var items = JSON.parse(parameters);
+				console.log('parameter lock data:');
+				console.log(items);
+				this.parameters = [];
+				this.convertToParameters(items);
+			}
+			//加载锁定的响应参数
+			var responses = localStorage.getItem(LOCALSTORAGE_CACHE_KEY_RESPONSE);
+			if (responses != null && responses != '') {
+				this.responses = [];
+				var items = JSON.parse(responses);
+				console.log('response lock data:');
+				console.log(items);
+				this.convertToResponse(items);
 			}
 		}
 	},
@@ -554,6 +609,147 @@ export default {
 			});
 		},
 		/**
+		 * 保存为模板
+		 */
+		saveAsTemplate() {
+			this.$prompt(this.$t('EnterTemplateName'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
+				inputPattern: /.+/,
+				inputErrorMessage: this.$t('EnterTemplateName')
+			})
+				.then(({ value }) => {
+					var seen = [];
+					var replacer = function(key, value) {
+						if (typeof value === 'object' && value !== null) {
+							if (seen.indexOf(value) >= 0) {
+								return;
+							}
+							seen.push(value);
+						}
+						return value;
+					};
+					var reqData = {};
+					reqData.name = value;
+					reqData.api = JSON.stringify(this.api);
+					reqData.parameters = JSON.stringify(this.parameters, replacer);
+					reqData.responses = JSON.stringify(this.responses, replacer);
+					console.log('save as template ...');
+					console.log(reqData);
+					this.saveTemplate(reqData);
+				})
+				.catch(() => {});
+		},
+		/**
+		 * 保存API模板
+		 * @param {Object} reqData
+		 */
+		saveTemplate(reqData) {
+			postApiTemplateAPI(
+				reqData,
+				res => {
+					var data = res.data;
+					console.log('save template ...');
+					console.log(data);
+					if (data.code == 200) {
+						this.$message.success(this.$t('SaveSuccess'));
+						this.loadTemplateList();
+					}
+				},
+				err => {
+					this.$message.error(this.$t('FailedToSaveSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 加载API模板列表
+		 */
+		loadTemplateList() {
+			findApiTemplateListAPI(
+				res => {
+					var data = res.data;
+					console.log('load template list...');
+					console.log(data);
+					if (data.code == 200) {
+						this.templateList = data.data;
+					}
+				},
+				err => {
+					FailedToGetInfoSeeConsole;
+					this.$message.error(this.$t('FailedToGetInfoSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 加载指定模板
+		 * @param {Object} tid
+		 */
+		loadTemplate(tid) {
+			console.log('load template ' + tid);
+			getApiTemplateAPI(
+				tid,
+				res => {
+					var data = res.data;
+					console.log('load template ...');
+					console.log(data);
+					if (data.code == 200) {
+						var res = data.data;
+						if (res.api != null && res.api != '') {
+							this.api = JSON.parse(res.api);
+						}
+						if (res.parameters != null && res.parameters != '') {
+							var items = JSON.parse(res.parameters);
+							this.parameters=[];
+							this.convertToParameters(items);
+						}
+						if (res.responses != null && res.responses != '') {
+							var items = JSON.parse(res.responses);
+							this.responses = [];
+							this.convertToResponse(items);
+						}
+					}
+				},
+				err => {
+					this.$message.error(this.$t('FailedToGetInfoSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 删除指定API模板
+		 * @param {Object} tid
+		 */
+		deleteTemplate(tid) {
+			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
+				type: 'warning'
+			})
+				.then(() => {
+					console.log('delete template ' + tid);
+					deleteApiTemplateAPI(
+						tid,
+						res => {
+							var data = res.data;
+							console.log('delete template ...');
+							console.log(data);
+							if (data.code == 200) {
+								this.loadTemplateList();
+								this.selectTemplate = '';
+								this.$message.success(this.$t('DeleteSuccess'));
+							}
+						},
+						err => {
+							this.$message.error(this.$t('FailedToAddSeeConsole'));
+							console.log(err);
+						}
+					);
+				})
+				.catch(() => {});
+		},
+		/**
 		 * 递归获取items里面的内容
 		 * @param {Object} to
 		 * @param {Object} items
@@ -575,6 +771,60 @@ export default {
 			}
 		},
 		/**
+		 * 将以保存的请求参数转换为显示数据
+		 * @param {Object} items
+		 */
+		convertToParameters(items) {
+			if (items == null || items.length == 0) {
+				return;
+			}
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				item.ref = this.parameters;
+				if (item.items != null && item.items.length != 0) {
+					this.recursionAddItemsRef(item.items, item.items);
+				}
+				this.parameters.push(item);
+			}
+		},
+		/**
+		 * 将以保存的响应数据转换为显示数据
+		 * @param {Object} items
+		 */
+		convertToResponse(items){
+			if (items == null || items.length == 0) {
+				return;
+			}
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.data != null) {
+					for (var j = 0; j < item.data.length; j++) {
+						item.data[j].ref = item.data;
+						if (item.data[j].items != null && item.data[j].items.length != 0) {
+							this.recursionAddItemsRef(item.data[j].items, item.data[j].items);
+						}
+					}
+				}
+				this.responses.push(item);
+			}
+		},
+		/**
+		 * 递归添加参数引用
+		 * @param {Object} ref
+		 * @param {Object} items
+		 */
+		recursionAddItemsRef(ref, items) {
+			if (items == null || items.length == 0) {
+				return;
+			}
+			for (var i = 0; i < items.length; i++) {
+				items[i].ref = ref;
+				if (items[i].items != null && items[i].items.length != 0) {
+					this.recursionAddItemsRef(items[i].items, items[i].items);
+				}
+			}
+		},
+		/**
 		 * 添加请求参数
 		 */
 		addParameter() {
@@ -590,9 +840,31 @@ export default {
 				ref: this.parameters
 			});
 		},
+		/**
+		 * 是否显示参数编辑框
+		 * @param {Object} data
+		 */
 		showParameterEdit(data) {
 			this.dialogDataEditVisible = true;
 			this.parameterData = data;
+		},
+		/**
+		 * 保存请求参数
+		 */
+		saveParameterToLocal() {
+			var seen = [];
+			var replacer = function(key, value) {
+				if (typeof value === 'object' && value !== null) {
+					if (seen.indexOf(value) >= 0) {
+						return;
+					}
+					seen.push(value);
+				}
+				return value;
+			};
+			var parameters = JSON.stringify(this.parameters, replacer);
+			localStorage.setItem(LOCALSTORAGE_CACHE_KEY_PARAMETER, parameters);
+			this.$message.success(this.$t('LockTips'));
 		},
 		/**
 		 * 添加响应参数
@@ -603,6 +875,24 @@ export default {
 				msg: null,
 				data: []
 			});
+		},
+		/**
+		 * 保存响应参数
+		 */
+		saveResponseToLocal() {
+			var seen = [];
+			var replacer = function(key, value) {
+				if (typeof value === 'object' && value !== null) {
+					if (seen.indexOf(value) >= 0) {
+						return;
+					}
+					seen.push(value);
+				}
+				return value;
+			};
+			var responses = JSON.stringify(this.responses, replacer);
+			localStorage.setItem(LOCALSTORAGE_CACHE_KEY_RESPONSE, responses);
+			this.$message.success(this.$t('LockTips'));
 		},
 		/**
 		 * 给响应数据添加参数

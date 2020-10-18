@@ -167,7 +167,7 @@ export function getApiAPI(aid, res, err) {
  * @param {Object} err
  */
 export function saveApiAPI(data, res, err) {
-	request.post('/private/server/api' , data).then(res).catch(err);
+	request.post('/private/server/api', data).then(res).catch(err);
 }
 /**
  * 修改API
@@ -176,7 +176,7 @@ export function saveApiAPI(data, res, err) {
  * @param {Object} err
  */
 export function updateApiAPI(data, res, err) {
-	request.put('/private/server/api' , data).then(res).catch(err);
+	request.put('/private/server/api', data).then(res).catch(err);
 }
 
 /**
@@ -205,4 +205,42 @@ export function apiMoveDownAPI(aid, res, err) {
  */
 export function deleteAPI(aid, res, err) {
 	request.delete('/private/server/api/' + aid).then(res).catch(err);
+}
+
+/**
+ * 获取API模板的列表,返回模板的id与名称
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function findApiTemplateListAPI(res, err) {
+	request.get('/private/server/api/template').then(res).catch(err);
+}
+
+/**
+ * 获取API模板详情
+ * @param {Object} tid 模板的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function getApiTemplateAPI(tid, res, err) {
+	request.get('/private/server/api/template/' + tid).then(res).catch(err);
+}
+/**
+ * 新增API模板
+ * @param {Object} data 模板的数据
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function postApiTemplateAPI(data, res, err) {
+	request.post('/private/server/api/template',data).then(res).catch(err);
+}
+
+/**
+ * 删除API指定模板
+ * @param {Object} tid 模板的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function deleteApiTemplateAPI(tid, res, err) {
+	request.delete('/private/server/api/template/' + tid).then(res).catch(err);
 }

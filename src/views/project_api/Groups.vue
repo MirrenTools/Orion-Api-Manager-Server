@@ -553,9 +553,9 @@ export default {
 					daleteApiGroup(
 						gid,
 						res => {
+							var data = res.data;
 							console.log('delete group ...');
 							console.log(data);
-							var data = res.data;
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								location.reload();

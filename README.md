@@ -29,4 +29,3 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## TODO list
-- 新建API增加模板

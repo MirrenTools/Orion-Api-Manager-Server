@@ -100,7 +100,7 @@
 				</div>
 			</el-form-item>
 			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">{{ loginFailedTips }}</p>
-			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginHandler">{{ $t('Login') }}</el-button>
+			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginCheckHandler">{{ $t('Login') }}</el-button>
 		</el-form>
 	</div>
 </template>
@@ -187,6 +187,21 @@ export default {
 			this.verifyIndex = index;
 			this.verifyValue = value;
 			if (this.loginForm.id != '' && this.loginForm.password != '') {
+				this.loginCheckHandler();
+			}
+		},
+		/**
+		 * 登录前检查操作,主要检查是否使用了默认的登录账号与密码
+		 */
+		loginCheckHandler() {
+			if (this.loginForm.id == 'X-root' && this.loginForm.password == 'helloOAM') {
+				this.$alert(this.$t('PleaseModifyTheLoginPassword'), this.$t('Tips'), {
+					confirmButtonText: this.$t('Confirm'),
+					callback: action => {
+						this.loginHandler();
+					}
+				});
+			} else {
 				this.loginHandler();
 			}
 		},
@@ -222,7 +237,7 @@ export default {
 								this.$store.dispatch('app/login', info);
 								console.log('Login successful!');
 								this.$router.push('/index');
-							}else if(resp.code == 1304){
+							} else if (resp.code == 1304) {
 								console.log('Login failed:' + resp.msg);
 								this.loginError = true;
 								this.loginFailedTips = this.$t('ResultStatus1304');

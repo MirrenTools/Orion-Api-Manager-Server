@@ -31,6 +31,7 @@
 				<el-form-item :label="$t('ApiDescription')"><el-input type="textarea" v-model="api.description" :placeholder="$t('EnterApiDescription')"></el-input></el-form-item>
 				<el-form-item :label="$t('Ranking')"><el-input v-model="api.sorts" type="number" :placeholder="$t('EnterRanking')"></el-input></el-form-item>
 				<el-form-item label="Consumes"><el-input v-model="api.consumes" :placeholder="$t('EnterConsumes')"></el-input></el-form-item>
+				<!-- 请求参数 -->
 				<el-form-item :label="$t('Parameters')">
 					<div>
 						<el-table
@@ -109,6 +110,7 @@
 					</div>
 				</el-form-item>
 				<el-form-item label="Produces"><el-input v-model="api.produces" :placeholder="$t('EnterProduces')"></el-input></el-form-item>
+				<!-- 响应参数 -->
 				<el-form-item :label="$t('ResponsesResult')">
 					<div>
 						<div v-for="(resp, idx) in responses" :key="idx" style="border: 1px solid #c6e2ff; padding: 5px;margin-bottom: 5px;">
@@ -188,7 +190,7 @@
 							</div>
 						</div>
 						<div style="text-align: right;">
-							<el-button @click="addResponse()">{{ $t('AddMore') }}</el-button>
+							<el-button  @click="addResponse()">{{ $t('AddMore') }}</el-button>
 						</div>
 					</div>
 				</el-form-item>
