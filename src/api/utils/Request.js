@@ -58,6 +58,9 @@ request.interceptors.response.use(res => {
 				location.href = '#/login';
 			});
 			return res;
+		}else if (code == 402) {
+			Message.success(i18n.t('ResultStatus402'));
+			return res;
 		} else if (code == 403) {
 			MessageBox.confirm(i18n.t('ResultStatus403'), i18n.t('Tips'), {
 				confirmButtonText: i18n.t('Login'),
@@ -67,8 +70,14 @@ request.interceptors.response.use(res => {
 				location.href = '#/login';
 			});
 			return res;
+		}else if (code == 404) {
+			Message.error(i18n.t('ResultStatus404'));
+			return res;
 		} else if (code == 412) {
 			Message.warning(i18n.t('ResultStatus412'));
+			return res;
+		}  else if (code == 500) {
+			Message.error(i18n.t('ResultStatus500'));
 			return res;
 		} else if (code == 555) {
 			Message.error(i18n.t('ResultStatus555'));
@@ -82,6 +91,9 @@ request.interceptors.response.use(res => {
 		} else if (code == 1003) {
 			Message.error(i18n.t('ResultStatus1003'));
 			return res;
+		} else if (code == 1004) {
+			Message.error(i18n.t('ResultStatus1004'));
+			return res;
 		} else if (code == 1010) {
 			Message.error(i18n.t('ResultStatus1010'));
 			return res;
@@ -94,10 +106,18 @@ request.interceptors.response.use(res => {
 		} else if (code == 1101) {
 			Message.error(i18n.t('ResultStatus1101'));
 			return res;
+		} else if (code == 1303) {
+			Message.error(i18n.t('ResultStatus1303'));
+			return res;
+		} else if (code == 1304) {
+			Message.error(i18n.t('ResultStatus1304'));
+			return res;
 		} else {
 			Message.error(i18n.t('ResultStatus0'));
 			return res;
 		}
+
+		
 	},
 	error => {
 		console.log(error)
