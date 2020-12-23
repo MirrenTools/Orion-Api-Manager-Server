@@ -616,6 +616,8 @@ export default {
 							params.push(d);
 						}
 						reqData.parameters = JSON.stringify(params);
+					}else{
+						reqData.parameters="[]";
 					}
 					if (this.api.body != null && this.api.body != '') {
 						reqData.body = this.api.body;
