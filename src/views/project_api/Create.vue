@@ -112,8 +112,11 @@
 						</el-table>
 						<div style="text-align: right;margin-top: 5px;margin-bottom: 3px;">
 							<div style="text-align: right;">
-								<el-button @click="saveParameterToLocal()">{{ $t('Lock') }}</el-button>
+								<el-button @click="removeParameterToLocal()" size="mini">{{ $t('ClearLock') }}</el-button>
+								<el-button @click="saveParameterToLocal()" size="mini">{{ $t('Lock') }}</el-button>
 								<el-button @click="addParameter()">{{ $t('AddParam') }}</el-button>
+								<el-input v-model="parameterItems" style="width: 50px;margin-left:3px;" size="mini"></el-input>
+								{{ $t('Item') }}
 							</div>
 						</div>
 						<div><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" :placeholder="$t('EnterRequestBody')" v-model="api.body"></el-input></div>
@@ -182,12 +185,16 @@
 								</el-table-column>
 								<el-table-column :label="$t('Operation')" width="65">
 									<template v-slot="scope">
-										<el-popover placement="left-start" trigger="click">
+										<el-popover placement="left-start" trigger="click" @show="parameterDataEditItems=1">
 											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">{{ $t('MoveUp') }}</el-button>
 											<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">{{ $t('MoveDown') }}</el-button>
-											<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">
-												{{ $t('AddParam') }}
-											</el-button>
+											<div style="margin-left:10px;display: inline-block;">
+												<div v-show="scope.row.type == 'object' || scope.row.type == 'array'" style="margin-right: 10px;">
+													<el-button size="mini" type="primary" @click="addDataItems(scope.row,parameterDataEditItems)">{{ $t('AddParam') }}</el-button>
+													<el-input v-model="parameterDataEditItems" style="width: 50px;margin-left:3px;" size="mini"></el-input>
+													{{ $t('Item') }}
+												</div>
+											</div>
 											<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">{{ $t('Delete') }}</el-button>
 											<el-button slot="reference" size="mini" icon="el-icon-edit"></el-button>
 										</el-popover>
@@ -196,11 +203,14 @@
 							</el-table>
 							<div style="text-align: right;padding-top: 3px;">
 								<el-button size="mini" type="danger" @click="removeResponseData(idx)">{{ $t('Remove') }}</el-button>
-								<el-button size="mini" @click="addResponseData(resp.data)">{{ $t('AddParam') }}</el-button>
+								<el-button size="mini" @click="addResponseData(resp)">{{ $t('AddParam') }}</el-button>
+								<el-input v-model="resp.parameterItems" style="width: 50px;margin-left:3px;" size="mini"></el-input>
+								{{ $t('Item') }}
 							</div>
 						</div>
 						<div style="text-align: right;">
-							<el-button @click="saveResponseToLocal()">{{ $t('Lock') }}</el-button>
+							<el-button @click="removeResponseToLocal()" size="mini">{{ $t('ClearLock') }}</el-button>
+							<el-button @click="saveResponseToLocal()" size="mini">{{ $t('Lock') }}</el-button>
 							<el-button @click="addResponse()">{{ $t('AddMore') }}</el-button>
 						</div>
 					</div>
@@ -262,17 +272,27 @@
 						</el-table-column>
 						<el-table-column prop="description" :label="$t('ParamDescription')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.description" type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" :placeholder="$t('EnterParamDescription')" style="margin: 5px auto;"></el-input>
+								<el-input
+									v-model="scope.row.description"
+									type="textarea"
+									:autosize="{ minRows: 1, maxRows: 3 }"
+									:placeholder="$t('EnterParamDescription')"
+									style="margin: 5px auto;"
+								></el-input>
 							</template>
 						</el-table-column>
 						<el-table-column :label="$t('Operation')" width="65">
 							<template v-slot="scope">
-								<el-popover placement="left-start" trigger="click">
+								<el-popover placement="left-start" trigger="click" @show="parameterDataEditItems=1">
 									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 0)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="tableColumnMove(scope.row, scope.row.tableRowkey, 1)">{{ $t('MoveDown') }}</el-button>
-									<el-button size="mini" type="primary" v-show="scope.row.type == 'object' || scope.row.type == 'array'" @click="addDataItems(scope.row)">
-										{{ $t('AddParam') }}
-									</el-button>
+									<div style="margin-left:10px;display: inline-block;">
+										<div v-show="scope.row.type == 'object' || scope.row.type == 'array'" style="margin-right: 10px;">
+											<el-button size="mini" type="primary" @click="addDataItems(scope.row,parameterDataEditItems)">{{ $t('AddParam') }}</el-button>
+											<el-input v-model="parameterDataEditItems" style="width: 50px;margin-left:3px;" size="mini"></el-input>
+											{{ $t('Item') }}
+										</div>
+									</div>
 									<el-button size="mini" type="danger" @click="tableColumnRemove(scope.row)">{{ $t('Delete') }}</el-button>
 									<el-button slot="reference" size="mini" icon="el-icon-edit"></el-button>
 								</el-popover>
@@ -280,7 +300,9 @@
 						</el-table-column>
 					</el-table>
 					<div style="text-align: right;">
-						<el-button size="mini" @click="addDataItems(parameterData)">{{ $t('AddParam') }}</el-button>
+						<el-button size="mini" @click="parameterEditAddDataItem(parameterData)">{{ $t('AddParam') }}</el-button>
+						<el-input v-model="parameterDataItems" style="width: 50px;margin-left:3px;" size="mini"></el-input>
+						{{ $t('Item') }}
 					</div>
 				</el-form-item>
 				<el-form-item :label="$t('MaxLength')" v-show="parameterData.type == 'string'">
@@ -374,15 +396,26 @@ export default {
 			},
 			/**API中的请求参数*/
 			parameters: [],
+			/**添加多少项请求参数*/
+			parameterItems: 1,
 			/**是否显示数据编辑框*/
 			dialogDataEditVisible: false,
-			/**请求参数*/
+			/**请求参数弹窗编辑的参数*/
 			parameterData: {},
+			/**请求参数弹窗编辑的参数的添加项*/
+			parameterDataItems: 1,
+			/**大于2级参数编辑参数时的添加项*/
+			parameterDataEditItems:1,
 			/***响应数据*/
 			responses: [
 				{
+					//状态码
 					status: 200,
+					//状态信息
 					msg: 'ok',
+					//添加多少项参数
+					parameterItems: 1,
+					//数据信息
 					data: []
 				}
 			],
@@ -701,7 +734,7 @@ export default {
 						}
 						if (res.parameters != null && res.parameters != '') {
 							var items = JSON.parse(res.parameters);
-							this.parameters=[];
+							this.parameters = [];
 							this.convertToParameters(items);
 						}
 						if (res.responses != null && res.responses != '') {
@@ -791,7 +824,7 @@ export default {
 		 * 将以保存的响应数据转换为显示数据
 		 * @param {Object} items
 		 */
-		convertToResponse(items){
+		convertToResponse(items) {
 			if (items == null || items.length == 0) {
 				return;
 			}
@@ -828,17 +861,23 @@ export default {
 		 * 添加请求参数
 		 */
 		addParameter() {
-			this.parameters.push({
-				tableRowkey: this.getTableRandomRowKey(),
-				tableRowLevel: 1,
-				required: true,
-				in: 'query',
-				type: 'string',
-				name: '',
-				description: '',
-				items: [],
-				ref: this.parameters
-			});
+			var sums = parseInt(this.parameterItems);
+			if (isNaN(sums) || sums < 0) {
+				sums = 1;
+			}
+			for (var i = 0; i < sums; i++) {
+				this.parameters.push({
+					tableRowkey: this.getTableRandomRowKey(),
+					tableRowLevel: 1,
+					required: true,
+					in: 'query',
+					type: 'string',
+					name: '',
+					description: '',
+					items: [],
+					ref: this.parameters
+				});
+			}
 		},
 		/**
 		 * 是否显示参数编辑框
@@ -846,10 +885,12 @@ export default {
 		 */
 		showParameterEdit(data) {
 			this.dialogDataEditVisible = true;
+			this.parameterDataItems = 1;
 			this.parameterData = data;
 		},
+
 		/**
-		 * 保存请求参数
+		 * 本地保存请求参数
 		 */
 		saveParameterToLocal() {
 			var seen = [];
@@ -867,17 +908,25 @@ export default {
 			this.$message.success(this.$t('LockTips'));
 		},
 		/**
+		 * 移除本地保存的请求参数
+		 */
+		removeParameterToLocal(){
+			localStorage.removeItem(LOCALSTORAGE_CACHE_KEY_PARAMETER);
+			this.$message.success(this.$t('Success'));
+		},
+		/**
 		 * 添加响应参数
 		 */
 		addResponse() {
 			this.responses.push({
 				status: null,
 				msg: null,
+				parameterItems: 1,
 				data: []
 			});
 		},
 		/**
-		 * 保存响应参数
+		 * 本地保存响应参数
 		 */
 		saveResponseToLocal() {
 			var seen = [];
@@ -895,20 +944,33 @@ export default {
 			this.$message.success(this.$t('LockTips'));
 		},
 		/**
-		 * 给响应数据添加参数
-		 * @param {Object} data
+		 * 移除本地保存的响应参数
 		 */
-		addResponseData(data) {
-			data.push({
-				tableRowkey: this.getTableRandomRowKey(),
-				tableRowLevel: 1,
-				type: 'string',
-				name: '',
-				in: 'body',
-				description: '',
-				items: [],
-				ref: data
-			});
+		removeResponseToLocal(){
+			localStorage.removeItem(LOCALSTORAGE_CACHE_KEY_RESPONSE);
+			this.$message.success(this.$t('Success'));
+		},
+		/**
+		 * 给响应数据添加参数
+		 * @param {Object} resp
+		 */
+		addResponseData(resp) {
+			var sums = parseInt(resp.parameterItems);
+			if (isNaN(sums) || sums < 0) {
+				sums = 1;
+			}
+			for (var i = 0; i < sums; i++) {
+				resp.data.push({
+					tableRowkey: this.getTableRandomRowKey(),
+					tableRowLevel: 1,
+					type: 'string',
+					name: '',
+					in: 'body',
+					description: '',
+					items: [],
+					ref: resp.data
+				});
+			}
 		},
 		/**
 		 * 移除响应数据
@@ -926,29 +988,32 @@ export default {
 				.catch(() => {});
 		},
 		/**
-		 * 显示响应参数编辑框
-		 * @param {Object} data
+		 * 请求参数编辑框添加参数
 		 */
-		showResponseDataEdit(data) {
-			this.dialogResponseEditVisible = true;
-			this.responseEditData = data;
-			console.log(data);
+		parameterEditAddDataItem(data) {
+			this.addDataItems(data, this.parameterDataItems);
 		},
 		/**
 		 * 编辑参数添加数据
-		 * @param {Object} data
+		 * @param {Object} data 那个参数要添加
+		 * @param {Object} size 添加多少个
 		 */
-		addDataItems(data) {
-			data.items.push({
-				tableRowkey: this.getTableRandomRowKey(),
-				tableRowLevel: data.tableRowLevel + 1,
-				type: 'string',
-				name: '',
-				in: 'body',
-				description: '',
-				items: [],
-				ref: data.items
-			});
+		addDataItems(data, size) {
+			if (isNaN(size) || size < 0) {
+				size = 1;
+			}
+			for (var i = 0; i < size; i++) {
+				data.items.push({
+					tableRowkey: this.getTableRandomRowKey(),
+					tableRowLevel: data.tableRowLevel + 1,
+					type: 'string',
+					name: '',
+					in: 'body',
+					description: '',
+					items: [],
+					ref: data.items
+				});
+			}
 		},
 		/**
 		 * 数据上下数据列移动

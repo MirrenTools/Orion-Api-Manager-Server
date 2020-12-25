@@ -250,7 +250,9 @@
 						</el-table-column>
 						<el-table-column prop="description" :label="$t('ParamDescription')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.description" type="textarea" :rows="1" :placeholder="$t('EnterParamDescription')"
+								<el-input v-model="scope.row.description" type="textarea" 
+								:autosize="{ minRows: 1, maxRows: 3 }"
+								:placeholder="$t('EnterParamDescription')"
 								 style="margin: 5px auto;"></el-input>
 							</template>
 						</el-table-column>

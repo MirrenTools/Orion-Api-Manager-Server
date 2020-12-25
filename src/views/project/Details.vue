@@ -87,9 +87,9 @@
 				<tr>
 					<td class="project-item">{{ $t('Operation') }}</td>
 					<td>
-						<a :href="'#/index/get/groups/' + project.key" class="alink" style="margin-left: 0;">{{ $t('ApiManage') }}</a>
-						<a :href="exportServerHost + '/private/download/' + project.key+'?token='+sessionId" class="alink">{{ $t('ExportDocument') }}</a>
-						<a :href="exportServerHost + '/client/index.html?id=' + project.key+'&token='+sessionId" target="_blank" class="alink">{{ $t('OpenOnClient') }}</a>
+						<a :href="'#/index/get/groups/' + project.key" class="alink" style="color: white;margin-left: 0;"><el-button size="mini" type="primary" icon="el-icon-link">{{ $t('ApiManage') }}</el-button></a>
+						<a :href="exportServerHost + '/private/download/' + project.key+'?token='+sessionId" class="alink" style="color: white;"><el-button size="mini" type="primary" icon="el-icon-download">{{ $t('ExportDocument') }}</el-button></a>
+						<a :href="exportServerHost + '/client/index.html?id=' + project.key+'&token='+sessionId" target="_blank" class="alink" style="color: white;"><el-button size="mini" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button></a>
 					</td>
 				</tr>
 			</table>

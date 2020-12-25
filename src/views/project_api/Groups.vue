@@ -5,9 +5,9 @@
 				<b>{{ $t('ProjectName') }}: {{ projectName }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<el-button size="medium" type="primary"><a :href="exportServerHost + '/private/download/' + projectId+'?token='+sessionId" class="alink" style="color: white;">{{ $t('ExportDocument') }}</a></el-button>
-				<el-button size="medium" type="primary"><a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink" style="color: white;">{{ $t('OpenOnClient') }}</a></el-button>
-				<el-button size="medium" type="primary" @click="
+				<a :href="exportServerHost + '/private/download/' + projectId+'?token='+sessionId" class="alink" style="color: white;"><el-button size="medium" type="primary" icon="el-icon-download">{{ $t('ExportDocument') }}</el-button></a>
+				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink" style="color: white;"><el-button size="medium" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button></a>
+				<el-button size="medium" type="primary" icon="el-icon-plus" style="margin-left: 4px;" @click="
 							dialogCreateGroupVisible = true;
 							groupDialogMode = 'edit';
 							groupData = {};
@@ -746,6 +746,7 @@
 		text-decoration: none;
 		outline: none;
 		display: inline-block;
+		margin: 3px 5px;
 	}
 
 	.alink:active,
