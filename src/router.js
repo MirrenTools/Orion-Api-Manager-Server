@@ -88,21 +88,6 @@ export const constantRoutes = [{
 				}]
 			}
 		}, {
-			path: 'share/project/:pid',
-			name: 'ProjectShare',
-			component: () => import('./views/project/Share'),
-			meta: {
-				title: 'ProjectShare',
-				breadcrumb: [{
-					path: '/index',
-					title: 'ProjectList'
-				}, {
-					path: '/index/get/project/:pid',
-					title: 'ProjectDetails',
-					pathKeys: ['pid']
-				}]
-			}
-		}, {
 			path: 'get/groups/:pid',
 			name: 'GroupList',
 			component: () => import('./views/project_api/Groups'),

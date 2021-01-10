@@ -76,6 +76,9 @@ request.interceptors.response.use(res => {
 		} else if (code == 412) {
 			Message.warning(i18n.t('ResultStatus412'));
 			return res;
+		}else if (code == 413) {
+			Message.warning(i18n.t('ResultStatus413'));
+			return res;
 		}  else if (code == 500) {
 			Message.error(i18n.t('ResultStatus500'));
 			return res;

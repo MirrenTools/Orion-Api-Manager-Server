@@ -5,7 +5,6 @@
 				<b>{{ $t('ProjectName') }}: {{ projectName }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<a :href="exportServerHost + '/private/download/' + projectId+'?token='+sessionId" class="alink" style="color: white;"><el-button size="medium" type="primary" icon="el-icon-download">{{ $t('ExportDocument') }}</el-button></a>
 				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink" style="color: white;"><el-button size="medium" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button></a>
 				<el-button size="medium" type="primary" icon="el-icon-plus" style="margin-left: 4px;" @click="
 							dialogCreateGroupVisible = true;

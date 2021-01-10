@@ -6,12 +6,12 @@
 			</div>
 			<div style="margin-left: auto;">
 				<div v-show="mode === 'view'">
-					<el-button size="mini" type="primary" @click="copySubmit()">{{ $t('MakeACopy') }}</el-button>
-					<el-button size="mini" type="primary" @click="showUpdateView()">{{ $t('Modify') }}</el-button>
-					<el-button size="mini" type="danger" @click="deleteSubmit()">{{ $t('Delete') }}</el-button>
+					<el-button size="medium" type="primary" @click="copySubmit()">{{ $t('MakeACopy') }}</el-button>
+					<el-button size="medium" type="primary" @click="showUpdateView()">{{ $t('Modify') }}</el-button>
+					<el-button size="medium" type="danger" @click="deleteSubmit()">{{ $t('Delete') }}</el-button>
 				</div>
 				<div v-show="mode === 'edit'">
-					<el-button size="mini" @click="mode = 'view'">{{ $t('Cancel') }}</el-button>
+					<el-button size="medium" @click="mode = 'view'">{{ $t('Cancel') }}</el-button>
 				</div>
 			</div>
 		</div>
@@ -87,9 +87,15 @@
 				<tr>
 					<td class="project-item">{{ $t('Operation') }}</td>
 					<td>
-						<a :href="'#/index/get/groups/' + project.key" class="alink" style="color: white;margin-left: 0;"><el-button size="mini" type="primary" icon="el-icon-link">{{ $t('ApiManage') }}</el-button></a>
-						<a :href="exportServerHost + '/private/download/' + project.key+'?token='+sessionId" class="alink" style="color: white;"><el-button size="mini" type="primary" icon="el-icon-download">{{ $t('ExportDocument') }}</el-button></a>
-						<a :href="exportServerHost + '/client/index.html?id=' + project.key+'&token='+sessionId" target="_blank" class="alink" style="color: white;"><el-button size="mini" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button></a>
+						<a :href="'#/index/get/groups/' + project.key" class="alink" style="color: white;margin-left: 0;">
+							<el-button size="mini" type="primary" icon="el-icon-link">{{ $t('ApiManage') }}</el-button>
+						</a>
+						<a :href="exportServerHost + '/private/download/' + project.key + '?token=' + sessionId" class="alink" style="color: white;">
+							<el-button size="mini" type="primary" icon="el-icon-download">{{ $t('ExportDocument') }}</el-button>
+						</a>
+						<a :href="exportServerHost + '/client/index.html?id=' + project.key + '&token=' + sessionId" target="_blank" class="alink" style="color: white;">
+							<el-button size="mini" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button>
+						</a>
 					</td>
 				</tr>
 			</table>
@@ -138,12 +144,71 @@
 					</div>
 				</el-form-item>
 			</el-form>
+
+			<!-- 分享记录 -->
+			<div v-show="mode === 'view'">
+				<div style="display: flex;align-items: center;margin-top: 10px;">
+					<div>
+						<b>{{ $t('ProjectShare') }}</b>
+					</div>
+					<div style="margin-left: auto;">
+						<el-button size="medium" type="primary" icon="el-icon-share" @click="showShareCreate()">{{ $t('CreateShare') }}</el-button>
+					</div>
+				</div>
+				<el-table :data="shareList" :empty-text="$t('NoSharedRecord')">
+					<el-table-column prop="url" :label="$t('ShareUrl')" min-width="240">
+						<template slot-scope="scope">
+							<span>{{ generateShareUrl(scope.row.sid) }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column prop="pwd" :label="$t('ViewPassword')" width="180"></el-table-column>
+					<el-table-column prop="ctime" :label="$t('ShareTime')" width="180">
+						<template slot-scope="scope">
+							<span>{{ formatDate(scope.row.shareTime) }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column :label="$t('Operation')" width="230">
+						<template slot-scope="scope">
+							<el-button size="mini" type="primary" @click="copyShare(scope.row)">{{ $t('Copy') }}</el-button>
+							<el-button size="mini" type="primary" @click="showShareUpdate(scope.row)">{{ $t('Modify') }}</el-button>
+							<el-button size="mini" type="danger" @click="submitShareDelete(scope.row)">{{ $t('Delete') }}</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</div>
+			<!-- 分享记录新增与修改的弹窗 -->
+			<el-dialog :title="shareDialogMode == 'view' ? $t('NewShare') : $t('ModifyShare')" :visible.sync="shareDialogVisible">
+				<el-form :model="shareData" label-width="100px" ref="shareEditForm">
+					<el-form-item
+						:label="$t('ViewPassword')"
+						prop="pwd"
+						:rules="[{ required: true, message: $t('EnterPassword') }, { min: 4, max: 32, message: $t('EnterPassword'), trigger: 'blur' }]"
+					>
+						<el-input v-model="shareData.pwd" :placeholder="$t('EnterViewPassword')"></el-input>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button @click="shareDialogVisible = false">{{ $t('Cancel') }}</el-button>
+					<el-button type="primary" @click="submitShareUpdate()" v-show="shareDialogMode == 'edit'">{{ $t('Submit') }}</el-button>
+					<el-button type="primary" @click="submitShareCreate()" v-show="shareDialogMode == 'view'">{{ $t('SubmitModify') }}</el-button>
+				</div>
+			</el-dialog>
 		</div>
 	</div>
 </template>
 
 <script>
-import { getProjectAPI, saveProjectAPI, copyProjectAPI, updateProjectAPI, deleteProjectAPI } from '@/api/Project';
+import {
+	getProjectAPI,
+	saveProjectAPI,
+	copyProjectAPI,
+	updateProjectAPI,
+	deleteProjectAPI,
+	findProjectShareAPI,
+	saveProjectShareAPI,
+	updateProjectShareAPI,
+	deleteProjectShareAPI
+} from '@/api/Project';
 import { findTagsAPI, findServerUsersAPI } from '@/api/Members';
 import { datetimeFormat } from '@/utils/DataFormat';
 import store from '@/store/index.js';
@@ -209,7 +274,18 @@ export default {
 			/**用户标签列表*/
 			userTags: [],
 			/**用户列表*/
-			userList: []
+			userList: [],
+			/**是否显示分享的编辑的Dialog*/
+			shareDialogVisible: false,
+			/**分享的编辑Dialog的类型*/
+			shareDialogMode: MODE_VIEW,
+			/**分享的数据*/
+			shareData: {
+				id: 'idadf',
+				pwd: '123456'
+			},
+			/**分享列表*/
+			shareList: []
 		};
 	},
 	created() {
@@ -224,6 +300,7 @@ export default {
 			}
 			this.loadUserTags();
 			this.loadProject(pid);
+			this.loadSharedRecords(pid);
 		}
 	},
 	methods: {
@@ -486,6 +563,169 @@ export default {
 							if (data.code == 200) {
 								this.$message.success(this.$t('DeleteSuccess'));
 								this.$router.push('/index');
+							}
+						},
+						err => {
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
+							console.log(err);
+						}
+					);
+				})
+				.catch(() => {});
+		},
+		/**
+		 * 加载项目分享记录
+		 */
+		loadSharedRecords(pid) {
+			findProjectShareAPI(
+				pid,
+				resp => {
+					var data = resp.data;
+					console.log('load project share...');
+					console.log(data);
+					if (data.code == 200) {
+						this.shareList = data.data;
+					}
+				},
+				err => {
+					this.$message.error(this.$t('FailedToLoadSeeConsole'));
+					console.log(err);
+				}
+			);
+		},
+		/**
+		 * 生成分享链接
+		 * @param {Object} id
+		 */
+		generateShareUrl(id) {
+			return location.protocol + '//' + location.host + '/client/index.html?sid=' + id;
+		},
+		/**
+		 * 显示新增分享
+		 */
+		showShareCreate() {
+			this.shareDialogVisible = true;
+			this.shareDialogMode = MODE_VIEW;
+			this.shareData = { pwd: '' };
+		},
+		/**
+		 * 提交新增分享
+		 */
+		submitShareCreate() {
+			this.$refs.shareEditForm.validate(valid => {
+				if (valid) {
+					var reqData = {
+						pid: this.project.key,
+						pwd: this.shareData.pwd
+					};
+					console.log('create project share...');
+					console.log(reqData);
+					saveProjectShareAPI(
+						reqData,
+						res => {
+							var data = res.data;
+							console.log(data);
+							if (data.code == 200) {
+								this.$message.success(this.$t('AddSuccess'));
+								this.loadSharedRecords(this.project.key);
+								this.shareDialogVisible = false;
+							}
+						},
+						err => {
+							this.$message.error(this.$t('FailedToAddSeeConsole'));
+							console.log(err);
+						}
+					);
+				} else {
+					this.$message.error(this.$t('MissingRequiredInformation'));
+					return false;
+				}
+			});
+		},
+		/**
+		 * 显示修改分享
+		 * @param {Object} data
+		 */
+		showShareUpdate(data) {
+			this.shareDialogVisible = true;
+			this.shareDialogMode = MODE_EDIT;
+			this.shareData = data;
+		},
+		/**
+		 * 提交修改分享
+		 */
+		submitShareUpdate() {
+			this.$refs.shareEditForm.validate(valid => {
+				if (valid) {
+					var reqData = {
+						sid: this.shareData.sid,
+						pid: this.project.key,
+						pwd: this.shareData.pwd
+					};
+					console.log('modify project share...');
+					console.log(reqData);
+					updateProjectShareAPI(
+						reqData,
+						res => {
+							var data = res.data;
+							console.log(data);
+							if (data.code == 200) {
+								this.$message.success(this.$t('ModifySuccess'));
+								this.loadSharedRecords(this.project.key);
+								this.shareDialogVisible = false;
+							}
+						},
+						err => {
+							this.$message.error(this.$t('FailedToModifySeeConsole'));
+							console.log(err);
+						}
+					);
+				} else {
+					this.$message.error(this.$t('MissingRequiredInformation'));
+					return false;
+				}
+			});
+		},
+		/**
+		 * 复制分享信息
+		 * @param {Object} data
+		 */
+		copyShare(data) {
+			var oInput = document.createElement('textarea');
+			var template = this.$t('ShareCopyTemplate')
+				.replace('{title}', this.project.name)
+				.replace('{link}', this.generateShareUrl(data.sid))
+				.replace('{pwd}', data.pwd);
+			oInput.value = template;
+			document.body.appendChild(oInput);
+			oInput.select();
+			document.execCommand('Copy');
+			this.$message({
+				message: this.$t('CopySuccess'),
+				type: 'success'
+			});
+			oInput.remove();
+		},
+		/**
+		 * 提交删除分享
+		 * @param {Object} data
+		 */
+		submitShareDelete(data) {
+			this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
+				confirmButtonText: this.$t('Confirm'),
+				cancelButtonText: this.$t('Cancel'),
+				type: 'warning'
+			})
+				.then(() => {
+					deleteProjectShareAPI(
+						data.sid,
+						res => {
+							var data = res.data;
+							console.log('delete project share...');
+							console.log(data);
+							if (data.code == 200) {
+								this.$message.success(this.$t('DeleteSuccess'));
+								this.loadSharedRecords(this.project.key);
 							}
 						},
 						err => {

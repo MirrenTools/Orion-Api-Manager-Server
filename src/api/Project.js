@@ -86,6 +86,46 @@ export function deleteProjectAPI(pid, res, err) {
 }
 
 /**
+ * 获取指定项目的分享记录
+ * @param {String} pid 项目的id
+ * @param {Object} resLL
+ * @param {Object} err
+ */
+export function findProjectShareAPI(pid, res, err) {
+	request.get('/private/projectShare/' + pid).then(res).catch(err);
+}
+
+/**
+ * 保存项目分享
+ * @param {Object} data 项目分享的信息
+ * @param {Object} resLL
+ * @param {Object} err
+ */
+export function saveProjectShareAPI(data, res, err) {
+	request.post('/private/server/projectShare', data).then(res).catch(err);
+}
+
+/**
+ * 修改项目分享
+ * @param {Object} data 项目分享的信息
+ * @param {Object} resLL
+ * @param {Object} err
+ */
+export function updateProjectShareAPI(data, res, err) {
+	request.put('/private/server/projectShare', data).then(res).catch(err);
+}
+
+/**
+ * 删除项目分享
+ * @param {Object} sid 分享的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function deleteProjectShareAPI(sid, res, err) {
+	request.delete('/private/server/projectShare/' + sid).then(res).catch(err);
+}
+
+/**
  * 获取分组列表
  * @param {Object} pid 项目的id
  * @param {Object} res
@@ -232,7 +272,7 @@ export function getApiTemplateAPI(tid, res, err) {
  * @param {Object} err
  */
 export function postApiTemplateAPI(data, res, err) {
-	request.post('/private/server/api/template',data).then(res).catch(err);
+	request.post('/private/server/api/template', data).then(res).catch(err);
 }
 
 /**
