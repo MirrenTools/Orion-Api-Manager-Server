@@ -5,7 +5,10 @@
 				<b>{{ $t('ProjectName') }}: {{ projectName }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink" style="color: white;"><el-button size="medium" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button></a>
+				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink"
+				 style="color: white;">
+					<el-button size="medium" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button>
+				</a>
 				<el-button size="medium" type="primary" icon="el-icon-plus" style="margin-left: 4px;" @click="
 							dialogCreateGroupVisible = true;
 							groupDialogMode = 'edit';
@@ -100,10 +103,11 @@
 								</div>
 								<!-- API操作 -->
 								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
-									<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">{{ $t('Delete') }}</el-button>
+									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">{{ $t('Delete') }}</el-button>
 									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
 										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
 									</a>
+									<el-button size="mini" type="primary" @click.stop="showTransferGroup(api.apiId)">{{ $t('TransferGroup') }}</el-button>
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}</el-button>
 								</div>
@@ -228,6 +232,20 @@
 				<el-button type="primary" @click="groupUpdateSubmit" v-show="groupDialogMode == 'view'">{{ $t('SubmitModify') }}</el-button>
 			</div>
 		</el-dialog>
+		<!-- API修改分组的弹窗 -->
+		<el-dialog :title="$t('TransferGroup')" :visible.sync="transferGroupVisible" width="30%">
+			<div>
+				<el-select v-model="transferSelectGroupId" :placeholder="$t('SelectTransferGroup')" style="width: 100%;">
+					<el-option v-for="item in groups" :key="item.groupId" :label="item.name" :value="item.groupId">
+					</el-option>
+				</el-select>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="transferGroupVisible = false">{{ $t('Cancel') }}</el-button>
+				<el-button type="primary" @click="submitTransferGroup()">{{ $t('Submit') }}</el-button>
+			</span>
+		</el-dialog>
+
 	</div>
 </template>
 
@@ -242,6 +260,7 @@
 		apiGroupMoveDownAPI,
 		findApisAPI,
 		deleteAPI,
+		updateApiAPI,
 		apiMoveUpAPI,
 		apiMoveDownAPI
 	} from '@/api/Project';
@@ -262,7 +281,7 @@
 				/**项目的id*/
 				projectId: '',
 				/**项目的名称*/
-				projectName:'项目的名称',
+				projectName: '项目的名称',
 				/**是否显示新建分组的窗口*/
 				dialogCreateGroupVisible: false,
 				/**分组的窗口类型,edit为新增,view为修改*/
@@ -298,7 +317,14 @@
 				/**当前选中的API*/
 				selectGroupId: null,
 				/**当前分组的接口合集*/
-				apis: []
+				apis: [],
+				/**是否显示分组选择弹窗*/
+				transferGroupVisible: false,
+				/**已选择的分组id*/
+				transferSelectGroupId: '',
+				/**已选择的APIid*/
+				transferSelectApiId: '',
+
 			};
 		},
 		created() {
@@ -321,27 +347,27 @@
 			 * 加载项目基本信息
 			 * @param {Object} pid
 			 */
-			loadProjectInfo(pid){
-					getProjectAPI(
-						pid,
-						resp => {
-							var data = resp.data;
-							console.log('get project...');
-							console.log(data);
-							if (data.code == 200) {
-								if (data.data == null) {
-									this.$message.error(this.$t('FailedToLoadTheProjectInvalidID'));
-									return;
-								}
-								this.projectName=data.data.name;
+			loadProjectInfo(pid) {
+				getProjectAPI(
+					pid,
+					resp => {
+						var data = resp.data;
+						console.log('get project...');
+						console.log(data);
+						if (data.code == 200) {
+							if (data.data == null) {
+								this.$message.error(this.$t('FailedToLoadTheProjectInvalidID'));
+								return;
 							}
-						},
-						err => {
-							this.$message.error(this.$t('FailedToGetProjectInfoSeeConsole'));
-							console.log(err);
+							this.projectName = data.data.name;
 						}
-					);
-				
+					},
+					err => {
+						this.$message.error(this.$t('FailedToGetProjectInfoSeeConsole'));
+						console.log(err);
+					}
+				);
+
 			},
 			/**
 			 * 加载项目分组
@@ -674,6 +700,45 @@
 						);
 					})
 					.catch(() => {});
+			},
+			/**
+			 * 转移分组
+			 * @param {Object} aid
+			 */
+			showTransferGroup(aid) {
+				this.transferGroupVisible = true;
+				this.transferSelectGroupId = '';
+				this.transferSelectApiId = aid;
+			},
+			/**
+			 * 提交转移分组
+			 */
+			submitTransferGroup() {
+				if (this.transferSelectGroupId == '' || this.transferSelectApiId == '') {
+					this.$message.warning(this.$t('请选择要更换的分组'))
+					return;
+				}
+				var reqData = {
+					apiId: this.transferSelectApiId,
+					groupId: this.transferSelectGroupId
+				};
+				console.log('transfer API');
+				console.log(reqData);
+				updateApiAPI(
+					reqData,
+					res => {
+						var data = res.data;
+						if (data.code == 200) {
+							this.$message.success(this.$t('MoveSuccess'));
+							this.findApisAndLoad(this.group.groupId);
+							this.transferGroupVisible=false;
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToModifySeeConsole'));
+						console.log(err);
+					}
+				);
 			},
 			/**
 			 * API向上移动

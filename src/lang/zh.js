@@ -141,6 +141,8 @@ export default {
 	EnterGroupDescription:'请输入分组的详细描述,支持HTML',
 	GroupRanking:'分组排序',
 	EnterGroupRanking:'请输入分组排序,默认为0',
+	TransferGroup:'更换分组',
+	SelectTransferGroup:'请选择要更换的分组',
 	ApiManage: 'API 管理',
 	ApiList: 'API 列表',
 	ApiDetails: '接口详情',

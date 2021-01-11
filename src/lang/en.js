@@ -141,6 +141,8 @@ export default {
 	EnterGroupDescription: 'Please enter the group description, support HTML',
 	GroupRanking: 'Ranking',
 	EnterGroupRanking: 'Please enter group sort, default is 0',
+	TransferGroup:'Transfer Group',
+	SelectTransferGroup:'Please select the group to transfer',
 	ApiManage: 'API manage',
 	ApiList: 'API list',
 	ApiDetails: 'API Details',
