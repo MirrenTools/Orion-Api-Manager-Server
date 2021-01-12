@@ -250,9 +250,7 @@
 						</el-table-column>
 						<el-table-column prop="description" :label="$t('ParamDescription')">
 							<template v-slot="scope">
-								<el-input v-model="scope.row.description" type="textarea" 
-								:autosize="{ minRows: 1, maxRows: 3 }"
-								:placeholder="$t('EnterParamDescription')"
+								<el-input v-model="scope.row.description" type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" :placeholder="$t('EnterParamDescription')"
 								 style="margin: 5px auto;"></el-input>
 							</template>
 						</el-table-column>
@@ -525,9 +523,7 @@
 							reqData.path = '/' + reqData.path;
 						}
 						reqData.title = this.api.title;
-						if (this.api.description != null && this.api.description != '') {
-							reqData.description = this.api.description;
-						}
+						reqData.description = this.api.description || '';
 						if (!isNaN(this.api.sorts)) {
 							reqData.sorts = parseInt(this.api.sorts);
 						}
@@ -543,6 +539,8 @@
 							if (consumes.length > 0) {
 								reqData.consumes = JSON.stringify(consumes);
 							}
+						} else {
+							reqData.consumes = '[]';
 						}
 						if (this.api.produces != null && this.api.produces != '') {
 							var cs = this.api.produces.split(',');
@@ -556,6 +554,8 @@
 							if (produces.length > 0) {
 								reqData.produces = JSON.stringify(produces);
 							}
+						} else {
+							reqData.produces = '[]';
 						}
 						// 请求参数开始
 						if (this.parameters.length > 0) {
@@ -647,6 +647,8 @@
 								params.push(d);
 							}
 							reqData.responses = JSON.stringify(params);
+						} else {
+							reqData.responses = "[]";
 						}
 						// 响应参数结束
 
