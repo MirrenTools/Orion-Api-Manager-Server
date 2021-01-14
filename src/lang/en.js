@@ -153,6 +153,7 @@ export default {
 	NewApiSucceeded: 'Add successfully, continue to create API?',
 	ModifyApi: 'Modify API',
 	ImportAPI: 'Import API',
+	ImportingAPI: 'Importing API',
 	EnterPath: 'The path on the URL is required and has / start ,path parameter needs to be added{}, example: {id}',
 	ApiStatus: 'API status',
 	InService: 'In Service',

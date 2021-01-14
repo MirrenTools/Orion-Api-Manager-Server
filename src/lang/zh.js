@@ -153,6 +153,7 @@ export default {
 	NewApiSucceeded:'新增成功,是否继续创建API?',
 	ModifyApi:'修改API',
 	ImportAPI:'导入API',
+	ImportingAPI:'正在导入API',
 	EnterPath:'URL上的path,必填,已/开始,如果没有系统会自动加上/ ,path参数请加上英文{},示例:{id}',
 	ApiStatus:'API 状态',
 	InService:'服务中',

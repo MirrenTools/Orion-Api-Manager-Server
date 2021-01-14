@@ -296,7 +296,7 @@ export default {
 			}
 		};
 		return {
-			sessionToken:'',
+			sessionToken: '',
 			/**是否请求加载中*/
 			requestLoading: false,
 			/**项目数据是否加载中*/
@@ -344,7 +344,7 @@ export default {
 		if (role != 'ROOT' && role != 'SERVER') {
 			this.$router.push('/index');
 		}
-		this.sessionToken=store.getters.sessionId;
+		this.sessionToken = store.getters.sessionId;
 	},
 	/**
 	 * 在离开当前页面之前关闭可能显示的进度提示
@@ -365,7 +365,7 @@ export default {
 			if (urls.charAt(0) == 'P' && urls.charAt(1) == ':') {
 				urls = urls.substring(2);
 				axios
-					.get(process.env.VUE_APP_BASE_API + '/proxy/project?url=' + urls+"&token="+this.sessionToken)
+					.get(process.env.VUE_APP_BASE_API + '/proxy/project?url=' + urls + '&token=' + this.sessionToken)
 					.then(res => {
 						if (res.data.code == 200) {
 							this.loadDocument(JSON.parse(res.data.data));
@@ -628,8 +628,16 @@ export default {
 							break;
 						case WS_API_SAVED:
 							var d = JSON.parse(res.data);
-							var msg = this.$t('ImportAPI');
-							':<br>' + d.name + (d.result > 0 ? this.$t('Success') : this.$t('Failed')) + '!<br>' + this.$t('CurrentProgress') + d.index + '/' + d.count;
+							var msg =
+								this.$t('ImportingAPI') +
+								':<br>' +
+								d.name +
+								(d.result > 0 ? this.$t('Success') : this.$t('Failed')) +
+								'!<br>' +
+								this.$t('CurrentProgress') +
+								d.index +
+								'/' +
+								d.count;
 							progressTips.innerHTML = msg;
 							break;
 						case WS_COMPLETED:
