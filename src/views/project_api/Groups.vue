@@ -107,7 +107,8 @@
 									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
 										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
 									</a>
-									<el-button size="mini" type="primary" @click.stop="showTransferGroup(api.apiId)">{{ $t('TransferGroup') }}</el-button>
+									<el-button size="mini" @click.stop="copyApiSubmit(api.apiId)">{{ $t('Copy') }}</el-button>
+									<el-button size="mini" @click.stop="showTransferGroup(api.apiId)">{{ $t('TransferGroup') }}</el-button>
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}</el-button>
 								</div>
@@ -260,6 +261,7 @@
 		apiGroupMoveDownAPI,
 		findApisAPI,
 		deleteAPI,
+		copyApiAPI,
 		updateApiAPI,
 		apiMoveUpAPI,
 		apiMoveDownAPI
@@ -564,17 +566,18 @@
 						reqData.summary = this.groupData.summary;
 						reqData.sorts = this.groupData.sorts;
 						reqData.description = this.groupData.description;
-						if ((this.groupData.externalUrl != null && this.groupData.externalUrl != '') || (this.groupData.externalDesc !=
-								null && this.groupData.externalDesc != '')) {
-							var ext = {};
-							if (this.groupData.externalUrl != null && this.groupData.externalUrl != '') {
-								ext.url = this.groupData.externalUrl;
-							}
-							if (this.groupData.externalDesc != null && this.groupData.externalDesc != '') {
-								ext.description = this.groupData.externalDesc;
-							}
-							reqData.externalDocs = JSON.stringify(ext);
+						var ext = {};
+						if (this.groupData.externalUrl != null && this.groupData.externalUrl != '') {
+							ext.url = this.groupData.externalUrl;
+						} else {
+							ext.url = '';
 						}
+						if (this.groupData.externalDesc != null && this.groupData.externalDesc != '') {
+							ext.description = this.groupData.externalDesc;
+						} else {
+							ext.description = '';
+						}
+						reqData.externalDocs = JSON.stringify(ext);
 						putApiGroup(
 							reqData,
 							resp => {
@@ -672,6 +675,35 @@
 				);
 			},
 			/**
+			 * 复制API
+			 * @param {Object} aid
+			 */
+			copyApiSubmit(aid) {
+				this.$confirm(this.$t('CopyConfirm'), this.$t('Tips'), {
+						confirmButtonText: this.$t('Confirm'),
+						cancelButtonText: this.$t('Cancel'),
+						type: 'warning'
+					})
+					.then(() => {
+							copyApiAPI(
+								aid,
+								res => {
+									console.log(data);
+									var data = res.data;
+									if (data.code == 200) {
+										this.$message.success(this.$t('CopySuccess'));
+										this.findApisAndLoad(this.group.groupId);
+									}
+								},
+								err => {
+									this.$message.error(this.$t('FailedToModifySeeConsole'));
+									console.log(err);
+								}
+							);
+					})
+					.catch(() => {});
+			},
+			/**
 			 * 提交删除API
 			 * @param {Object} aid
 			 */
@@ -731,7 +763,7 @@
 						if (data.code == 200) {
 							this.$message.success(this.$t('MoveSuccess'));
 							this.findApisAndLoad(this.group.groupId);
-							this.transferGroupVisible=false;
+							this.transferGroupVisible = false;
 						}
 					},
 					err => {

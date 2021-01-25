@@ -209,6 +209,18 @@ export function getApiAPI(aid, res, err) {
 export function saveApiAPI(data, res, err) {
 	request.post('/private/server/api', data).then(res).catch(err);
 }
+
+/**
+ * 复制API
+ * @param {Object} aid API的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function copyApiAPI(aid, res, err) {
+	request.post('/private/server/api/' + aid).then(res).catch(err);
+}
+
+
 /**
  * 修改API
  * @param {Object} data api的数据

@@ -96,7 +96,7 @@ export default {
 	LastUpdateTime: 'Last update time',
 	ProjectInformation: 'Project information',
 	MakeACopy: 'Make a copy',
-	CopyConfirm: 'Are you sure you want to copy this project?',
+	CopyConfirm: 'Are you sure you want to copy?',
 	CopySuccess: 'Copy successfully!',
 	CopyFailed: 'Copy failed',
 	ProjectName: 'Project name',

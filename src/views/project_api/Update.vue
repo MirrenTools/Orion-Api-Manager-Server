@@ -371,7 +371,7 @@
 			};
 		},
 		created() {
-			var role = store.getters.role;
+			let role = store.getters.role;
 			if (role != 'ROOT' && role != 'SERVER') {
 				this.$router.push('/index');
 			} else {
@@ -398,7 +398,7 @@
 				getApiAPI(
 					aid,
 					res => {
-						var data = res.data;
+						let data = res.data;
 						console.log('load API...');
 						console.log(data);
 						if (data.code == 200) {
@@ -425,8 +425,8 @@
 								data.data.produces = JSON.parse(data.data.produces).join(',');
 							}
 							if (data.data.parameters != null && data.data.parameters != '') {
-								var reqd = JSON.parse(data.data.parameters);
-								for (var i = 0; i < reqd.length; i++) {
+								let reqd = JSON.parse(data.data.parameters);
+								for (let i = 0; i < reqd.length; i++) {
 									reqd[i].tableRowkey = this.getTableRandomRowKey();
 									reqd[i].tableRowLevel = 1;
 									reqd[i].required = reqd[i].required == true || reqd[i].required == 'true';
@@ -442,7 +442,7 @@
 								this.parameters = [];
 							}
 							if (data.data.responses != null && data.data.responses != '') {
-								var respd = JSON.parse(data.data.responses);
+								let respd = JSON.parse(data.data.responses);
 								if (respd != null && respd.length > 0 && (respd[0].status == null || respd[0].data == null)) {
 									respd = [{
 										status: 200,
@@ -452,10 +452,10 @@
 								} else {
 									respd = respd;
 								}
-								for (var i = 0; i < respd.length; i++) {
-									var responsed = respd[i].data;
-									for (var j = 0; j < responsed.length; j++) {
-										var d = responsed[j];
+								for (let i = 0; i < respd.length; i++) {
+									let responsed = respd[i].data;
+									for (let j = 0; j < responsed.length; j++) {
+										let d = responsed[j];
 										d.tableRowkey = this.getTableRandomRowKey();
 										d.tableRowLevel = 1;
 										d.ref = responsed;
@@ -495,8 +495,8 @@
 				if (data.items == null || data.items.length == 0) {
 					return;
 				}
-				for (var i = 0; i < data.items.length; i++) {
-					var d = data.items[i];
+				for (let i = 0; i < data.items.length; i++) {
+					let d = data.items[i];
 					d.tableRowkey = this.getTableRandomRowKey();
 					d.tableRowLevel = data.tableRowLevel + 1;
 					d.ref = data.items;
@@ -513,7 +513,7 @@
 			submitUpdateApi() {
 				this.$refs.apiForm.validate(valid => {
 					if (valid) {
-						var reqData = {};
+						let reqData = {};
 						reqData.apiId = this.apiId;
 						reqData.groupId = this.groupId;
 						reqData.method = this.api.method;
@@ -528,9 +528,9 @@
 							reqData.sorts = parseInt(this.api.sorts);
 						}
 						if (this.api.consumes != null && this.api.consumes != '') {
-							var cs = this.api.consumes.split(',');
-							var consumes = [];
-							for (var i = 0; i < cs.length; i++) {
+							let cs = this.api.consumes.split(',');
+							let consumes = [];
+							for (let i = 0; i < cs.length; i++) {
 								if (cs[i] == ',' || cs[i] == '') {
 									continue;
 								}
@@ -543,9 +543,9 @@
 							reqData.consumes = '[]';
 						}
 						if (this.api.produces != null && this.api.produces != '') {
-							var cs = this.api.produces.split(',');
-							var produces = [];
-							for (var i = 0; i < cs.length; i++) {
+							let cs = this.api.produces.split(',');
+							let produces = [];
+							for (let i = 0; i < cs.length; i++) {
 								if (cs[i] == ',' || cs[i] == '') {
 									continue;
 								}
@@ -559,13 +559,13 @@
 						}
 						// 请求参数开始
 						if (this.parameters.length > 0) {
-							var params = [];
-							for (var i = 0; i < this.parameters.length; i++) {
-								var p = this.parameters[i];
+							let params = [];
+							for (let i = 0; i < this.parameters.length; i++) {
+								let p = this.parameters[i];
 								if (p.name == null || p.name == '') {
 									continue;
 								}
-								var d = {
+								let d = {
 									required: p.required,
 									in: p.in,
 									type: p.type,
@@ -588,9 +588,9 @@
 									d.maximum = p.maximum;
 								}
 								if (p.enums != null && p.enums != '') {
-									var cs = p.enums.split(',');
-									var enums = [];
-									for (var i = 0; i < cs.length; i++) {
+									let cs = p.enums.split(',');
+									let enums = [];
+									for (let i = 0; i < cs.length; i++) {
 										if (cs[i] == ',' || cs[i] == '') {
 											continue;
 										}
@@ -616,23 +616,23 @@
 						reqData.body = this.api.body;
 						// 请求参数结束,响应结束开始
 						if (this.responses.length > 0) {
-							var params = [];
-							for (var i = 0; i < this.responses.length; i++) {
-								var p = this.responses[i];
+							let params = [];
+							for (let i = 0; i < this.responses.length; i++) {
+								let p = this.responses[i];
 								if ((p.status == null || p.status == '') && (p.data == null || p.data.length == 0)) {
 									continue;
 								}
-								var d = {
+								let d = {
 									status: p.status,
 									msg: p.msg
 								};
 								d.data = [];
-								for (var j = 0; j < p.data.length; j++) {
-									var pd = p.data[j];
+								for (let j = 0; j < p.data.length; j++) {
+									let pd = p.data[j];
 									if (pd.name == null || pd.name == '') {
 										continue;
 									}
-									var dd = {
+									let dd = {
 										type: pd.type,
 										in: pd.in,
 										name: pd.name,
@@ -652,7 +652,7 @@
 						}
 						// 响应参数结束
 
-						var exd = null;
+						let exd = null;
 						if (this.api.exDdescription != null) {
 							exd = {
 								description: this.api.exDdescription
@@ -676,7 +676,7 @@
 						updateApiAPI(
 							reqData,
 							res => {
-								var data = res.data;
+								let data = res.data;
 								if (data.code == 200) {
 									this.$confirm(this.$t('ModifySuccessAskReturn'), this.$t('ModifySuccess'), {
 											confirmButtonText: this.$t('GoBack'),
@@ -711,8 +711,8 @@
 				if (items == null || items.length == 0) {
 					return;
 				}
-				for (var i = 0; i < items.length; i++) {
-					var p = {};
+				for (let i = 0; i < items.length; i++) {
+					let p = {};
 					p.type = items[i].type;
 					p.name = items[i].name;
 					p.description = items[i].description;
@@ -741,6 +741,11 @@
 			},
 			showParameterEdit(data) {
 				this.dialogDataEditVisible = true;
+				if (data.enums != null) {
+					try {
+						data.enums = JSON.parse(data.enums).join(',');
+					} catch (e) {console.log('data.enums convert err: ',e)}
+				}
 				this.parameterData = data;
 			},
 			/**
@@ -816,9 +821,9 @@
 			 * @param {Object} flag 0=下移,1=上移
 			 */
 			tableColumnMove(row, key, flag) {
-				var idx = -1;
-				var data = row.ref;
-				for (var i = 0; i < data.length; i++) {
+				let idx = -1;
+				let data = row.ref;
+				for (let i = 0; i < data.length; i++) {
 					if (data[i].tableRowkey == key) {
 						idx = i;
 						break;
@@ -827,7 +832,7 @@
 				if (idx == -1 || (flag == 0 && idx == 0) || (flag == 1 && idx == data.length - 1)) {
 					return;
 				}
-				var temp = data[idx];
+				let temp = data[idx];
 				if (flag == 0) {
 					this.$set(data, idx, data[idx - 1]);
 					this.$set(data, idx - 1, temp);
@@ -857,7 +862,7 @@
 			 * @param {Object} index 要删除的id
 			 */
 			findDataAndDelete(data, index) {
-				for (var i = 0; i < data.length; i++) {
+				for (let i = 0; i < data.length; i++) {
 					if (data[i].tableRowkey == index) {
 						data.splice(i, 1);
 						return;
