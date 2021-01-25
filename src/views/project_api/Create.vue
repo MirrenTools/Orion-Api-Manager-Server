@@ -366,13 +366,16 @@ export default {
 				// 	description: 'description',
 				// 	def: 'test',
 				// 	minLength: 123,
+				// 	maxLength: 123,
+				// 	minimum: 123,
+				// 	maximum: 123,
 				// 	enums: '["q","ee","etet"]',
 				// 	pattern: 'scope.row.pattern ',
 				// 	items: [{
-				// 		rowKeyId: 'rowKeyId1',
 				// 		type: 'type',
 				// 		name: 'name',
 				// 		description: 'description'
+				// 		items: [{items}]
 				// 	}]
 				// }],
 				// responses: []

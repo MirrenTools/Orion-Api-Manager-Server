@@ -1,5 +1,3 @@
-// import Cookies from 'js-cookie'
-
 const state = {
 	sidebar: {
 		opened: true,

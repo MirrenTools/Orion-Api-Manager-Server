@@ -1,7 +1,7 @@
 <template>
 	<div style="width: 98%; max-width: 1240px;padding: 10px 0;margin:auto;">
 		<div style="text-align: center;" v-show="projectListLoading == true">
-			<h2>Welcome to Orion-API-Manager</h2>
+			<h2>{{ welcome }}</h2>
 			<div>{{ projectListTips }}</div>
 		</div>
 		<div v-loading="projectListLoading">
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import { getConsoleConfigAPI } from '@/api/Common';
 import { findProjectListAPI, projectMoveUpAPI, projectMoveDownAPI } from '@/api/Project';
 import { datetimeFormat } from '@/utils/DataFormat';
 import store from '@/store/index.js';
@@ -81,6 +82,8 @@ export default {
 		return {
 			/**服务器的地址*/
 			exportServerHost: process.env.VUE_APP_BASE_API,
+			/**欢迎语句*/
+			welcome: 'Welcome to Orion-API-Manager',
 			/**用户的角色ROOT:超级管理员,SERVER:普通管理员,CLIENT:普通用户*/
 			sessionUserRole: store.getters.role,
 			/**用户的id*/
@@ -96,6 +99,20 @@ export default {
 		};
 	},
 	created() {
+		//显示默认的欢迎语句
+		getConsoleConfigAPI(
+			res => {
+				let data = res.data;
+				console.log('get console config: ', data);
+				if (data.code == 200) {
+					document.title = data.data.title;
+					this.welcome = data.data.welcome;
+				}
+			},
+			err => {
+				console.log('get console config failed: ', err);
+			}
+		);
 		var sessionId = store.getters.sessionId;
 		if (sessionId == null) {
 			this.$router.push('/login');
