@@ -12,6 +12,7 @@ export default {
 	Tips: 'Tips',
 	Apply:'Apply',
 	Select: 'Select',
+	SelectOrAdd: 'Please select or add',
 	Operation: 'Operation',
 	Edit: 'Edit',
 	Copy: 'Copy',

@@ -39,7 +39,12 @@
 					<el-input v-model="api.sorts" type="number" :placeholder="$t('EnterRanking')"></el-input>
 				</el-form-item>
 				<el-form-item label="Consumes">
-					<el-input v-model="api.consumes" :placeholder="$t('EnterConsumes')"></el-input>
+					<el-select v-model="api.consumes" :placeholder="$t('SelectOrAdd')" filterable allow-create multiple style="width: 100%;">
+						<el-option label="x-www-form-urlencoded" value="x-www-form-urlencoded"></el-option>
+						<el-option label="multipart/form-data" value="multipart/form-data"></el-option>
+						<el-option label="application/json" value="application/json"></el-option>
+						<el-option label="application/xml" value="application/xml"></el-option>
+					</el-select>
 				</el-form-item>
 				<!-- 请求参数 -->
 				<el-form-item :label="$t('Parameters')">
@@ -110,7 +115,10 @@
 					</div>
 				</el-form-item>
 				<el-form-item label="Produces">
-					<el-input v-model="api.produces" :placeholder="$t('EnterProduces')"></el-input>
+					<el-select v-model="api.produces" :placeholder="$t('SelectOrAdd')" filterable allow-create multiple style="width: 100%;">
+						<el-option label="application/json" value="application/json"></el-option>
+						<el-option label="application/xml" value="application/xml"></el-option>
+					</el-select>
 				</el-form-item>
 				<!-- 响应参数 -->
 				<el-form-item :label="$t('ResponsesResult')">
@@ -419,10 +427,10 @@
 								}
 							}
 							if (data.data.consumes != null && data.data.consumes != '') {
-								data.data.consumes = JSON.parse(data.data.consumes).join(',');
+								data.data.consumes = JSON.parse(data.data.consumes);
 							}
 							if (data.data.produces != null && data.data.produces != '') {
-								data.data.produces = JSON.parse(data.data.produces).join(',');
+								data.data.produces = JSON.parse(data.data.produces);
 							}
 							if (data.data.parameters != null && data.data.parameters != '') {
 								let reqd = JSON.parse(data.data.parameters);
@@ -527,33 +535,13 @@
 						if (!isNaN(this.api.sorts)) {
 							reqData.sorts = parseInt(this.api.sorts);
 						}
-						if (this.api.consumes != null && this.api.consumes != '') {
-							let cs = this.api.consumes.split(',');
-							let consumes = [];
-							for (let i = 0; i < cs.length; i++) {
-								if (cs[i] == ',' || cs[i] == '') {
-									continue;
-								}
-								consumes.push(cs[i]);
-							}
-							if (consumes.length > 0) {
-								reqData.consumes = JSON.stringify(consumes);
-							}
+						if (this.api.consumes != null && this.api.consumes.length > 0) {
+							reqData.consumes = JSON.stringify(this.api.consumes);
 						} else {
 							reqData.consumes = '[]';
 						}
-						if (this.api.produces != null && this.api.produces != '') {
-							let cs = this.api.produces.split(',');
-							let produces = [];
-							for (let i = 0; i < cs.length; i++) {
-								if (cs[i] == ',' || cs[i] == '') {
-									continue;
-								}
-								produces.push(cs[i]);
-							}
-							if (produces.length > 0) {
-								reqData.produces = JSON.stringify(produces);
-							}
+						if (this.api.produces != null && this.api.produces.length > 0) {
+							reqData.produces = JSON.stringify(this.api.produces);
 						} else {
 							reqData.produces = '[]';
 						}
@@ -744,7 +732,9 @@
 				if (data.enums != null) {
 					try {
 						data.enums = JSON.parse(data.enums).join(',');
-					} catch (e) {console.log('data.enums convert err: ',e)}
+					} catch (e) {
+						console.log('data.enums convert err: ', e)
+					}
 				}
 				this.parameterData = data;
 			},

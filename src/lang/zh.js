@@ -12,6 +12,7 @@ export default {
 	Tips:'提示',
 	Apply:'使用',
 	Select:'请选择',
+	SelectOrAdd: '请选择或新增',
 	Operation:'操作',
 	Edit:'编辑',
 	Copy:'复制',
