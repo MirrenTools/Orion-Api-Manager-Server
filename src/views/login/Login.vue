@@ -104,17 +104,17 @@
 			<p v-show="loginError" style="text-align: center;color: #F56C6C;font-size:14px;">{{ loginFailedTips }}</p>
 			<el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="loginCheckHandler">{{ $t('Login') }}</el-button>
 		</el-form>
-		<!-- 如不想显示Powered by OAM 您可以注释下方代码 -->
+		<!-- 如不想显示Powered by OrionAM 您可以注释下方代码 -->
 		<!-- 如果您是商用或外部使用,注释后我希望您对我的项目进行赞助或打赏,我们将在首页展示您 -->
 		<!-- 设计与编码并开源不易,感谢您的慷慨!祝您愉快! -->
 		<div style="z-index: 2002;position: fixed;bottom:0;right: 0;padding:20px;cursor: pointer;">
 			<a
 				href="https://mirren.gitee.io/orion-api-manager-docs/"
 				target="_blank"
-				title="MirrenTools.org developed program Orion-API-Manager"
+				title="This is the MirrenTools.org website development program Orion-API-Manager"
 				style="color: white;text-decoration: none;"
 			>
-				Powered by OAM
+				Powered by OrionAM
 			</a>
 		</div>
 	</div>
@@ -337,7 +337,7 @@ $cursor: #fff;
 			caret-color: $cursor;
 
 			&:-webkit-autofill {
-				box-shadow: 0 0 0px 1000px $bg inset !important;
+				box-shadow: 0 0 0px 1000px transparent inset !important;
 				-webkit-text-fill-color: $cursor !important;
 			}
 		}
@@ -353,15 +353,11 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b;
-$dark_gray: #889aa4;
-$light_gray: #eee;
-
 .login-container {
 	height: 100vh;
 	width: 100%;
 	overflow: hidden;
-	background: $bg url('../../assets/links.svg') no-repeat 50%;
+	background: #2d3a4b url('../../assets/links.svg') no-repeat 50%;
 
 	.login-form {
 		position: relative;
@@ -380,7 +376,7 @@ $light_gray: #eee;
 
 		.title {
 			font-size: 26px;
-			color: $light_gray;
+			color: #eee;
 			margin: 0px auto 40px auto;
 			text-align: center;
 			font-weight: bold;
@@ -392,7 +388,7 @@ $light_gray: #eee;
 		right: 10px;
 		top: 7px;
 		font-size: 16px;
-		color: $dark_gray;
+		color: #889aa4;
 		cursor: pointer;
 		user-select: none;
 	}
