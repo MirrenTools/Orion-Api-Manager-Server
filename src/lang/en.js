@@ -126,7 +126,7 @@ export default {
 	ExtDocsDesc: 'Ext Docs Desc',
 	EnterExtDocsDesc: 'Please enter the document description, support HTML',
 	ExportDocument: 'Export document data',
-	OpenOnClient: 'Open on client',
+	OpenOnClient: 'View API',
 	GroupList: 'Group list',
 	ThereIsNoGroupPleaseAdd: 'There is no group, please add new group and add API',
 	NewGroup: 'New group',
