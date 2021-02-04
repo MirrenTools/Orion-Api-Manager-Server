@@ -276,6 +276,8 @@ export default {
 											this.$router.push('/index');
 										}
 									});
+								}else{
+									this.$router.push('/index');
 								}
 							} else if (resp.code == 1304) {
 								console.log('Login failed:' + resp.msg);
