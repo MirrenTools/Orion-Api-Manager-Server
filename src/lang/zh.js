@@ -126,7 +126,7 @@ export default {
 	ExtDocsDesc:'附加文档描述',
 	EnterExtDocsDesc:'请输入文档描述,支持HTML',
 	ExportDocument: '导出接口数据',
-	OpenOnClient: '在Client中查看',
+	OpenOnClient: '查看API',
 	GroupList: '分组列表',
 	ThereIsNoGroupPleaseAdd: '尚无分组,请新增分组后增加API',
 	NewGroup:'新增分组',
