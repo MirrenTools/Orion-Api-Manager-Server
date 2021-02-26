@@ -10,30 +10,29 @@ export default function(docs) {
 	 * @param {Object} data
 	 */
 	function ofOpenAPI(data) {
-		var orionData = commonConvert(data);
-		var servers = [];
+		let orionData = commonConvert(data);
+		let servers = [];
 		if (data.servers != null) {
-			for (var i = 0; i < data.servers.length; i++) {
-				var s = data.servers[i];
-				var urls = [{
+			for (let i = 0; i < data.servers.length; i++) {
+				let s = data.servers[i];
+				let urls = [{
 					url: s.url,
 					description: s.description
 				}];
-				if (s.variables != null) {
-					for (var key in s.variables) {
-						var val = s.variables[key];
-						var def = val.default;
+				if (s.letiables != null) {
+					for (let key in s.letiables) {
+						let val = s.letiables[key];
+						let def = val.default;
 						if (def == null) {
 							continue;
 						}
-						var description = val.description;
-						var vals = [{
+						let vals = [{
 							key: key,
 							value: def
 						}];
 						if (val.enum != null) {
-							for (var j = 0; j < val.enum.length; j++) {
-								var va = val.enum[j];
+							for (let j = 0; j < val.enum.length; j++) {
+								let va = val.enum[j];
 								if (va === def) {
 									continue;
 								}
@@ -43,12 +42,12 @@ export default function(docs) {
 								});
 							}
 						}
-						var ulen = urls.length;
-						for (var u = 0; u < ulen; u++) {
-							var url = urls[u].url;
+						let ulen = urls.length;
+						for (let u = 0; u < ulen; u++) {
+							let url = urls[u].url;
 							urls[u].url = url.replace('{' + vals[0].key + '}', vals[0].value);
-							var description = urls[u].description;
-							for (var e = 1; e < vals.length; e++) {
+							let description = urls[u].description;
+							for (let e = 1; e < vals.length; e++) {
 								urls.push({
 									url: url.replace('{' + vals[e].key + '}', vals[e].value),
 									description: description
@@ -57,8 +56,8 @@ export default function(docs) {
 						}
 					}
 				}
-				for (var u = 0; u < urls.length; u++) {
-					servers.push(urls[u]);
+				for (let us = 0; us < urls.length; us++) {
+					servers.push(urls[us]);
 				}
 			}
 		}
@@ -71,11 +70,11 @@ export default function(docs) {
 	 * @param {Object} data
 	 */
 	function ofSwagger(data) {
-		var orionData = commonConvert(data);
-		var servers = [];
-		var nsurl = (data.host || '') + (data.basePath || '');
+		let orionData = commonConvert(data);
+		let servers = [];
+		let nsurl = (data.host || '') + (data.basePath || '');
 		if (data.schemes != null) {
-			for (var i = 0; i < data.schemes.length; i++) {
+			for (let i = 0; i < data.schemes.length; i++) {
 				servers.push({
 					url: data.schemes[i] + '://' + nsurl
 				});
@@ -95,10 +94,10 @@ export default function(docs) {
 	 * @param {Object} data
 	 */
 	function commonConvert(data) {
-		var orionData = {};
+		let orionData = {};
 		//项目信息转换开始
 		if (data.info != null) {
-			var info = data.info;
+			let info = data.info;
 			if (info.title != null) {
 				orionData.name = info.title;
 			}
@@ -152,10 +151,10 @@ export default function(docs) {
 		//项目信息转换结束
 		//分组信息转换开始
 		orionData.content = [];
-		var groups = {};
+		let groups = {};
 		if (data.tags != null) {
-			for (var i = 0; i < data.tags.length; i++) {
-				var tag = data.tags[i];
+			for (let i = 0; i < data.tags.length; i++) {
+				let tag = data.tags[i];
 				tag.apis = [];
 				tag.summary = tag.name;
 				if (tag.description != null) {
@@ -176,61 +175,61 @@ export default function(docs) {
 		//分组信息转换结束
 		//可引用数据加载
 		//加载Reference
-		var refs = {};
+		let refs = {};
 		if (data.definitions != null) {
-			for (var refkey in data.definitions) {
+			for (let refkey in data.definitions) {
 				refs['#/definitions/' + refkey] = data.definitions[refkey];
 			}
 		}
 		if (data.parameters != null) {
-			for (var refkey in data.parameters) {
+			for (let refkey in data.parameters) {
 				refs['#/parameters/' + refkey] = data.parameters[refkey];
 			}
 		}
 		if (data.responses != null) {
-			for (var refkey in data.responses) {
+			for (let refkey in data.responses) {
 				refs['#/responses/' + refkey] = data.responses[refkey];
 			}
 		}
 		if (data.components != null && data.components.schemas != null) {
-			for (var refkey in data.components.schemas) {
+			for (let refkey in data.components.schemas) {
 				refs['#/components/schemas/' + refkey] = data.components.schemas[refkey];
 			}
 		}
 		if (data.components != null && data.components.parameters != null) {
-			for (var refkey in data.components.parameters) {
+			for (let refkey in data.components.parameters) {
 				refs['#/components/parameters/' + refkey] = data.components.parameters[refkey];
 			}
 		}
 		if (data.components != null && data.components.responses != null) {
-			for (var refkey in data.components.responses) {
+			for (let refkey in data.components.responses) {
 				refs['#/components/responses/' + refkey] = data.components.responses[refkey];
 			}
 		}
 		if (data.components != null && data.components.requestBodies != null) {
-			for (var refkey in data.components.requestBodies) {
+			for (let refkey in data.components.requestBodies) {
 				refs['#/components/requestBodies/' + refkey] = data.components.requestBodies[refkey];
 			}
 		}
 		if (data.components != null && data.components.headers != null) {
-			for (var refkey in data.components.headers) {
+			for (let refkey in data.components.headers) {
 				refs['#/components/headers/' + refkey] = data.components.headers[refkey];
 			}
 		}
-		for (var refkey in refs) {
-			var nref = fillSchemaRef(refs[refkey], refs);
+		for (let refkey in refs) {
+			let nref = fillSchemaRef(refs[refkey], refs);
 			refs[refkey] = nref;
 		}
 		//可引用数据加载结束
 
 
 		// API信息转换开始
-		for (var path in data.paths) {
-			var ad = data.paths[path];
-			for (var method in ad) {
-				var api = {};
+		for (let path in data.paths) {
+			let ad = data.paths[path];
+			for (let method in ad) {
+				let api = {};
 				api.path = path;
-				var adata = ad[method];
+				let adata = ad[method];
 				api.method = method;
 				api.title = adata.summary || path;
 				if (adata.description != null) {
@@ -244,42 +243,43 @@ export default function(docs) {
 				// Request转换
 				api.parameters = [];
 				if (adata.parameters != null) {
-					for (var i = 0; i < adata.parameters.length; i++) {
-						loadParametersSchema(api.parameters, adata.parameters[i], refs);
+					for (let i = 0; i < adata.parameters.length; i++) {
+						loadParametersSchema(api, api.parameters, adata.parameters[i], refs);
 					}
 				}
 
-
 				if (adata.requestBody != null && adata.requestBody.content != null) {
-					if (adata.requestBody.content['application/json'] != null && adata.requestBody.content['application/json'].schema !=
-						null) {
-						var schema = adata.requestBody.content['application/json'].schema;
-						loadRequestBody(api.parameters, schema, refs);
+					if (adata.requestBody.content['application/json'] != null && adata.requestBody.content['application/json'].schema != null) {
+						let schema = adata.requestBody.content['application/json'];
+						loadRequestBody(api, api.parameters, schema, refs);
+					} else if (adata.requestBody.content['*/*'] != null && adata.requestBody.content['*/*'].schema != null) {
+						let schema = adata.requestBody.content['*/*'];
+						loadRequestBody(api, api.parameters, schema, refs);
 					} else {
-						api.body = fillSchemaRef(adata.requestBody, refs);
+						api.body = JSON.stringify(fillSchemaRef(adata.requestBody, refs));
 					}
 				}
 
 				// Response转换
 				api.responses = [];
-				for (var pkey in adata.responses) {
-					var pdata = adata.responses[pkey];
-					var resp = {
+				for (let pkey in adata.responses) {
+					let pdata = adata.responses[pkey];
+					let resp = {
 						status: pkey,
 						msg: pdata.description || '',
 						data: []
 					};
 					if (pdata.headers != null) {
-						for (var hkey in pdata.headers) {
-							var hdata = pdata.headers[hkey];
+						for (let hkey in pdata.headers) {
+							let hdata = pdata.headers[hkey];
 							if (hdata.schema != null) {
-								for (var skey in hdata.schema) {
+								for (let skey in hdata.schema) {
 									if (hdata[skey] != null) {
 										hdata[skey] = hdata.schema[skey];
 									}
 								}
 							}
-							var rdata = {};
+							let rdata = {};
 							rdata.in = 'header';
 							rdata.type = hdata.type || 'string';
 							rdata.name = hkey;
@@ -294,7 +294,7 @@ export default function(docs) {
 
 					if (pdata.content != null) {
 						if (pdata.content['application/json'] != null && pdata.content['application/json'].schema != null) {
-							var schema = pdata.content['application/json'].schema;
+							let schema = pdata.content['application/json'].schema;
 							loadResponseSchema(resp.data, schema, refs);
 						} else {
 							resp.schema = fillSchemaRef(pdata.content, refs);
@@ -307,7 +307,7 @@ export default function(docs) {
 					api.responses.push(resp);
 				}
 
-				var tempGroup;
+				let tempGroup;
 				if (adata.tags != null && adata.tags.length >= 1) {
 					tempGroup = groups[adata.tags[0]];
 				}
@@ -328,7 +328,7 @@ export default function(docs) {
 		}
 
 		// API信息转换结束
-		for (var key in groups) {
+		for (let key in groups) {
 			orionData.content.push(groups[key]);
 		}
 		orionData.externalDocs = data.externalDocs;
@@ -340,14 +340,14 @@ export default function(docs) {
 	 * @param {Object} refs 可引用的对象集
 	 */
 	function fillSchemaRef(ref, refs) {
-		var refStr = JSON.stringify(ref);
-		var refkeys = refStr.match(/"\$ref":".*?(?=")/g);
+		let refStr = JSON.stringify(ref);
+		let refkeys = refStr.match(/"\$ref":".*?(?=")/g);
 		if (refkeys == null) {
 			return JSON.parse(refStr);
 		}
-		for (var i = 0; i < refkeys.length; i++) {
-			var key = refkeys[i].replace('"$ref":"', '');
-			var obj = refs[key];
+		for (let i = 0; i < refkeys.length; i++) {
+			let key = refkeys[i].replace('"$ref":"', '');
+			let obj = refs[key];
 			refStr = refStr.replace('"' + key + '"', JSON.stringify(obj));
 			while (refStr.indexOf(key) != -1) {
 				refStr = refStr.replace('"' + key + '"', JSON.stringify(obj));
@@ -358,20 +358,20 @@ export default function(docs) {
 
 	/**
 	 * 将parameters的Schema加载到OrionRequest中data中,如果是body数据则将body返回
+	 * @param {Object} api API的基本信息
 	 * @param {Object} requestData OrionRequest 的数据
 	 * @param {Object} fromSchema 要需要转换加载的数据
 	 * @param {Object} refs 可引用的对象集
 	 */
-	function loadParametersSchema(parameter, fromSchema, refs) {
-		var schema;
+	function loadParametersSchema(api, parameter, fromSchema, refs) {
+		let schema;
 		if (fromSchema['$ref'] != null) {
 			schema = JSON.parse(JSON.stringify(refs[fromSchema['$ref']]));
 		} else {
 			schema = JSON.parse(JSON.stringify(fromSchema))
 		}
-
 		if (schema['in'] == 'body') {
-			loadRequestBody(parameter, schema, refs);
+			loadRequestBody(api, parameter, schema, refs);
 			return;
 		}
 
@@ -424,7 +424,7 @@ export default function(docs) {
 			schema.description = marked(schema.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 		}
 		if (schema.type == 'array' && schema.items != null) {
-			var arraySchema = fillSchemaRef(schema.items, refs);
+			let arraySchema = fillSchemaRef(schema.items, refs);
 			if (schema.description == null) {
 				schema.description = '';
 			} else {
@@ -448,14 +448,26 @@ export default function(docs) {
 	}
 	/**
 	 * 将body参数加载到Orion的请求参数
-	 * @param {Object} parameter
+	 * @param {Object} api API的基本信息
+	 * @param {Object} parameter API的请求参数
 	 * @param {Object} fromSchema
 	 * @param {Object} refs
 	 */
-	function loadRequestBody(parameter, fromSchema, refs) {
-		var schema;
-		if (fromSchema.schema != null && fromSchema['$ref'] != null) {
-			var ref = refs[fromSchema['$ref']];
+	function loadRequestBody(api, parameter, fromSchema, refs) {
+		let schema;
+		let schemaType;
+		if (fromSchema.schema != null) {
+			schemaType = fromSchema.schema.type;
+			let ref;
+			if (fromSchema.schema['$ref'] != null) {
+				ref = refs[fromSchema.schema['$ref']];
+			} else if (fromSchema.schema['items'] != null) {
+				if (fromSchema.schema.items['$ref'] != null) {
+					ref = refs[fromSchema.schema.items['$ref']];
+				}
+			} else {
+				ref = fromSchema.schema;
+			}
 			if (ref == null) {
 				fromSchema['in'] = 'body';
 				if (fromSchema['default'] != null) {
@@ -473,12 +485,12 @@ export default function(docs) {
 			schema = JSON.parse(JSON.stringify(fromSchema));
 		}
 
-		var items = [];
+		let items = [];
 		if (schema.properties != null) {
 			loadParameterProperties(items, schema.properties, schema.required, refs);
 		}
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
+		for (let i = 0; i < items.length; i++) {
+			let item = items[i];
 			item['in'] = 'body';
 			if (item['default'] != null) {
 				item.def = item['default'];
@@ -488,6 +500,23 @@ export default function(docs) {
 			}
 			item.type = getSchemaDataType(item) || '';
 			parameter.push(item);
+		}
+		if ('array' == schemaType) {
+			let body = '[{';
+			for (let i = 0; i < items.length; i++) {
+				let item = items[i];
+				if (i > 0) {
+					body += ',';
+				}
+				body += '"' + item['name'] + '":';
+				if ('string' == item['type']) {
+					body += '"' + (item['default'] == null ? ('{' + item['name'] + '}') : item['default']) + '"';
+				} else {
+					body += (item['default'] == null ? ('{' + item['name'] + '}') : item['default']);
+				}
+			}
+			body += '}]';
+			api.body = body;
 		}
 	}
 
@@ -500,16 +529,17 @@ export default function(docs) {
 	 * @param {Object} refs 属性引用
 	 */
 	function loadParameterProperties(items, properties, required, refs) {
-		for (var pkey in properties) {
-			var pdata = null;
-			var pdata = properties[pkey];
+		if (refs) console.log();
+		for (let pkey in properties) {
+			let pdata = null;
+			pdata = properties[pkey];
 			if (pdata['$ref'] != null) {
 				pdata = pdata['$ref'];
 				if (pdata.properties != null) {
 					pdata.items = [];
-					for (var pdkey in pdata.properties) {
-						var pddata = pdata.properties[pdkey];
-						var item = {
+					for (let pdkey in pdata.properties) {
+						let pddata = pdata.properties[pdkey];
+						let item = {
 							name: pdkey
 						};
 						item.type = getSchemaDataType(pddata) || '';
@@ -529,7 +559,7 @@ export default function(docs) {
 				pdata.description = marked(pdata.description).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 			}
 			if (pdata.type == 'array' && pdata.items != null) {
-				var desc = 'schema: ' + JSON.stringify(pdata.items);
+				let desc = 'schema: ' + JSON.stringify(pdata.items);
 				if (pdata.description == null) {
 					pdata.description = desc;
 				} else if (pdata.description != desc) {
@@ -547,7 +577,7 @@ export default function(docs) {
 	 * @param {Object} refs 可引用的对象集
 	 */
 	function loadResponseSchema(responseData, schema, refs) {
-		var flag = 0;
+		let flag = 0;
 		if (schema['$ref'] != null) {
 			schema = refs[schema['$ref']];
 		}
@@ -575,12 +605,12 @@ export default function(docs) {
 			}
 		}
 		if (schema.properties != null) {
-			for (var skey in schema.properties) {
-				var rdata = {};
+			for (let skey in schema.properties) {
+				let rdata = {};
 				rdata.in = 'body';
 				rdata.type = getSchemaDataType(schema.properties[skey]) || 'string';
 				rdata.name = skey;
-				var desc = schema.properties[skey].description || '';
+				let desc = schema.properties[skey].description || '';
 				if (desc != null) {
 					rdata.description = marked(desc).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 				}
@@ -589,12 +619,12 @@ export default function(docs) {
 			flag++;
 		}
 		if (schema.additionalProperties != null) {
-			for (var skey in schema.additionalProperties) {
-				var rdata = {};
+			for (let skey in schema.additionalProperties) {
+				let rdata = {};
 				rdata.in = 'body';
 				rdata.type = getSchemaDataType(schema.additionalProperties[skey]) || 'string';
 				rdata.name = skey;
-				var desc = schema.additionalProperties[skey].description || '';
+				let desc = schema.additionalProperties[skey].description || '';
 				if (desc != null) {
 					rdata.description = marked(desc).replace(/^(\s|<p>)+|(\s|<\/p>)+$/g, '');
 				}
@@ -626,8 +656,8 @@ export default function(docs) {
 		return ref.type;
 	}
 
-	var openapi = docs.openapi;
-	var swagger = docs.swagger;
+	let openapi = docs.openapi;
+	let swagger = docs.swagger;
 	if (openapi != null && openapi.startsWith('3.')) {
 		return ofOpenAPI(docs);
 	} else if (swagger != null && swagger.startsWith('2.')) {

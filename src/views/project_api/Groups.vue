@@ -167,10 +167,9 @@
 												</template>
 											</el-table-column>
 										</el-table>
-										<div v-if="api.body && api.body != ''">
-											<el-input type="textarea" :autosize="{ minRows: 1 }" v-model="api.body" style="border: 0;"></el-input>
-										</div>
+										<div style="padding: 5px 0;" v-html="api.body" v-show="api.body"></div>
 									</div>
+									
 									<!-- 响应参数标题 -->
 									<div style="padding:10px;">
 										<div style="display: flex;align-items: center;">
@@ -184,7 +183,7 @@
 									<div style="padding:5px 10px;background-color: white">
 										<div v-for="(resp, idx) in api.responses" :key="idx">
 											<p>{{ $t('Status') }}: {{ resp.status }} {{ $t('StatusMsg') }}: {{ resp.msg }}</p>
-											<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
+											<el-table :data="resp.data" v-show="resp.data&&resp.data.length>0" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
 											 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
 												<el-table-column prop="in" :label="$t('Position')" width="120" align="right"></el-table-column>
 												<el-table-column prop="type" :label="$t('Type')" width="100" align="right"></el-table-column>
