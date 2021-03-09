@@ -4,8 +4,10 @@
 			<el-input :placeholder="$t('TheUrlOfTheAPIs')" v-model="documentUrl">
 				<template slot="append">
 					<el-button @click="getDocumentOfUrl()" :loading="requestLoading">{{ $t('Load') }}</el-button>
-					<div style="display: inline-block; border-left: 2px solid #ccc;margin-left:17px;margin-right:15px;">&nbsp;</div>
-					<el-button @click="$refs.readFile.click()" :loading="projectLoading">{{ $t('LocalLoad') }}</el-button>
+					<div style="display: inline-block; border-left: 2px solid #ccc;margin-left:17px;margin-right:15px;">
+						&nbsp;</div>
+					<el-button @click="$refs.readFile.click()" :loading="projectLoading">{{ $t('LocalLoad') }}
+					</el-button>
 				</template>
 			</el-input>
 			<input type="file" style="display: none" accept=".json,.txt" ref="readFile" @change="getProjectOfFile" />
@@ -20,14 +22,16 @@
 					<el-input v-model="projectEdit.versions" :placeholder="$t('EnterProjectVersion')"></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('ProjectDescription')" prop="description">
-					<el-input v-model="projectEdit.description" type="textarea" :placeholder="$t('EnterProjectDescription')"></el-input>
+					<el-input v-model="projectEdit.description" type="textarea"
+						:placeholder="$t('EnterProjectDescription')"></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('Servers')" prop="servers">
 					<template>
-						<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;" v-for="(server, idx) in projectEdit.servers"
-						 :key="idx">
+						<div style="border: 1px solid #DCDFE6;padding: 5px;margin-bottom: 5px;"
+							v-for="(server, idx) in projectEdit.servers" :key="idx">
 							<el-input v-model="server.url" :placeholder="$t('EnterHostAddress')"></el-input>
-							<el-input v-model="server.description" :placeholder="$t('EnterHostDescription')" class="novalidate"></el-input>
+							<el-input v-model="server.description" :placeholder="$t('EnterHostDescription')"
+								class="novalidate"></el-input>
 							<div style="text-align: right;padding-top: 3px;">
 								<el-button size="mini" @click="removeServer(idx)">{{ $t('Remove') }}</el-button>
 							</div>
@@ -93,7 +97,8 @@
 					<td class="project-item" valign="top">{{ $t('ExtDocsDesc') }}</td>
 					<td>
 						<div v-show="projectEdit.exDdescription" v-html="projectEdit.exDdescription"></div>
-						<a v-show="projectEdit.exDurl" :href="projectEdit.exDurl" target="_blank" class="alink" style="margin-left: 0;">{{ projectEdit.exDurl }}</a>
+						<a v-show="projectEdit.exDurl" :href="projectEdit.exDurl" target="_blank" class="alink"
+							style="margin-left: 0;">{{ projectEdit.exDurl }}</a>
 					</td>
 				</tr>
 			</table>
@@ -123,15 +128,18 @@
 							<p v-html="g.description"></p>
 							<!-- 拓展文档 -->
 							<div v-if="g.externalDocs != null">
-								<div v-if="g.externalDocs.description != null" v-html="g.externalDocs.description"></div>
-								<a v-if="g.externalDocs.url != null" :href="g.externalDocs.url" target="_blank" class="alink" style="margin-left: 0;">{{ g.externalDocs.url }}</a>
+								<div v-if="g.externalDocs.description != null" v-html="g.externalDocs.description">
+								</div>
+								<a v-if="g.externalDocs.url != null" :href="g.externalDocs.url" target="_blank"
+									class="alink" style="margin-left: 0;">{{ g.externalDocs.url }}</a>
 							</div>
 						</div>
 						<!-- 接口列表 -->
 						<div v-for="api in g.apis" :key="api.apiId" style="margin-bottom: 10px;">
 							<div :class="['api', api.method]">
 								<!-- API的方法与路径与简介 -->
-								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']" @click="api.show = !api.show">
+								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']"
+									@click="api.show = !api.show">
 									<div class="api-method">{{ api.method }}</div>
 									<div class="api-path-summary">
 										<span v-if="api.deprecated == true || api.deprecated == 'true'">
@@ -149,18 +157,23 @@
 									<!-- API说明 -->
 									<div style="padding:10px;background-color: white">
 										<!-- API描述 -->
-										<div v-if="api.description" v-html="api.description.replace(/\n/g, '<br>')"></div>
+										<div v-if="api.description" v-html="api.description.replace(/\n/g, '<br>')">
+										</div>
 										<!-- API附件说明 -->
 										<div v-for="(addi, idx) in api.additional" :key="idx">
 											<div>
 												<b>{{ addi.title }}</b>
 											</div>
-											<div v-if="addi.description" v-html="addi.description.replace(/\n/g, '<br>')"></div>
+											<div v-if="addi.description"
+												v-html="addi.description.replace(/\n/g, '<br>')"></div>
 										</div>
 										<!-- 拓展文档 -->
 										<div v-if="api.externalDocs != null">
-											<div v-if="api.externalDocs.description != null" v-html="api.externalDocs.description"></div>
-											<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url" target="_blank" class="alink" style="margin-left: 0;">{{ api.externalDocs.url }}</a>
+											<div v-if="api.externalDocs.description != null"
+												v-html="api.externalDocs.description"></div>
+											<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url"
+												target="_blank" class="alink"
+												style="margin-left: 0;">{{ api.externalDocs.url }}</a>
 										</div>
 									</div>
 									<!-- 请求参数标题 -->
@@ -169,32 +182,49 @@
 											<div style="min-width: 60px;">
 												<b>{{ $t('Parameters') }}</b>
 											</div>
-											<div style="margin-left: auto;" v-if="api.consumes != null">Consumes: {{ api.consumes }}</div>
+											<div style="margin-left: auto;" v-if="api.consumes != null">Consumes:
+												{{ api.consumes }}
+											</div>
 										</div>
 									</div>
 									<!-- 请求参数 -->
 									<div style="padding:5px 10px;background-color: white">
-										<el-table :data="api.parameters" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
-										 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" :empty-text="$t('ThereIsNoNeedToRequestParameters')">
-											<el-table-column prop="required" :label="$t('Required')" width="100" align="right">
+										<el-table :data="api.parameters" style="width: 100%;" row-key="tableRowKeyId"
+											border default-expand-all
+											:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
+											:empty-text="$t('ThereIsNoNeedToRequestParameters')">
+											<el-table-column prop="required" :label="$t('Required')" width="100"
+												align="right">
 												<template slot-scope="scope">
-													<span v-if="scope.row.required != null">{{ scope.row.required == 'true' || scope.row.required == true ? $t('True') : $t('False') }}</span>
+													<span
+														v-if="scope.row.required != null">{{ scope.row.required == 'true' || scope.row.required == true ? $t('True') : $t('False') }}</span>
 												</template>
 											</el-table-column>
-											<el-table-column prop="in" :label="$t('Position')" width="120" align="right"></el-table-column>
-											<el-table-column prop="type" :label="$t('Type')" width="120"></el-table-column>
-											<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
+											<el-table-column prop="in" :label="$t('Position')" width="120"
+												align="right"></el-table-column>
+											<el-table-column prop="type" :label="$t('Type')" width="120">
+											</el-table-column>
+											<el-table-column prop="name" :label="$t('ParamName')" width="300">
+											</el-table-column>
 											<el-table-column prop="description" :label="$t('ParamDescription')">
 												<template slot-scope="scope">
-													<div v-if="scope.row.description" v-html="scope.row.description"></div>
+													<div v-if="scope.row.description" v-html="scope.row.description">
+													</div>
 													<div class="desc-constraint">
-														<span v-if="scope.row.def">{{ $t('Default') }}: {{ scope.row.def }}</span>
-														<span v-if="scope.row.minLength">{{ $t('MinLength') }}: {{ scope.row.minLength }}</span>
-														<span v-if="scope.row.maxLength">{{ $t('MaxLength') }}: {{ scope.row.maxLength }}</span>
-														<span v-if="scope.row.minValue">{{ $t('Minimum') }}: {{ scope.row.minValue }}</span>
-														<span v-if="scope.row.maxValue">{{ $t('Maximum') }}: {{ scope.row.maxValue }}</span>
-														<span v-if="scope.row.enums">{{ $t('Enums') }}: {{ scope.row.enums }}</span>
-														<span v-if="scope.row.regex">{{ $t('Pattern') }}: {{ scope.row.regex }}</span>
+														<span v-if="scope.row.def">{{ $t('Default') }}:
+															{{ scope.row.def }}</span>
+														<span v-if="scope.row.minLength">{{ $t('MinLength') }}:
+															{{ scope.row.minLength }}</span>
+														<span v-if="scope.row.maxLength">{{ $t('MaxLength') }}:
+															{{ scope.row.maxLength }}</span>
+														<span v-if="scope.row.minValue">{{ $t('Minimum') }}:
+															{{ scope.row.minValue }}</span>
+														<span v-if="scope.row.maxValue">{{ $t('Maximum') }}:
+															{{ scope.row.maxValue }}</span>
+														<span v-if="scope.row.enums">{{ $t('Enums') }}:
+															{{ scope.row.enums }}</span>
+														<span v-if="scope.row.regex">{{ $t('Pattern') }}:
+															{{ scope.row.regex }}</span>
 													</div>
 												</template>
 											</el-table-column>
@@ -209,24 +239,34 @@
 											<div style="min-width: 60px;">
 												<b>{{ $t('Responses') }}</b>
 											</div>
-											<div style="margin-left: auto;" v-if="api.produces != null">Produces: {{ api.produces }}</div>
+											<div style="margin-left: auto;" v-if="api.produces != null">Produces:
+												{{ api.produces }}
+											</div>
 										</div>
 									</div>
 									<!-- 响应参数 -->
 									<div style="padding:5px 10px;background-color: white">
 										<div v-for="(resp, idx) in api.responses" :key="idx">
-											<p>{{ $t('Status') }}: {{ resp.status }} {{ $t('StatusMsg') }}: {{ resp.msg }}</p>
+											<p>{{ $t('Status') }}: {{ resp.status }} {{ $t('StatusMsg') }}:
+												{{ resp.msg }}
+											</p>
 											<div v-if="resp.schema">
 												<json-viewer :expand-depth="10" :value="resp.schema" />
 											</div>
-											<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
-											 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" v-if="resp.data && resp.data.length > 0">
-												<el-table-column prop="in" :label="$t('Position')" width="120" align="right"></el-table-column>
-												<el-table-column prop="type" :label="$t('Type')" width="100" align="right"></el-table-column>
-												<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
+											<el-table :data="resp.data" style="width: 100%;" row-key="tableRowKeyId"
+												border default-expand-all
+												:tree-props="{ children: 'items', hasChildren: 'hasChildren' }"
+												v-if="resp.data && resp.data.length > 0">
+												<el-table-column prop="in" :label="$t('Position')" width="120"
+													align="right"></el-table-column>
+												<el-table-column prop="type" :label="$t('Type')" width="100"
+													align="right"></el-table-column>
+												<el-table-column prop="name" :label="$t('ParamName')" width="300">
+												</el-table-column>
 												<el-table-column prop="description" :label="$t('ParamDescription')">
 													<template slot-scope="scope">
-														<div v-if="scope.row.description" v-html="scope.row.description"></div>
+														<div v-if="scope.row.description"
+															v-html="scope.row.description"></div>
 													</template>
 												</el-table-column>
 											</el-table>
@@ -584,7 +624,8 @@
 						switch (res.code) {
 							case WS_UNRECOGNIZED:
 								console.log(WS_UNRECOGNIZED);
-								progressTips.innerText = this.$t('UnrecognizedInstructionPleaseCheckTheTypeOfTheRequest');
+								progressTips.innerText = this.$t(
+									'UnrecognizedInstructionPleaseCheckTheTypeOfTheRequest');
 								break;
 							case WS_LOGIN_TIMEOUT:
 								console.log(WS_LOGIN_TIMEOUT);
@@ -594,18 +635,21 @@
 								progressTips.innerText = this.$t('ImportFailedInvalidApiDocument');
 								break;
 							case WS_CHECK_PROJECT_NAME_SERVERS:
-								progressTips.innerText = this.$t('ImportFailedProjectNameAndServersCannotBeEmpty');
+								progressTips.innerText = this.$t(
+									'ImportFailedProjectNameAndServersCannotBeEmpty');
 								break;
 							case WS_PROJECT_SAVEING:
 								var msg = this.$t('ImportingProject') + res.data + '...';
 								progressTips.innerText = msg;
 								break;
 							case WS_PROJECT_SAVE_EXCEPTION:
-								var msg = this.$t('ImportProject') + ':' + res.data + this.$t('TheExpectedResultIsNotAchieved');
+								var msg = this.$t('ImportProject') + ':' + res.data + this.$t(
+									'TheExpectedResultIsNotAchieved');
 								progressTips.innerText = msg;
 								break;
 							case WS_PROJECT_SAVED:
-								var msg = this.$t('ImportProject') + ':' + res.data + this.$t('SuccessStartImportingGroupData');
+								var msg = this.$t('ImportProject') + ':' + res.data + this.$t(
+									'SuccessStartImportingGroupData');
 								progressTips.innerText = msg;
 								break;
 							case WS_GROUP_SAVED:
@@ -769,7 +813,8 @@
 									if (gd.externalDocs.externalUrl != null && gd.externalDocs.externalUrl != '') {
 										ext.url = gd.externalDocs.externalUrl;
 									}
-									if (gd.externalDocs.externalDesc != null && gd.externalDocs.externalDesc != '') {
+									if (gd.externalDocs.externalDesc != null && gd.externalDocs.externalDesc !=
+										'') {
 										ext.description = gd.externalDocs.externalDesc;
 									}
 									group.externalDocs = JSON.stringify(ext);
@@ -849,20 +894,25 @@
 													d.maxValue = p.maxValue;
 												}
 												if (p.enums != null && p.enums != '') {
-													if (Object.prototype.toString.call(p.enums) === '[object Array]') {
-														d.enums = JSON.stringify(p.enums);
-													} else {
-														var cs = p.enums.split(',');
-														var enums = [];
-														for (var i = 0; i < cs.length; i++) {
-															if (cs[i] == ',' || cs[i] == '') {
-																continue;
+													try {
+														if (Object.prototype.toString.call(p.enums) ===
+															'[object Array]') {
+															d.enums = JSON.stringify(p.enums);
+														} else {
+															var cs = p.enums.split(',');
+															var enums = [];
+															for (var i = 0; i < cs.length; i++) {
+																if (cs[i] == ',' || cs[i] == '') {
+																	continue;
+																}
+																enums.push(cs[i]);
 															}
-															enums.push(cs[i]);
+															if (enums.length > 0) {
+																d.enums = JSON.stringify(enums);
+															}
 														}
-														if (enums.length > 0) {
-															d.enums = JSON.stringify(enums);
-														}
+													} catch (err) {
+														console.log(err)
 													}
 												}
 												if (p.regex != null && p.regex != '') {
@@ -881,7 +931,8 @@
 											var params = [];
 											for (var i = 0; i < ad.responses.length; i++) {
 												var p = ad.responses[i];
-												if ((p.status == null || p.status == '') && (p.msg == null || p.msg == '') && (p.data == null || p.data.length == 0)) {
+												if ((p.status == null || p.status == '') && (p.msg == null || p
+														.msg == '') && (p.data == null || p.data.length == 0)) {
 													continue;
 												}
 												var d = {
