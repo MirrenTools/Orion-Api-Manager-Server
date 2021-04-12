@@ -146,6 +146,7 @@ export default {
 	SelectTransferGroup:'Please select the group to transfer',
 	ApiManage: 'API manage',
 	ApiList: 'API list',
+	ApiQuantity: 'API quantity',
 	ApiDetails: 'API Details',
 	TemplateList:'Template list',
 	SaveAsTemplate:'Save as template',

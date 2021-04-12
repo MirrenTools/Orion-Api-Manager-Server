@@ -146,6 +146,7 @@ export default {
 	SelectTransferGroup:'请选择要更换的分组',
 	ApiManage: 'API 管理',
 	ApiList: 'API 列表',
+	ApiQuantity: 'API 数量',
 	ApiDetails: '接口详情',
 	TemplateList:'模板列表',
 	SaveAsTemplate:'保存为模板',
