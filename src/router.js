@@ -140,6 +140,25 @@ export const constantRoutes = [{
 					pathKeys: ['pid']
 				}]
 			}
+		}, {
+			path: 'get/project/api/:pid/:gid/:aid',
+			name: 'ApiDetails',
+			component: () => import('./views/project_api/Details'),
+			meta: {
+				title: 'ApiDetails',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				}, {
+					path: '/index/get/project/:pid',
+					title: 'ProjectDetails',
+					pathKeys: ['pid']
+				}, {
+					path: '/index/get/groups/:pid',
+					title: 'GroupList',
+					pathKeys: ['pid']
+				}]
+			}
 		}]
 	},
 	// 404 page must be placed at the end !!!

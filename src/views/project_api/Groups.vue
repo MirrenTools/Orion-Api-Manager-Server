@@ -87,7 +87,7 @@
 						<div v-for="api in apis" :key="api.apiId" style="margin-bottom: 10px;">
 							<div :class="['api', api.method]">
 								<!-- API的方法与路径与简介 -->
-								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']" @click="api.show = !api.show">
+								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']" >
 									<div class="api-method">{{ api.method }}</div>
 									<div class="api-path-summary">
 										<span v-if="api.deprecated == true || api.deprecated == 'true'">
@@ -96,10 +96,6 @@
 										{{ api.path }}
 									</div>
 									<div class="api-path-summary">{{ api.title }}</div>
-									<div style="margin-left: auto;">
-										<i v-show="!api.show" class="el-icon-arrow-right"></i>
-										<i v-show="api.show" class="el-icon-arrow-down"></i>
-									</div>
 								</div>
 								<!-- API操作 -->
 								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
@@ -111,92 +107,11 @@
 									<el-button size="mini" @click.stop="showTransferGroup(api.apiId)">{{ $t('TransferGroup') }}</el-button>
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}</el-button>
+									<a :href="'#/index/get/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
+										<el-button size="mini" type="primary">{{ $t('CheckDetails') }}</el-button>
+									</a>
 								</div>
-								<div v-show="api.show">
-									<!-- API说明 -->
-									<div style="padding:10px;background-color: white">
-										<!-- API描述 -->
-										<div v-if="api.description" v-html="api.description.replace(/\n/g, '<br>')"></div>
-										<!-- API附件说明 -->
-										<div v-for="(addi, idx) in api.additional" :key="idx">
-											<div>
-												<b>{{ addi.title }}</b>
-											</div>
-											<div v-if="addi.description" v-html="addi.description.replace(/\n/g, '<br>')"></div>
-										</div>
-										<!-- 拓展文档 -->
-										<div v-if="api.externalDocs != null">
-											<div v-if="api.externalDocs.description != null" v-html="api.externalDocs.description"></div>
-											<a v-if="api.externalDocs.url != null" :href="api.externalDocs.url" target="_blank" class="alink" style="margin-left: 0;">{{ api.externalDocs.url }}</a>
-										</div>
-									</div>
-									<!-- 请求参数标题 -->
-									<div style="padding:10px;">
-										<div style="display: flex;align-items: center;">
-											<div style="min-width: 60px;">
-												<b>{{ $t('Parameters') }}</b>
-											</div>
-											<div style="margin-left: auto;" v-if="api.consumes != null">Consumes: {{ api.consumes }}</div>
-										</div>
-									</div>
-									<!-- 请求参数 -->
-									<div style="padding:5px 10px;background-color: white">
-										<el-table :data="api.parameters" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
-										 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }" :empty-text="$t('ThereIsNoNeedToRequestParameters')">
-											<el-table-column prop="required" :label="$t('Required')" width="100" align="right">
-												<template slot-scope="scope">
-													<span v-if="scope.row.required == 'true' || scope.row.required == true">{{ $t('True')}}</span>
-													<span v-if="scope.row.required == 'false' || scope.row.required == false">{{ $t('False')}}</span>
-												</template>
-											</el-table-column>
-											<el-table-column prop="in" :label="$t('Position')" width="120"></el-table-column>
-											<el-table-column prop="type" :label="$t('Type')" width="120"></el-table-column>
-											<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
-											<el-table-column prop="description" :label="$t('ParamDescription')">
-												<template slot-scope="scope">
-													<div v-if="scope.row.description" v-html="scope.row.description"></div>
-													<div class="desc-constraint">
-														<span v-if="scope.row.def">{{ $t('Default') }}: {{ scope.row.def }}</span>
-														<span v-if="scope.row.minLength">{{ $t('MinLength') }}: {{ scope.row.minLength }}</span>
-														<span v-if="scope.row.maxLength">{{ $t('MaxLength') }}: {{ scope.row.maxLength }}</span>
-														<span v-if="scope.row.minimum">{{ $t('Minimum') }}: {{ scope.row.minimum }}</span>
-														<span v-if="scope.row.maximum">{{ $t('Maximum') }}: {{ scope.row.maximum }}</span>
-														<span v-if="scope.row.enums">{{ $t('Enums') }}: {{ scope.row.enums }}</span>
-														<span v-if="scope.row.pattern">{{ $t('Pattern') }}: {{ scope.row.pattern }}</span>
-													</div>
-												</template>
-											</el-table-column>
-										</el-table>
-										<div style="padding: 5px 0;" v-html="api.body" v-show="api.body"></div>
-									</div>
-									
-									<!-- 响应参数标题 -->
-									<div style="padding:10px;">
-										<div style="display: flex;align-items: center;">
-											<div style="min-width: 60px;">
-												<b>{{ $t('Responses') }}</b>
-											</div>
-											<div style="margin-left: auto;" v-if="api.produces != null">Produces: {{ api.produces }}</div>
-										</div>
-									</div>
-									<!-- 响应参数 -->
-									<div style="padding:5px 10px;background-color: white">
-										<div v-for="(resp, idx) in api.responses" :key="idx">
-											<p>{{ $t('Status') }}: {{ resp.status }} {{ $t('StatusMsg') }}: {{ resp.msg }}</p>
-											<el-table :data="resp.data" v-show="resp.data&&resp.data.length>0" style="width: 100%;" row-key="tableRowKeyId" border default-expand-all
-											 :tree-props="{ children: 'items', hasChildren: 'hasChildren' }">
-												<el-table-column prop="in" :label="$t('Position')" width="120" align="right"></el-table-column>
-												<el-table-column prop="type" :label="$t('Type')" width="100" align="right"></el-table-column>
-												<el-table-column prop="name" :label="$t('ParamName')" width="300"></el-table-column>
-												<el-table-column prop="description" :label="$t('ParamDescription')">
-													<template slot-scope="scope">
-														<div v-if="scope.row.description" v-html="scope.row.description"></div>
-													</template>
-												</el-table-column>
-											</el-table>
-										</div>
-									</div>
-								</div>
+							
 							</div>
 						</div>
 					</div>
