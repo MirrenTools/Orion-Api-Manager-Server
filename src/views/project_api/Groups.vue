@@ -5,8 +5,8 @@
 				<b>{{ $t('ProjectName') }}: {{ projectName }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank" class="alink"
-				 style="color: white;">
+				<a :href="exportServerHost + '/client/index.html?id=' + projectId+'&token='+sessionId" target="_blank"
+					class="alink" style="color: white;">
 					<el-button size="medium" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button>
 				</a>
 				<el-button size="medium" type="primary" icon="el-icon-plus" style="margin-left: 4px;" @click="
@@ -27,8 +27,11 @@
 						</div>
 					</div>
 					<ul class="group-items" v-loading="groupsLoading">
-						<li v-if="groups == null || groups.length == 0" style="color: #777;">{{ $t('ThereIsNoGroupPleaseAdd') }}</li>
-						<li v-for="(g, idx) in groups" :class="{ current: selectGroupId == g.groupId }" :key="idx" @click="loadApis(g)">
+						<li v-if="groups == null || groups.length == 0" style="color: #777;">
+							{{ $t('ThereIsNoGroupPleaseAdd') }}
+						</li>
+						<li v-for="(g, idx) in groups" :class="{ current: selectGroupId == g.groupId }" :key="idx"
+							@click="loadApis(g)">
 							<span class="group-item">{{ g.name }}</span>
 						</li>
 					</ul>
@@ -52,9 +55,11 @@
 								<tr v-if="group.externalDocs != null && group.externalDocs != '{}'">
 									<td class="td-item" valign="top">{{ $t('ExtDocsDesc') }}</td>
 									<td>
-										<div v-if="JSON.parse(group.externalDocs).description != null" v-html="JSON.parse(group.externalDocs).description"></div>
-										<a v-if="JSON.parse(group.externalDocs).url != null" :href="JSON.parse(group.externalDocs).url" target="_blank"
-										 class="alink" style="margin-left: 0;">
+										<div v-if="JSON.parse(group.externalDocs).description != null"
+											v-html="JSON.parse(group.externalDocs).description"></div>
+										<a v-if="JSON.parse(group.externalDocs).url != null"
+											:href="JSON.parse(group.externalDocs).url" target="_blank" class="alink"
+											style="margin-left: 0;">
 											{{ JSON.parse(group.externalDocs).url }}
 										</a>
 									</td>
@@ -62,22 +67,34 @@
 								<tr>
 									<td class="td-item" valign="top">{{ $t('Operation') }}</td>
 									<td>
-										<el-button size="mini" @click="groupMoveUp(group.groupId)">{{ $t('MoveUp') }}</el-button>
-										<el-button size="mini" @click="groupMoveDown(group.groupId)">{{ $t('MoveDown') }}</el-button>
-										<el-button size="mini" type="primary" @click="showGroupUpdateDialog(group)">{{ $t('ModifyGroup') }}</el-button>
-										<el-button size="mini" type="danger" @click="groupDeleteSubmit(group.groupId)">{{ $t('DeleteGroup') }}</el-button>
+										<el-button size="mini" @click="groupMoveUp(group.groupId)">{{ $t('MoveUp') }}
+										</el-button>
+										<el-button size="mini" @click="groupMoveDown(group.groupId)">
+											{{ $t('MoveDown') }}
+										</el-button>
+										<el-button size="mini" type="primary" @click="showGroupUpdateDialog(group)">
+											{{ $t('ModifyGroup') }}
+										</el-button>
+										<el-button size="mini" type="danger" @click="groupDeleteSubmit(group.groupId)">
+											{{ $t('DeleteGroup') }}
+										</el-button>
 									</td>
 								</tr>
 							</table>
 						</div>
 						<!-- 接口列表与新增接口 -->
-						<div style="box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);height: 2px;border-bottom: 1px solid #EEE;"></div>
+						<div
+							style="box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);height: 2px;border-bottom: 1px solid #EEE;">
+						</div>
 						<div style="padding: 10px 0;display: flex;align-items: center;">
 							<div>
 								<b>{{ $t('ApiList') }}</b>
 							</div>
 							<div style="margin-left: auto;">
-								<a :href="'#/index/post/project/api/' + projectId + '/' + group.groupId" style="margin:0 10px;">
+								<el-button size="mini" type="primary" @click="inportApiVisible=true">{{ $t('Inport') }}
+								</el-button>
+								<a :href="'#/index/post/project/api/' + projectId + '/' + group.groupId"
+									style="margin:0 10px;">
 									<el-button size="mini" type="primary">{{ $t('NewApi') }}</el-button>
 								</a>
 							</div>
@@ -87,7 +104,8 @@
 						<div v-for="api in apis" :key="api.apiId" style="margin-bottom: 10px;">
 							<div :class="['api', api.method]">
 								<!-- API的方法与路径与简介 -->
-								<div :class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']" >
+								<div
+									:class="['api-header', api.deprecated == true || api.deprecated == 'true' ? 'text-through' : '']">
 									<div class="api-method">{{ api.method }}</div>
 									<div class="api-path-summary">
 										<span v-if="api.deprecated == true || api.deprecated == 'true'">
@@ -99,19 +117,29 @@
 								</div>
 								<!-- API操作 -->
 								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
-									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">{{ $t('Delete') }}</el-button>
-									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
+									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">
+										{{ $t('Delete') }}
+									</el-button>
+									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
+										style="margin:0 10px;">
 										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
 									</a>
-									<el-button size="mini" @click.stop="copyApiSubmit(api.apiId)">{{ $t('Copy') }}</el-button>
-									<el-button size="mini" @click.stop="showTransferGroup(api.apiId)">{{ $t('TransferGroup') }}</el-button>
+									<el-button size="mini" @click.stop="exportApi(api.apiId)">{{ $t('Export') }}
+									</el-button>
+									<el-button size="mini" @click.stop="copyApiSubmit(api.apiId)">{{ $t('Copy') }}
+									</el-button>
+									<el-button size="mini" @click.stop="showTransferGroup(api.apiId)">
+										{{ $t('TransferGroup') }}
+									</el-button>
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
-									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}</el-button>
-									<a :href="'#/index/get/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId" style="margin:0 10px;">
+									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}
+									</el-button>
+									<a :href="'#/index/get/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
+										style="margin:0 10px;">
 										<el-button size="mini" type="primary">{{ $t('CheckDetails') }}</el-button>
 									</a>
 								</div>
-							
+
 							</div>
 						</div>
 					</div>
@@ -120,7 +148,8 @@
 		</el-container>
 
 		<!-- 新增或修改分组的弹窗 -->
-		<el-dialog :title="groupDialogMode == 'view' ? $t('ModifyGroup') : $t('NewGroup')" :visible.sync="dialogCreateGroupVisible">
+		<el-dialog :title="groupDialogMode == 'view' ? $t('ModifyGroup') : $t('NewGroup')"
+			:visible.sync="dialogCreateGroupVisible">
 			<el-form :model="groupData" :rules="groupDataRules" label-width="100px" ref="groupEditForm">
 				<el-form-item :label="$t('GroupName')" prop="name">
 					<el-input v-model="groupData.name" :placeholder="$t('EnterTheGroupName')"></el-input>
@@ -132,25 +161,32 @@
 					<el-input v-model="groupData.sorts" type="number" :placeholder="$t('EnterGroupRanking')"></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('GroupDescription')" prop="description">
-					<el-input type="textarea" v-model="groupData.description" :placeholder="$t('EnterGroupDescription')"></el-input>
+					<el-input type="textarea" v-model="groupData.description"
+						:placeholder="$t('EnterGroupDescription')"></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('ExtDocsURL')" prop="externalUrl">
 					<el-input v-model="groupData.externalUrl" :placeholder="$t('EnterExtDocsURL')"></el-input>
 				</el-form-item>
 				<el-form-item :label="$t('ExtDocsDesc')" prop="externalDesc">
-					<el-input type="textarea" v-model="groupData.externalDesc" :placeholder="$t('EnterExtDocsDesc')"></el-input>
+					<el-input type="textarea" v-model="groupData.externalDesc" :placeholder="$t('EnterExtDocsDesc')">
+					</el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="dialogCreateGroupVisible = false">{{ $t('Cancel') }}</el-button>
-				<el-button type="primary" @click="groupCreateSubmit" v-show="groupDialogMode == 'edit'">{{ $t('Submit') }}</el-button>
-				<el-button type="primary" @click="groupUpdateSubmit" v-show="groupDialogMode == 'view'">{{ $t('SubmitModify') }}</el-button>
+				<el-button type="primary" @click="groupCreateSubmit" v-show="groupDialogMode == 'edit'">
+					{{ $t('Submit') }}
+				</el-button>
+				<el-button type="primary" @click="groupUpdateSubmit" v-show="groupDialogMode == 'view'">
+					{{ $t('SubmitModify') }}
+				</el-button>
 			</div>
 		</el-dialog>
 		<!-- API修改分组的弹窗 -->
 		<el-dialog :title="$t('TransferGroup')" :visible.sync="transferGroupVisible" width="30%">
 			<div>
-				<el-select v-model="transferSelectGroupId" :placeholder="$t('SelectTransferGroup')" style="width: 100%;">
+				<el-select v-model="transferSelectGroupId" :placeholder="$t('SelectTransferGroup')"
+					style="width: 100%;">
 					<el-option v-for="item in groups" :key="item.groupId" :label="item.name" :value="item.groupId">
 					</el-option>
 				</el-select>
@@ -160,7 +196,17 @@
 				<el-button type="primary" @click="submitTransferGroup()">{{ $t('Submit') }}</el-button>
 			</span>
 		</el-dialog>
-
+		<!-- 导入API的弹窗 -->
+		<el-dialog :title="$t('ImportAPI')" :visible.sync="inportApiVisible">
+			<div>
+				<el-input type="textarea" :rows="6" :placeholder="$t('PleaseInputApiData')" v-model="inportApiData">
+				</el-input>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="inportApiVisible = false">{{ $t('Cancel') }}</el-button>
+				<el-button type="primary" @click="submitInportApi()">{{ $t('Submit') }}</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -174,6 +220,8 @@
 		apiGroupMoveUpAPI,
 		apiGroupMoveDownAPI,
 		findApisAPI,
+		getApiAPI,
+		saveApiAPI,
 		deleteAPI,
 		copyApiAPI,
 		updateApiAPI,
@@ -240,6 +288,10 @@
 				transferSelectGroupId: '',
 				/**已选择的APIid*/
 				transferSelectApiId: '',
+				/**是否显示分组选择弹窗*/
+				inportApiVisible: false,
+				/**需要导入的API数据*/
+				inportApiData: '',
 
 			};
 		},
@@ -372,7 +424,8 @@
 								}
 								if (api.responses != null) {
 									var respd = JSON.parse(api.responses);
-									if (respd != null && respd.length > 0 && (respd[0].status == undefined || respd[0].data == undefined)) {
+									if (respd != null && respd.length > 0 && (respd[0].status == undefined || respd[0]
+											.data == undefined)) {
 										api.responses = [{
 											status: 200,
 											msg: 'ok',
@@ -414,7 +467,8 @@
 						reqData.name = this.groupData.name;
 						reqData.summary = this.groupData.summary;
 						reqData.description = this.groupData.description;
-						if ((this.groupData.externalUrl != null && this.groupData.externalUrl != '') || (this.groupData.externalDesc !=
+						if ((this.groupData.externalUrl != null && this.groupData.externalUrl != '') || (this
+								.groupData.externalDesc !=
 								null && this.groupData.externalDesc != '')) {
 							var ext = {};
 							if (this.groupData.externalUrl != null && this.groupData.externalUrl != '') {
@@ -589,6 +643,72 @@
 				);
 			},
 			/**
+			 * 导出API到粘贴板
+			 * @param {Object} aid
+			 */
+			exportApi(aid) {
+				getApiAPI(aid,
+					res => {
+						var data = res.data;
+						console.log('get API...');
+						console.log(data);
+						if (data.code == 200) {
+							delete(data.data.apiId);
+							delete(data.data.groupId);
+							let json = JSON.stringify(data.data);
+							let oInput = document.createElement('input');
+							oInput.value = json;
+							document.body.appendChild(oInput);
+							oInput.select();
+							document.execCommand('Copy');
+							this.$message.success(this.$t('ExportSucceeded'));
+							oInput.remove();
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToGetInfoSeeConsole'));
+						console.log(err);
+					}
+				);
+			},
+			/**
+			 * 提交导入API
+			 */
+			submitInportApi() {
+				try {
+					var reqData = JSON.parse(this.inportApiData);
+					reqData.groupId=this.selectGroupId;
+					// 响应参数结束
+					console.log('Inport API...');
+					console.log(reqData);
+					saveApiAPI(
+						reqData,
+						res => {
+							var data = res.data;
+							console.log('Inport API response:');
+							console.log(data);
+							if (data.code == 200) {
+								this.inportApiData = '';
+								this.inportApiVisible=false;
+								this.$message.success(this.$t('InportSucceeded'));
+								this.findApisAndLoad(this.selectGroupId);
+							}
+						},
+						err => {
+							this.$message.error(this.$t('FailedToAddSeeConsole'));
+							console.log('Inport API error:');
+							console.log(err);
+						}
+					);
+				} catch (e) {
+					this.$message.error(this.$t('FailedToAddSeeConsole'));
+					console.log('Inport API error:');
+					console.log(e);
+				}
+
+
+			},
+			/**
 			 * 复制API
 			 * @param {Object} aid
 			 */
@@ -599,21 +719,21 @@
 						type: 'warning'
 					})
 					.then(() => {
-							copyApiAPI(
-								aid,
-								res => {
-									console.log(data);
-									var data = res.data;
-									if (data.code == 200) {
-										this.$message.success(this.$t('CopySuccess'));
-										this.findApisAndLoad(this.group.groupId);
-									}
-								},
-								err => {
-									this.$message.error(this.$t('FailedToModifySeeConsole'));
-									console.log(err);
+						copyApiAPI(
+							aid,
+							res => {
+								console.log(data);
+								var data = res.data;
+								if (data.code == 200) {
+									this.$message.success(this.$t('CopySuccess'));
+									this.findApisAndLoad(this.group.groupId);
 								}
-							);
+							},
+							err => {
+								this.$message.error(this.$t('FailedToModifySeeConsole'));
+								console.log(err);
+							}
+						);
 					})
 					.catch(() => {});
 			},
