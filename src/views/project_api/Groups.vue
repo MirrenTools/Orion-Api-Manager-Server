@@ -117,13 +117,6 @@
 								</div>
 								<!-- API操作 -->
 								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
-									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">
-										{{ $t('Delete') }}
-									</el-button>
-									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
-										style="margin:0 10px;">
-										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
-									</a>
 									<el-button size="mini" @click.stop="exportApi(api.apiId)">{{ $t('Export') }}
 									</el-button>
 									<el-button size="mini" @click.stop="copyApiSubmit(api.apiId)">{{ $t('Copy') }}
@@ -134,6 +127,13 @@
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}
 									</el-button>
+									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">
+										{{ $t('Delete') }}
+									</el-button>
+									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
+										style="margin-left:10px;">
+										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
+									</a>
 									<a :href="'#/index/get/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
 										style="margin:0 10px;">
 										<el-button size="mini" type="primary">{{ $t('CheckDetails') }}</el-button>
@@ -677,7 +677,7 @@
 			submitInportApi() {
 				try {
 					var reqData = JSON.parse(this.inportApiData);
-					reqData.groupId=this.selectGroupId;
+					reqData.groupId = this.selectGroupId;
 					// 响应参数结束
 					console.log('Inport API...');
 					console.log(reqData);
@@ -689,7 +689,7 @@
 							console.log(data);
 							if (data.code == 200) {
 								this.inportApiData = '';
-								this.inportApiVisible=false;
+								this.inportApiVisible = false;
 								this.$message.success(this.$t('InportSucceeded'));
 								this.findApisAndLoad(this.selectGroupId);
 							}
