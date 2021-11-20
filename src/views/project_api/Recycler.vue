@@ -21,6 +21,8 @@
 							</div>
 							<!-- API操作 -->
 							<div style="padding:5px 10px;text-align: right;">
+								<el-button size="mini" @click.stop="exportApi(api.apiId)">{{ $t('Export') }}
+								</el-button>
 								<el-button size="mini" type="primary" @click.stop="showApiSubmit(api.apiId)">
 									{{ $t('ApiShow') }}
 								</el-button>
@@ -39,7 +41,7 @@
 
 <script>
 	import {
-		getProjectAPI,findHideApisAPI,showApiAPI
+		getProjectAPI,findHideApisAPI,showApiAPI,getApiAPI
 	} from '@/api/Project';
 	import store from '@/store/index.js';
 	export default {
@@ -85,6 +87,35 @@
 					},
 					err => {
 						this.$message.error(this.$t('FailedToGetGroupInfoSeeConsole'));
+						console.log(err);
+					}
+				);
+			},
+			/**
+			 * 导出API到粘贴板
+			 * @param {Object} aid
+			 */
+			exportApi(aid) {
+				getApiAPI(aid,
+					res => {
+						var data = res.data;
+						console.log('get API...');
+						console.log(data);
+						if (data.code == 200) {
+							delete(data.data.apiId);
+							delete(data.data.groupId);
+							let json = JSON.stringify(data.data);
+							let oInput = document.createElement('input');
+							oInput.value = json;
+							document.body.appendChild(oInput);
+							oInput.select();
+							document.execCommand('Copy');
+							this.$message.success(this.$t('ExportSucceeded'));
+							oInput.remove();
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToGetInfoSeeConsole'));
 						console.log(err);
 					}
 				);

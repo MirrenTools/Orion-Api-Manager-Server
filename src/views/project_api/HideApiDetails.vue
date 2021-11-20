@@ -5,7 +5,8 @@
 				<b>{{ $t('ApiDetails') }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<el-button size="mini" type="danger" @click="apiDeleteSubmit(apiId)">{{ $t('PermanentlyDelete') }}</el-button>
+				<el-button size="mini" @click.stop="exportApi(api.apiId)">{{ $t('Export') }}</el-button>
+				<el-button size="mini" type="danger" @click="apiDeleteSubmit(api.apiId)">{{ $t('PermanentlyDelete') }}</el-button>
 				<el-button size="mini" type="primary" @click="showApiSubmit(api.apiId)">{{ $t('ApiShow') }}</el-button>
 			</div>
 		</div>
@@ -274,6 +275,35 @@
 						);
 					})
 					.catch(() => {});
+			},
+			/**
+			 * 导出API到粘贴板
+			 * @param {Object} aid
+			 */
+			exportApi(aid) {
+				getApiAPI(aid,
+					res => {
+						var data = res.data;
+						console.log('get API...');
+						console.log(data);
+						if (data.code == 200) {
+							delete(data.data.apiId);
+							delete(data.data.groupId);
+							let json = JSON.stringify(data.data);
+							let oInput = document.createElement('input');
+							oInput.value = json;
+							document.body.appendChild(oInput);
+							oInput.select();
+							document.execCommand('Copy');
+							this.$message.success(this.$t('ExportSucceeded'));
+							oInput.remove();
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToGetInfoSeeConsole'));
+						console.log(err);
+					}
+				);
 			},
 			/**
 			 * 加载API信息
