@@ -116,7 +116,7 @@
 									<div class="api-path-summary">{{ api.title }}</div>
 								</div>
 								<!-- API操作 -->
-								<div style="padding:5px 10px;text-align: right;" @click="api.show = !api.show">
+								<div style="padding:5px 10px;text-align: right;">
 									<el-button size="mini" @click.stop="exportApi(api.apiId)">{{ $t('Export') }}
 									</el-button>
 									<el-button size="mini" @click.stop="copyApiSubmit(api.apiId)">{{ $t('Copy') }}
@@ -127,9 +127,17 @@
 									<el-button size="mini" @click="apiMoveUp(api.apiId)">{{ $t('MoveUp') }}</el-button>
 									<el-button size="mini" @click="apiMoveDown(api.apiId)">{{ $t('MoveDown') }}
 									</el-button>
-									<el-button size="mini" type="danger" @click.stop="apiDeleteSubmit(api.apiId)">
-										{{ $t('Delete') }}
-									</el-button>
+									<el-popover placement="bottom" width="240"
+										style="margin-left:10px;">
+										<p>{{$t('DeleteConfirm')}}</p>
+										<div style="text-align: right; margin: 0">
+											<el-button type="danger" size="mini" @click="apiDeleteSubmit(api.apiId)">{{$t('PermanentlyDelete')}}</el-button>
+											<el-button type="primary" size="mini" @click="apiHideSubmit(api.apiId)">{{$t('ApiHide')}}</el-button>
+										</div>
+										<el-button slot="reference" size="mini">
+											{{ $t('Delete') }}
+										</el-button>
+									</el-popover>
 									<a :href="'#/index/put/project/api/' + projectId + '/' + api.groupId + '/' + api.apiId"
 										style="margin-left:10px;">
 										<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
@@ -139,7 +147,6 @@
 										<el-button size="mini" type="primary">{{ $t('CheckDetails') }}</el-button>
 									</a>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -207,6 +214,7 @@
 				<el-button type="primary" @click="submitInportApi()">{{ $t('Submit') }}</el-button>
 			</span>
 		</el-dialog>
+
 	</div>
 </template>
 
@@ -222,7 +230,8 @@
 		findApisAPI,
 		getApiAPI,
 		saveApiAPI,
-		deleteAPI,
+		deleteApiAPI,
+		hideApiAPI,
 		copyApiAPI,
 		updateApiAPI,
 		apiMoveUpAPI,
@@ -408,41 +417,41 @@
 							for (var a = 0; a < data.data.length; a++) {
 								var api = data.data[a];
 								api.show = false;
-								if (api.additional != null && api.additional != '') {
-									api.additional = JSON.parse(api.additional);
-								}
-								if (api.externalDocs != null && api.externalDocs != '') {
-									api.externalDocs = JSON.parse(api.externalDocs);
-								}
-								if (api.parameters != null) {
-									api.parameters = JSON.parse(api.parameters);
-									for (var i = 0; i < api.parameters.length; i++) {
-										this.recursionCreateTableRandomRowKey(api.parameters[i]);
-									}
-								} else {
-									api.parameters = [];
-								}
-								if (api.responses != null) {
-									var respd = JSON.parse(api.responses);
-									if (respd != null && respd.length > 0 && (respd[0].status == undefined || respd[0]
-											.data == undefined)) {
-										api.responses = [{
-											status: 200,
-											msg: 'ok',
-											data: respd
-										}];
-									} else {
-										api.responses = respd;
-									}
-									for (var r = 0; r < api.responses.length; r++) {
-										var rdata = api.responses[r].data;
-										for (var i = 0; i < rdata.length; i++) {
-											this.recursionCreateTableRandomRowKey(rdata[i]);
-										}
-									}
-								} else {
-									api.responses = [];
-								}
+								// if (api.additional != null && api.additional != '') {
+								// 	api.additional = JSON.parse(api.additional);
+								// }
+								// if (api.externalDocs != null && api.externalDocs != '') {
+								// 	api.externalDocs = JSON.parse(api.externalDocs);
+								// }
+								// if (api.parameters != null) {
+								// 	api.parameters = JSON.parse(api.parameters);
+								// 	for (var i = 0; i < api.parameters.length; i++) {
+								// 		this.recursionCreateTableRandomRowKey(api.parameters[i]);
+								// 	}
+								// } else {
+								// 	api.parameters = [];
+								// }
+								// if (api.responses != null) {
+								// 	var respd = JSON.parse(api.responses);
+								// 	if (respd != null && respd.length > 0 && (respd[0].status == undefined || respd[0]
+								// 			.data == undefined)) {
+								// 		api.responses = [{
+								// 			status: 200,
+								// 			msg: 'ok',
+								// 			data: respd
+								// 		}];
+								// 	} else {
+								// 		api.responses = respd;
+								// 	}
+								// 	for (var r = 0; r < api.responses.length; r++) {
+								// 		var rdata = api.responses[r].data;
+								// 		for (var i = 0; i < rdata.length; i++) {
+								// 			this.recursionCreateTableRandomRowKey(rdata[i]);
+								// 		}
+								// 	}
+								// } else {
+								// 	api.responses = [];
+								// }
 								this.apis.push(api);
 							}
 						}
@@ -738,34 +747,48 @@
 					.catch(() => {});
 			},
 			/**
+			 * 提交回收API
+			 * @param {Object} aid
+			 */
+			apiHideSubmit(aid) {
+				hideApiAPI(
+					aid,
+					res => {
+						var data = res.data;
+						console.log('hide API...');
+						console.log(data);
+						if (data.code == 200) {
+							this.$message.success(this.$t('ModifySuccess'));
+							this.findApisAndLoad(this.group.groupId);
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToModifySeeConsole'));
+						console.log(err);
+					}
+				);
+			},
+			/**
 			 * 提交删除API
 			 * @param {Object} aid
 			 */
 			apiDeleteSubmit(aid) {
-				this.$confirm(this.$t('DeleteConfirm'), this.$t('Tips'), {
-						confirmButtonText: this.$t('Confirm'),
-						cancelButtonText: this.$t('Cancel'),
-						type: 'warning'
-					})
-					.then(() => {
-						deleteAPI(
-							aid,
-							res => {
-								var data = res.data;
-								console.log('delete API...');
-								console.log(data);
-								if (data.code == 200) {
-									this.$message.success(this.$t('DeleteSuccess'));
-									this.findApisAndLoad(this.group.groupId);
-								}
-							},
-							err => {
-								this.$message.error(this.$t('FailedToModifySeeConsole'));
-								console.log(err);
-							}
-						);
-					})
-					.catch(() => {});
+				deleteApiAPI(
+					aid,
+					res => {
+						var data = res.data;
+						console.log('delete API...');
+						console.log(data);
+						if (data.code == 200) {
+							this.$message.success(this.$t('DeleteSuccess'));
+							this.findApisAndLoad(this.group.groupId);
+						}
+					},
+					err => {
+						this.$message.error(this.$t('FailedToModifySeeConsole'));
+						console.log(err);
+					}
+				);
 			},
 			/**
 			 * 转移分组

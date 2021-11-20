@@ -249,13 +249,41 @@ export function apiMoveUpAPI(aid, res, err) {
 export function apiMoveDownAPI(aid, res, err) {
 	request.put('/private/server/api/moveDown/' + aid).then(res).catch(err);
 }
+
+/**
+ * 获取所有隐藏(回收)的接口数据
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function findHideApisAPI(res, err) {
+	request.get('/private/server/hide/apis').then(res).catch(err);
+}
+/**
+ * 隐性(回收)指定API
+ * @param {Object} aid API的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function hideApiAPI(aid, res, err) {
+	request.put('/private/server/api/hide/' + aid).then(res).catch(err);
+}
+
+/**
+ * 显示(还原)指定API
+ * @param {Object} aid API的id
+ * @param {Object} res
+ * @param {Object} err
+ */
+export function showApiAPI(aid, res, err) {
+	request.put('/private/server/api/show/' + aid).then(res).catch(err);
+}
 /**
  * 删除API
  * @param {Object} aid API的id
  * @param {Object} res
  * @param {Object} err
  */
-export function deleteAPI(aid, res, err) {
+export function deleteApiAPI(aid, res, err) {
 	request.delete('/private/server/api/' + aid).then(res).catch(err);
 }
 

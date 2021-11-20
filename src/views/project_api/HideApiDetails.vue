@@ -5,11 +5,8 @@
 				<b>{{ $t('ApiDetails') }}</b>
 			</div>
 			<div style="margin-left: auto;">
-				<el-button size="mini" type="danger" @click="apiDeleteSubmit(apiId)">{{ $t('Delete') }}</el-button>
-				<el-button size="mini" type="primary" @click="copyApiSubmit(api.apiId)">{{ $t('Copy') }}</el-button>
-				<a :href="'#/index/put/project/api/' + projectId + '/' + groupId + '/' + apiId" style="margin:0 10px;">
-					<el-button size="mini" type="primary">{{ $t('Modify') }}</el-button>
-				</a>
+				<el-button size="mini" type="danger" @click="apiDeleteSubmit(apiId)">{{ $t('PermanentlyDelete') }}</el-button>
+				<el-button size="mini" type="primary" @click="showApiSubmit(api.apiId)">{{ $t('ApiShow') }}</el-button>
 			</div>
 		</div>
 		<div class="api-body" :class="['api-body-' + api.method]">
@@ -139,8 +136,7 @@
 	import {
 		getApiAPI,
 		deleteApiAPI,
-		copyApiAPI,
-		updateApiAPI,
+		showApiAPI
 	} from '@/api/Project';
 	import store from '@/store/index.js';
 	export default {
@@ -149,8 +145,6 @@
 		},
 		data() {
 			return {
-				projectId: '',
-				groupId: '',
 				apiId: '',
 				dataLoading: true,
 				api: {
@@ -213,8 +207,6 @@
 			if (role != 'ROOT' && role != 'SERVER') {
 				this.$router.push('/index');
 			} else {
-				this.projectId = this.$route.params.pid;
-				this.groupId = this.$route.params.gid;
 				this.apiId = this.$route.params.aid;
 				if (this.apiId == null) {
 					this.$message.warning(this.$t('FailedToLoadTheProjectInvalidID'));
@@ -225,23 +217,24 @@
 		},
 		methods: {
 			/**
-			 * 复制API
+			 * 还原API
 			 * @param {Object} aid
 			 */
-			copyApiSubmit(aid) {
-				this.$confirm(this.$t('CopyConfirm'), this.$t('Tips'), {
+			showApiSubmit(aid) {
+				this.$confirm(this.$t('ApiShowConfirm'), this.$t('Tips'), {
 						confirmButtonText: this.$t('Confirm'),
 						cancelButtonText: this.$t('Cancel'),
 						type: 'warning'
 					})
 					.then(() => {
-						copyApiAPI(
+						showApiAPI(
 							aid,
 							res => {
 								console.log(data);
 								var data = res.data;
 								if (data.code == 200) {
-									this.$message.success(this.$t('CopySuccess'));
+									this.$message.success(this.$t('ModifySuccess'));
+									this.$router.push('/index/get/recycler');
 								}
 							},
 							err => {
@@ -271,7 +264,7 @@
 								console.log(data);
 								if (data.code == 200) {
 									this.$message.success(this.$t('DeleteSuccess'));
-									this.$router.push('/index/get/groups/'+this.projectId);
+									this.$router.push('/index/get/recycler');
 								}
 							},
 							err => {
@@ -413,7 +406,6 @@
 					if (valid) {
 						let reqData = {};
 						reqData.apiId = this.apiId;
-						reqData.groupId = this.groupId;
 						reqData.method = this.api.method;
 						reqData.deprecated = this.api.deprecated;
 						reqData.path = this.api.path.replace(/(\/)+/g, '/');

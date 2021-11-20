@@ -88,6 +88,32 @@ export const constantRoutes = [{
 				}]
 			}
 		}, {
+			path: 'get/recycler',
+			name: 'ApiRecycler',
+			component: () => import('./views/project_api/Recycler'),
+			meta: {
+				title: 'ApiRecycler',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				}]
+			}
+		}, {
+			path: 'get/recycler/:aid',
+			name: 'ApiHideDetails',
+			component: () => import('./views/project_api/HideApiDetails'),
+			meta: {
+				title: 'ApiRecycler',
+				breadcrumb: [{
+					path: '/index',
+					title: 'ProjectList'
+				},{
+					path: '/index/get/recycler',
+					title: 'ApiRecycler',
+					pathKeys: ['pid']
+				}]
+			}
+		}, {
 			path: 'get/groups/:pid',
 			name: 'GroupList',
 			component: () => import('./views/project_api/Groups'),
@@ -96,7 +122,7 @@ export const constantRoutes = [{
 				breadcrumb: [{
 					path: '/index',
 					title: 'ProjectList'
-				}, {
+				},{
 					path: '/index/get/project/:pid',
 					title: 'ProjectDetails',
 					pathKeys: ['pid']
