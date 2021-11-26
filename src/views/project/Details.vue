@@ -97,9 +97,6 @@
 						 class="alink" style="color: white;">
 							<el-button size="mini" type="primary" icon="el-icon-position">{{ $t('OpenOnClient') }}</el-button>
 						</a>
-						<a :href="'#/index/get/recycler/' + project.key" class="alink" style="color: white;margin-left: 0;">
-							<el-button size="mini" type="primary" icon="el-icon-folder-delete">{{ $t('ApiRecycler') }}</el-button>
-						</a>
 					</td>
 				</tr>
 			</table>
